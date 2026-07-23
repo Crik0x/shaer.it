@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shaer.it — Simulatore MVP</title>
+<style>
+  :root{
+    --navy:#0B1F3A; --navy2:#122B4F; --navy3:#1B3A66;
+    --orange:#FF6A1A; --orange2:#FF8C00; --red:#FF4500;
+    --cream:#FFF6EE; --paper:#FFFFFF; --ink:#10243F;
+    --muted:#6B7C93; --line:#E3E8EF; --ok:#1E9E5A; --warn:#E8A100; --bad:#D7392C;
+    --chip:#EEF2F7;
+    --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,'Helvetica Neue',sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--sans);background:var(--cream);color:var(--ink);font-size:14px;line-height:1.45}
+  button{font-family:inherit;cursor:pointer}
+  a{color:var(--orange);text-decoration:none}
+  h1,h2,h3,h4{margin:0 0 .5em}
+  .mono{font-family:var(--mono)}
+
+  /* ---------- TOP BAR ---------- */
+  header{position:sticky;top:0;z-index:30;background:linear-gradient(90deg,var(--navy),var(--navy2));color:#fff;
+    display:flex;align-items:center;gap:14px;padding:10px 18px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+  .logo{font-weight:800;font-size:18px;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
+  .logo .dot{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--orange2),var(--red));
+    display:grid;place-items:center;font-size:13px;font-weight:900;color:#fff}
+  header .spacer{flex:1}
+  header select,header .wbox{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25);
+    border-radius:8px;padding:7px 10px;font-size:13px}
+  header select option{color:#000}
+  .roleChips{display:flex;gap:6px}
+  .roleChip{padding:6px 11px;border-radius:20px;font-size:12px;font-weight:700;border:1px solid rgba(255,255,255,.3);
+    background:rgba(255,255,255,.08);color:#fff;transition:.15s}
+  .roleChip.active{background:linear-gradient(135deg,var(--orange2),var(--red));border-color:transparent}
+  .roleChip.admin.active{background:#fff;color:var(--navy)}
+  .roleChip.disabled{opacity:.35;cursor:not-allowed}
+  .wbox{display:flex;align-items:center;gap:7px;font-weight:700}
+  .wbox small{font-weight:500;opacity:.7}
+  .topbtns{display:flex;gap:6px}
+  .topbtns button{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;padding:7px 10px;font-size:12px}
+  .topbtns button:hover{background:rgba(255,255,255,.22)}
+
+  /* ---------- LAYOUT ---------- */
+  .shell{display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 56px)}
+  nav.side{background:var(--paper);border-right:1px solid var(--line);padding:14px 10px}
+  nav.side .navsec{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:14px 8px 6px;font-weight:700}
+  nav.side button{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:none;border:none;
+    padding:9px 11px;border-radius:9px;color:var(--ink);font-size:13.5px;font-weight:600}
+  nav.side button:hover{background:var(--chip)}
+  nav.side button.active{background:linear-gradient(135deg,rgba(255,140,0,.16),rgba(255,69,0,.10));color:var(--red)}
+  nav.side button .ic{width:18px;text-align:center}
+  main{padding:22px 26px;overflow:auto}
+
+  /* ---------- COMPONENTS ---------- */
+  .pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+  .pagehead h2{font-size:21px}
+  .pagehead p{margin:2px 0 0;color:var(--muted);font-size:13px;max-width:640px}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px;
+    box-shadow:0 1px 2px rgba(16,36,63,.04)}
+  .card h3{font-size:15px;display:flex;align-items:center;gap:8px}
+  .grid{display:grid;gap:14px}
+  .g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:1100px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:linear-gradient(135deg,var(--navy),var(--navy3));color:#fff;border-radius:14px;padding:16px 18px}
+  .kpi .v{font-size:26px;font-weight:800;line-height:1.1}
+  .kpi .l{font-size:12px;opacity:.78;margin-top:3px}
+  .kpi.orange{background:linear-gradient(135deg,var(--orange2),var(--red))}
+  label{display:block;font-size:12px;font-weight:700;color:var(--navy2);margin:10px 0 4px}
+  input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font-family:inherit;font-size:13.5px;background:#fff}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--orange)}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .row>div{flex:1;min-width:150px}
+  .btn{background:linear-gradient(135deg,var(--orange2),var(--red));color:#fff;border:none;border-radius:9px;
+    padding:10px 16px;font-weight:700;font-size:13.5px}
+  .btn:hover{filter:brightness(1.05)}
+  .btn.ghost{background:#fff;color:var(--navy2);border:1px solid var(--line)}
+  .btn.ghost:hover{background:var(--chip)}
+  .btn.sm{padding:6px 11px;font-size:12px;border-radius:8px}
+  .btn.navy{background:linear-gradient(135deg,var(--navy2),var(--navy3))}
+  .btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:700}
+  tr:hover td{background:#FAFBFD}
+  .tag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;background:var(--chip);color:var(--navy2)}
+  .tag.ok{background:#E4F6EC;color:var(--ok)} .tag.warn{background:#FCF3DC;color:#9A7200}
+  .tag.bad{background:#FBE6E3;color:var(--bad)} .tag.info{background:#E6EEFB;color:#2B5BB5}
+  .tag.open{background:#E6EEFB;color:#2B5BB5} .tag.sug{background:#EDE3FB;color:#6B33C0}
+  .tag.prog{background:#FCF3DC;color:#9A7200} .tag.done{background:#E4F6EC;color:var(--ok)}
+  .tag.exp{background:#EEF1F5;color:#7A8699}
+  .pill{font-family:var(--mono);font-size:11.5px;background:var(--navy);color:#fff;padding:2px 8px;border-radius:6px}
+  .empty{color:var(--muted);font-style:italic;padding:10px 2px}
+  .bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden}
+  .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--orange2),var(--red))}
+  .hint{font-size:12px;color:var(--muted);margin-top:6px}
+  .divider{height:1px;background:var(--line);margin:14px 0}
+  .badge{font-size:11px;background:var(--red);color:#fff;border-radius:20px;padding:1px 7px;font-weight:800;margin-left:auto}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;
+    padding:12px 20px;border-radius:10px;font-weight:600;z-index:100;box-shadow:0 6px 20px rgba(0,0,0,.3);opacity:0;transition:.25s}
+  .toast.show{opacity:1;bottom:30px}
+  .chk{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;margin:4px 12px 4px 0}
+  .chk input{width:auto}
+  .miniledger{max-height:240px;overflow:auto}
+  .geo-cities{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .flowbox{background:var(--navy);color:#fff;border-radius:12px;padding:14px 16px;font-size:12.5px;line-height:1.7}
+  .flowbox b{color:var(--orange2)}
+  .split-table td{font-family:var(--mono);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><span class="dot">S</span> Shaer.it <span style="font-weight:500;opacity:.6;font-size:12px">· Simulatore MVP</span></div>
+  <div class="spacer"></div>
+  <div>
+    <label style="color:#fff;margin:0 0 3px;opacity:.7;font-size:10px;text-transform:uppercase">Identità attiva</label>
+    <select id="actorSelect" onchange="setActor(this.value)"></select>
+  </div>
+  <div class="roleChips" id="roleChips"></div>
+  <div class="wbox" id="walletBox"><small>Crediti</small> <span id="walletVal">0</span></div>
+  <div class="topbtns">
+    <button onclick="exportData()" title="Salva tutti i dati in un file .json">⬇ Esporta</button>
+    <button onclick="document.getElementById('importFile').click()" title="Carica un file .json">⬆ Importa</button>
+    <button onclick="resetAll()" title="Cancella tutto e ricarica i dati demo">↺ Reset</button>
+    <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importData(event)">
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="side" id="sidenav"></nav>
+  <main id="main"></main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================================
+   SHAER.IT — SIMULATORE MVP   (standalone, offline, vanilla JS)
+   Dati salvati in localStorage + Esporta/Importa su file .json
+   ========================================================================== */
+
+const LS_KEY = "shaer_sim_v1";
+let state = null;
+
+/* ---------- ID GENERATORS ---------- */
+const rid = (n=6)=>Array.from({length:n},()=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random()*32)]).join("");
+const newProductId  = ()=>"PRD-"+rid();
+const newTxnId      = ()=>"TXN-"+rid();
+const newCampaignId = ()=>"CMP-"+rid();
+const newId         = ()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const now = ()=>Date.now();
+const fmt = n => (Math.round(n*100)/100).toLocaleString("it-IT",{minimumFractionDigits:0,maximumFractionDigits:2});
+const today = ()=>new Date().toISOString().slice(0,10);
+
+/* ============================================================================
+   SEED DATA — popolazione demo per testare subito un ciclo completo
+   ========================================================================== */
+function seed(){
+  const users = [
+    {id:"u_anna",  name:"Anna (Buyer/Seller)", roles:["BUYER","SELLER"], city:"Roma", zone:"Prati", birthday:"06-10", interests:["moda","casa"], credits:120},
+    {id:"u_luca",  name:"Luca (Buyer)",         roles:["BUYER"],          city:"Roma", zone:"Trastevere", birthday:"06-08", interests:["sport","tech"], credits:60},
+    {id:"u_sara",  name:"Sara (Buyer)",         roles:["BUYER"],          city:"Roma", zone:"Monti", birthday:"12-01", interests:["moda","beauty"], credits:45},
+    {id:"u_marco", name:"Marco (Buyer)",        roles:["BUYER"],          city:"Roma", zone:"EUR", birthday:"03-22", interests:["tech"], credits:30},
+    {id:"u_gaia",  name:"Gaia (Buyer)",         roles:["BUYER"],          city:"Milano", zone:"Navigli", birthday:"06-12", interests:["casa","moda"], credits:55},
+    {id:"u_seller2",name:"Bottega Centro (Seller)", roles:["SELLER"],     city:"Roma", zone:"Centro", birthday:"01-01", interests:[], credits:100},
+    {id:"u_prod1", name:"BrandX (Producer)",    roles:["PRODUCER"],       city:"Milano", zone:"", birthday:"01-01", interests:[], credits:1000},
+    {id:"u_prod2", name:"Avv. Rossi (Producer/servizi)", roles:["PRODUCER"], city:"Roma", zone:"", birthday:"01-01", interests:[], credits:300},
+  ];
+  // social graph: chi segue chi (Anna è il nodo centrale)
+  const follows = [
+    {a:"u_anna",b:"u_luca"},{a:"u_anna",b:"u_sara"},{a:"u_anna",b:"u_marco"},{a:"u_anna",b:"u_gaia"},
+    {a:"u_luca",b:"u_anna"},{a:"u_sara",b:"u_anna"},{a:"u_marco",b:"u_anna"},{a:"u_gaia",b:"u_anna"},
+    {a:"u_luca",b:"u_sara"},{a:"u_sara",b:"u_luca"},
+  ];
+  const lists = [
+    {id:"lst_fam", ownerId:"u_anna", name:"Famiglia", filter:"familiari", members:["u_sara","u_marco"]},
+    {id:"lst_tech",ownerId:"u_anna", name:"Esperti Tech", filter:"interesse:tech", members:["u_luca","u_marco"]},
+  ];
+  const products = [
+    {id:"PRD-DEMOA1", producerId:"u_prod1", name:"Sneaker Aura", category:"sport", basePrice:60, status:"approved", geo:"nazionale"},
+    {id:"PRD-DEMOB2", producerId:"u_prod1", name:"Zaino Urban", category:"tech", basePrice:40, status:"approved", geo:"nazionale"},
+    {id:"PRD-DEMOC3", producerId:"u_prod2", name:"Consulenza legale 1h", category:"servizi", basePrice:120, status:"approved", geo:"locale"},
+    {id:"PRD-PEND04", producerId:"u_prod1", name:"Felpa Nova", category:"moda", basePrice:35, status:"pending", geo:"nazionale"},
+  ];
+  const contracts = [
+    {id:newId(), sellerId:"u_anna",   producerId:"u_prod1", productId:"PRD-DEMOA1", date:today()},
+    {id:newId(), sellerId:"u_anna",   producerId:"u_prod1", productId:"PRD-DEMOB2", date:today()},
+    {id:newId(), sellerId:"u_seller2",producerId:"u_prod1", productId:"PRD-DEMOA1", date:today()},
+  ];
+  const catalog = [
+    {id:newId(), sellerId:"u_anna",   productId:"PRD-DEMOA1", resalePrice:89, bonusPct:5},
+    {id:newId(), sellerId:"u_anna",   productId:"PRD-DEMOB2", resalePrice:59, bonusPct:0},
+    {id:newId(), sellerId:"u_seller2",productId:"PRD-DEMOA1", resalePrice:95, bonusPct:3},
+  ];
+  const campaigns = [
+    {id:newCampaignId(), type:"producer", creators:["u_prod1"], productId:"PRD-DEMOA1",
+      geoScope:"nazionale", cities:[], audience:"sport", budget:1000, rewardPool:200, dailyCap:300,
+      start:today(), end:"", status:"active", spent:0, approvals:{u_prod1:true}},
+  ];
+  return {
+    config:{
+      pct_participation:2, pct_chosen:2, pct_purchase:25, pct_cashback:3,
+      participation_scope:"all",   // 'all' = tutti i partecipanti | 'chosen' = solo chi ha suggerito il prodotto scelto
+      platform_fee:10,             // % che resta a Shaer.it sul pool di vendita (solo informativo qui)
+      unreliable_threshold:3, credits_per_euro:100,
+      data_share:{producer_geo:true, producer_buyer_aggregated:true, seller_analytics:true}
+    },
+    users, follows, lists, products, contracts, catalog, campaigns,
+    txns:[], ledger:[{id:newId(),ts:now(),userId:"SHAER_ESCROW",type:"escrow_in",amount:1000,note:"Budget campagna demo (CMP)",txnId:""}], notifications:[], wishlist:[
+      {id:newId(), ownerId:"u_sara", productId:"PRD-DEMOA1", sellerId:"u_anna", event:"compleanno", target:89, raised:30, contributors:["u_anna"], deadline:"2026-06-30"}
+    ],
+    shaerEscrow:1000,
+    ui:{actor:"u_anna", role:"BUYER", view:"home"}
+  };
+}
+
+/* ============================================================================
+   PERSISTENCE
+   ========================================================================== */
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+function load(){
+  const raw = localStorage.getItem(LS_KEY);
+  if(raw){ try{ state = JSON.parse(raw); }catch(e){ state=seed(); } }
+  else state = seed();
+}
+function resetAll(){ if(confirm("Cancellare tutti i dati e ricaricare la demo?")){ state=seed(); save(); boot(); toast("Dati demo ripristinati"); } }
+function exportData(){
+  const blob = new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download="shaer_sim_"+today()+".json"; a.click(); toast("Dati esportati su file");
+}
+function importData(ev){
+  const f=ev.target.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ state=JSON.parse(r.result); save(); boot(); toast("Dati importati"); }catch(e){ alert("File non valido"); } };
+  r.readAsText(f); ev.target.value="";
+}
+
+/* ============================================================================
+   HELPERS
+   ========================================================================== */
+const U      = id => state.users.find(u=>u.id===id) || {name:"?",city:"?"};
+const uname  = id => U(id).name;
+const prod   = id => state.products.find(p=>p.id===id);
+const camp   = id => state.campaigns.find(c=>c.id===id);
+const actor  = () => U(state.ui.actor);
+const ADMIN  = () => state.ui.role==="ADMIN";
+let toastT=null;
+function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.classList.add("show");
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2200); }
+
+function ledger(userId,type,amount,note,txnId){
+  state.ledger.unshift({id:newId(),ts:now(),userId,type,amount:Math.round(amount*100)/100,note,txnId:txnId||""});
+}
+function addCredits(userId,amount,note,txnId){
+  const u=U(userId); if(!u.credits)u.credits=0; u.credits=Math.round((u.credits+amount)*100)/100;
+  ledger(userId,amount>=0?"accredito":"addebito",amount,note,txnId);
+}
+function notify(userId,text,txnId){
+  state.notifications.unshift({id:newId(),ts:now(),userId,text,read:false,txnId:txnId||""});
+}
+function statusTag(s){
+  const m={OPEN:"open",SUGGESTED:"sug",IN_PROGRESS:"prog",COMPLETED:"done",EXPIRED:"exp",ABANDONED:"exp"};
+  return `<span class="tag ${m[s]||''}">${s}</span>`;
+}
+// Quante TXN aperte ha un buyer (per regola "inaffidabile")
+const openTxnCount = uid => state.txns.filter(t=>t.buyerId===uid && ["OPEN","SUGGESTED","IN_PROGRESS"].includes(t.status)).length;
+const isUnreliable = uid => openTxnCount(uid) > state.config.unreliable_threshold;
+
+// Followers che un utente "raggiunge" con una richiesta in base al targeting
+function audienceFor(buyerId, targeting){
+  // chi segue il buyer = la sua rete che riceve la notifica
+  let net = state.follows.filter(f=>f.b===buyerId).map(f=>f.a);
+  if(targeting.type==="public"){
+    // pubblico: tutti i buyer della piattaforma tranne se stesso
+    return state.users.filter(u=>u.roles.includes("BUYER")&&u.id!==buyerId).map(u=>u.id);
+  }
+  if(targeting.type==="list"){
+    const l=state.lists.find(x=>x.id===targeting.listId);
+    return l? l.members.filter(m=>m!==buyerId):[];
+  }
+  return net; // 'friends' = la propria rete
+}
+
+/* ============================================================================
+   REWARD ENGINE  — cuore del sistema
+   ========================================================================== */
+// distribuzione alla SCELTA del suggerimento: 2% partecipazione + 2% scelto
+function distributeOnChoice(txn){
+  const c = txn.campaignId ? camp(txn.campaignId) : null;
+  if(!c){ return {note:"Nessuna campagna collegata: nessun budget da distribuire."}; }
+  const pool = c.rewardPool;
+  const cfg  = state.config;
+  const participants = [...new Set(txn.suggestions.map(s=>s.shaererId))];
+  const chosenSuggesters = [...new Set(txn.suggestions.filter(s=>s.productId===txn.chosenProductId).map(s=>s.shaererId))];
+
+  let spent=0;
+  // --- 2% PARTECIPAZIONE ---
+  const baseGroup = cfg.participation_scope==="all" ? participants : chosenSuggesters;
+  const baseAmt = pool*cfg.pct_participation/100;
+  if(baseGroup.length){
+    const per = baseAmt/baseGroup.length;
+    baseGroup.forEach(id=>{ addCredits(id,per,`Partecipazione suggerimento (${txn.id})`,txn.id); spent+=per;
+      notify(id,`+${fmt(per)} cr · partecipazione a ${txn.id}`,txn.id); });
+  }
+  // --- +2% SUGGERIMENTO SCELTO ---
+  const chosenAmt = pool*cfg.pct_chosen/100;
+  if(chosenSuggesters.length){
+    const per = chosenAmt/chosenSuggesters.length;
+    chosenSuggesters.forEach(id=>{ addCredits(id,per,`Suggerimento scelto dal buyer (${txn.id})`,txn.id); spent+=per;
+      notify(id,`+${fmt(per)} cr · il tuo consiglio è stato scelto! (${txn.id})`,txn.id); });
+  }
+  c.spent += spent; state.shaerEscrow -= spent;
+  ledger("SHAER_ESCROW","escrow_out",-spent,`Payout scelta ${txn.id}`,txn.id);
+  return {spent, participants:participants.length, chosen:chosenSuggesters.length};
+}
+
+// distribuzione all'ACQUISTO verificato: 25% ai suggeritori del prodotto scelto + 3% cashback buyer
+function distributeOnPurchase(txn){
+  const c = txn.campaignId ? camp(txn.campaignId) : null;
+  if(!c){ return {note:"Nessuna campagna collegata."}; }
+  const pool=c.rewardPool, cfg=state.config;
+  const chosenSuggesters=[...new Set(txn.suggestions.filter(s=>s.productId===txn.chosenProductId).map(s=>s.shaererId))];
+  let spent=0;
+  const buyAmt=pool*cfg.pct_purchase/100;
+  if(chosenSuggesters.length){
+    const per=buyAmt/chosenSuggesters.length;
+    chosenSuggesters.forEach(id=>{ addCredits(id,per,`Acquisto verificato (${txn.id})`,txn.id); spent+=per;
+      notify(id,`+${fmt(per)} cr · acquisto completato grazie a te! (${txn.id})`,txn.id); });
+  }
+  const cash=pool*cfg.pct_cashback/100;
+  addCredits(txn.buyerId,cash,`Cashback acquisto (${txn.id})`,txn.id); spent+=cash;
+  notify(txn.buyerId,`+${fmt(cash)} cr · cashback sul tuo acquisto (${txn.id})`,txn.id);
+  c.spent+=spent; state.shaerEscrow-=spent;
+  ledger("SHAER_ESCROW","escrow_out",-spent,`Payout acquisto ${txn.id}`,txn.id);
+  // consumo budget → se esaurito, campagna chiusa
+  if(c.spent>=c.budget){ c.status="ended"; notify(c.creators[0],`Campagna ${c.id} terminata: budget esaurito`,""); }
+  return {spent, chosen:chosenSuggesters.length, cashback:cash};
+}
+
+// anteprima della ripartizione (mostrata nella scheda TXN senza muovere crediti)
+function previewSplit(txn){
+  const c=txn.campaignId?camp(txn.campaignId):null; if(!c)return null;
+  const pool=c.rewardPool,cfg=state.config;
+  const participants=[...new Set(txn.suggestions.map(s=>s.shaererId))];
+  const chosen= txn.chosenProductId ? [...new Set(txn.suggestions.filter(s=>s.productId===txn.chosenProductId).map(s=>s.shaererId))] : [];
+  return {pool, participants:participants.length, chosen:chosen.length,
+    base:pool*cfg.pct_participation/100, baseGroup:(cfg.participation_scope==="all"?participants.length:chosen.length),
+    bonus:pool*cfg.pct_chosen/100, buy:pool*cfg.pct_purchase/100, cash:pool*cfg.pct_cashback/100};
+}
+
+/* ============================================================================
+   NAV CONFIG
+   ========================================================================== */
+const NAV = {
+  BUYER:[["home","🏠 Home"],["ask","🔎 Ask Help"],["feed","📨 Richieste rete"],["wishlist","🎁 Wishlist & Regali"],["social","👥 Rete & Liste"],["wallet","💳 Wallet & Storico"]],
+  SELLER:[["sdash","📊 Dashboard"],["sb2b","🏭 Acquisti B2B"],["svetrina","🛍️ Vetrina"],["scamp","📣 Campagne"],["sconfirm","✅ Conferma vendita (QR)"],["wallet","💳 Wallet & Storico"]],
+  PRODUCER:[["pprod","📦 Prodotti"],["pcamp","📣 Campagne & Bonus"],["panalytics","📈 Analytics"],["wallet","💳 Wallet & Storico"]],
+  ADMIN:[["aappr","✔️ Approvazioni"],["aconfig","⚙️ Configurazione %"],["adata","🗂️ Tutti i dati"],["aanalytics","🌐 Analytics globali"],["ashare","🔐 Condivisione dati"]]
+};
+
+/* ============================================================================
+   BOOT + TOP BAR
+   ========================================================================== */
+function boot(){
+  // popola selettore identità
+  const sel=document.getElementById("actorSelect");
+  sel.innerHTML=state.users.map(u=>`<option value="${u.id}" ${u.id===state.ui.actor?"selected":""}>${u.name}</option>`).join("");
+  renderRoleChips(); renderWallet(); renderNav(); render();
+  save();
+}
+function renderRoleChips(){
+  const a=actor(); const wrap=document.getElementById("roleChips");
+  const all=["BUYER","SELLER","PRODUCER","ADMIN"];
+  wrap.innerHTML=all.map(r=>{
+    const has = r==="ADMIN" ? true : a.roles.includes(r);
+    const cls=`roleChip ${r==="ADMIN"?"admin":""} ${state.ui.role===r?"active":""} ${!has?"disabled":""}`;
+    return `<button class="${cls}" ${has?`onclick="setRole('${r}')"`:""}>${r}</button>`;
+  }).join("");
+}
+function renderWallet(){
+  if(state.ui.role==="ADMIN"){ document.getElementById("walletVal").textContent="—"; return; }
+  document.getElementById("walletVal").textContent=fmt(actor().credits||0)+" cr";
+}
+function setActor(id){
+  state.ui.actor=id; const a=U(id);
+  if(state.ui.role!=="ADMIN" && !a.roles.includes(state.ui.role)) state.ui.role=a.roles[0];
+  if(!validView()) state.ui.view=NAV[state.ui.role][0][0];
+  boot();
+}
+function setRole(r){ state.ui.role=r; if(!validView()) state.ui.view=NAV[r][0][0]; boot(); }
+function setView(v){ state.ui.view=v; renderNav(); render(); save(); }
+function validView(){ return NAV[state.ui.role].some(([v])=>v===state.ui.view); }
+function renderNav(){
+  const nav=document.getElementById("sidenav");
+  const incoming = state.notifications.filter(n=>n.userId===state.ui.actor && !n.read).length;
+  nav.innerHTML=`<div class="navsec">${state.ui.role}</div>`+
+    NAV[state.ui.role].map(([v,label])=>{
+      const badge = (v==="feed"&&pendingFeed()>0)?`<span class="badge">${pendingFeed()}</span>`:"";
+      return `<button class="${state.ui.view===v?"active":""}" onclick="setView('${v}')">${label}${badge}</button>`;
+    }).join("")+
+    `<div class="navsec">Sessione</div>
+     <button onclick="setView('wallet')">🔔 Notifiche ${incoming?`<span class="badge">${incoming}</span>`:""}</button>`;
+}
+function pendingFeed(){
+  // richieste OPEN che raggiungono l'attore e a cui non ha ancora risposto
+  return state.txns.filter(t=>t.status==="OPEN" && t.buyerId!==state.ui.actor &&
+    audienceFor(t.buyerId,t.targeting).includes(state.ui.actor) &&
+    !t.suggestions.some(s=>s.shaererId===state.ui.actor)).length;
+}
+
+/* ============================================================================
+   ROUTER
+   ========================================================================== */
+function render(){
+  renderWallet();
+  const v=state.ui.view, m=document.getElementById("main");
+  const map={
+    home:viewHome, ask:viewAsk, feed:viewFeed, wishlist:viewWishlist, social:viewSocial, wallet:viewWallet,
+    sdash:viewSellerDash, sb2b:viewB2B, svetrina:viewVetrina, scamp:viewSellerCamp, sconfirm:viewConfirm,
+    pprod:viewProducts, pcamp:viewProducerCamp, panalytics:viewProducerAnalytics,
+    aappr:viewApprovals, aconfig:viewConfig, adata:viewData, aanalytics:viewAdminAnalytics, ashare:viewShare
+  };
+  m.innerHTML=(map[v]||(()=>"<div class='empty'>Vista non trovata</div>"))();
+}
+
+/* ---- piccola util per intestazione pagina ---- */
+const head=(title,sub)=>`<div class="pagehead"><div><h2>${title}</h2>${sub?`<p>${sub}</p>`:""}</div></div>`;
+
+/* ============================================================================
+   BUYER VIEWS
+   ========================================================================== */
+function viewHome(){
+  const a=actor();
+  // compleanni dei contatti seguiti, nei prossimi 30 gg
+  const follows=state.follows.filter(f=>f.a===a.id).map(f=>U(f.b));
+  const md=today().slice(5); // MM-DD
+  const bdays=follows.filter(u=>u.birthday).sort((x,y)=>x.birthday.localeCompare(y.birthday));
+  const openAsks=state.txns.filter(t=>t.buyerId===a.id && ["OPEN","SUGGESTED","IN_PROGRESS"].includes(t.status));
+  const events=state.wishlist.filter(w=>follows.some(f=>f.id===w.ownerId));
+  return head(`Ciao, ${a.name.split(" ")[0]} 👋`, `La home dell'Utente: compleanni della rete, regali in raccolta, richieste aperte.`)+
+  `<div class="grid g3">
+    <div class="kpi orange"><div class="v">${fmt(a.credits||0)}</div><div class="l">Crediti disponibili</div></div>
+    <div class="kpi"><div class="v">${openAsks.length}</div><div class="l">Richieste aperte ${isUnreliable(a.id)?'· ⚠️ rank inaffidabile':''}</div></div>
+    <div class="kpi"><div class="v">${follows.length}</div><div class="l">Contatti seguiti</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>🎂 Compleanni dei contatti</h3>
+      ${bdays.length? `<table><tr><th>Contatto</th><th>Data</th><th></th></tr>`+
+        bdays.map(u=>`<tr><td>${u.name}</td><td class="mono">${u.birthday}</td>
+          <td>${state.wishlist.some(w=>w.ownerId===u.id)?`<span class="tag info">ha una wishlist</span>`:`<span class="tag">—</span>`}</td></tr>`).join("")+`</table>`
+        :`<div class="empty">Nessun contatto con compleanno impostato. Aggiungi contatti in “Rete & Liste”.</div>`}
+      <p class="hint">Regola coperta: i compleanni dei contatti compaiono in home page.</p>
+    </div>
+    <div class="card"><h3>🎁 Regali della rete (crowdfunding)</h3>
+      ${events.length? events.map(w=>{
+        const pct=Math.min(100,Math.round(w.raised/w.target*100));
+        return `<div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between"><b>${uname(w.ownerId)}</b> <span class="tag">${w.event}</span></div>
+          <div style="font-size:12px;color:var(--muted)">${prod(w.productId)?.name||""} · da ${uname(w.sellerId)} · scad. ${w.deadline}</div>
+          <div class="bar" style="margin:6px 0"><i style="width:${pct}%"></i></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px">
+            <span>${fmt(w.raised)} / ${fmt(w.target)} cr (${pct}%)</span>
+            <button class="btn sm" onclick="contribute('${w.id}')">Contribuisci 10 cr</button></div>
+        </div>`}).join("")
+        :`<div class="empty">Nessun regalo in raccolta dalla tua rete.</div>`}
+      <p class="hint">Regola coperta: vedere status/wishlist del profilo e partecipare alla raccolta fondi.</p>
+    </div>
+  </div>
+  <div class="card"><h3>🧾 Le tue richieste aperte</h3>
+    ${openAsks.length? txnTable(openAsks):`<div class="empty">Nessuna richiesta attiva. Vai su “Ask Help”.</div>`}
+  </div>`;
+}
+function contribute(wid){
+  const w=state.wishlist.find(x=>x.id===wid); const a=actor();
+  if((a.credits||0)<10){ toast("Crediti insufficienti"); return; }
+  addCredits(a.id,-10,`Contributo regalo ${uname(w.ownerId)}`);
+  w.raised+=10; if(!w.contributors.includes(a.id))w.contributors.push(a.id);
+  toast("Hai contribuito 10 cr"); save(); render(); renderWallet();
+}
+
+function viewAsk(){
+  const a=actor();
+  const myLists=state.lists.filter(l=>l.ownerId===a.id);
+  const myTxns=state.txns.filter(t=>t.buyerId===a.id).sort((x,y)=>y.createdAt-x.createdAt);
+  return head("🔎 Ask Help — Richiedi un prodotto/servizio",
+    "Il Buyer pubblica una richiesta con dei flag che aiutano la rete a suggerire. La richiesta genera un TXN-ID e raggiunge il pubblico, una lista o la propria rete.")+
+  `${isUnreliable(a.id)?`<div class="card" style="border-color:var(--warn)"><b>⚠️ Rank inaffidabile:</b> hai ${openTxnCount(a.id)} richieste aperte (soglia ${state.config.unreliable_threshold}). Gli Shaerer non guadagnano sui nuovi suggerimenti finché non ne chiudi qualcuna.</div>`:""}
+  <div class="card"><h3>Nuova richiesta</h3>
+    <div class="row">
+      <div><label>Categoria</label>
+        <select id="ask_cat"><option>sport</option><option>tech</option><option>moda</option><option>beauty</option><option>casa</option><option>servizi</option></select></div>
+      <div><label>Dove</label><select id="ask_where"><option value="offline">In negozio (offline)</option><option value="online">Online</option></select></div>
+      <div><label>Scadenza</label><input type="date" id="ask_deadline" value=""></div>
+    </div>
+    <div class="row">
+      <div><label>Flag · Colore</label><input id="ask_color" placeholder="es. nero"></div>
+      <div><label>Flag · Materiale / dettaglio</label><input id="ask_material" placeholder="es. pelle / taglia 42"></div>
+      <div><label>Budget indicativo (cr)</label><input type="number" id="ask_budget" value="100"></div>
+    </div>
+    <div class="row">
+      <div><label>A chi inviare la richiesta</label>
+        <select id="ask_target" onchange="document.getElementById('ask_listwrap').style.display=this.value==='list'?'block':'none'">
+          <option value="friends">La mia rete (chi mi segue)</option>
+          <option value="public">Pubblico (tutta la piattaforma)</option>
+          <option value="list">Una lista specifica</option>
+        </select></div>
+      <div id="ask_listwrap" style="display:none"><label>Lista</label>
+        <select id="ask_list">${myLists.map(l=>`<option value="${l.id}">${l.name} (${l.members.length})</option>`).join("")||'<option value="">— nessuna lista —</option>'}</select></div>
+    </div>
+    <div style="margin-top:14px"><button class="btn" onclick="createAsk()">📤 Pubblica richiesta</button></div>
+    <p class="hint">Regola coperta (punto 13–14): la notifica raggiunge pubblico / lista amici / gruppo specifico.</p>
+  </div>
+  <div class="card"><h3>Le mie richieste</h3>${myTxns.length?txnTable(myTxns):`<div class="empty">Nessuna richiesta ancora.</div>`}</div>`;
+}
+function createAsk(){
+  const a=actor();
+  const target=document.getElementById("ask_target").value;
+  const txn={
+    id:newTxnId(), buyerId:a.id, category:document.getElementById("ask_cat").value,
+    where:document.getElementById("ask_where").value,
+    flags:{color:document.getElementById("ask_color").value, material:document.getElementById("ask_material").value},
+    budget:+document.getElementById("ask_budget").value||0,
+    targeting:{type:target, listId:target==="list"?document.getElementById("ask_list").value:null},
+    status:"OPEN", suggestions:[], chosenProductId:null, campaignId:null,
+    sellerId:null, paymentMethod:null, valueFinal:null,
+    createdAt:now(), deadline:document.getElementById("ask_deadline").value||""
+  };
+  state.txns.unshift(txn);
+  addCredits(a.id,1,`Domanda pubblicata (${txn.id})`,txn.id);
+  const aud=audienceFor(a.id,txn.targeting);
+  aud.forEach(uid=>notify(uid,`Nuova richiesta da ${a.name}: ${txn.category} ${txn.flags.color||""} (${txn.id})`,txn.id));
+  toast(`Richiesta ${txn.id} pubblicata · raggiunge ${aud.length} persone`);
+  save(); render(); renderNav(); renderWallet();
+}
+
+function viewFeed(){
+  const me=state.ui.actor;
+  // richieste aperte che mi raggiungono
+  const open=state.txns.filter(t=>t.status!=="COMPLETED"&&t.status!=="EXPIRED"&&t.status!=="ABANDONED"
+    && t.buyerId!==me && audienceFor(t.buyerId,t.targeting).includes(me));
+  return head("📨 Richieste della rete","Le richieste che ti raggiungono. Suggerisci un prodotto: parteciperai alla ripartizione della ricompensa.")+
+  (open.length? open.map(t=>{
+    const already=t.suggestions.find(s=>s.shaererId===me);
+    const unrel=isUnreliable(t.buyerId);
+    // prodotti suggeribili = prodotti approvati presenti in almeno un catalogo seller
+    const sugg=state.products.filter(p=>p.status==="approved" && state.catalog.some(c=>c.productId===p.id));
+    return `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:start">
+        <div><h3>${t.category} ${t.flags.color?`· ${t.flags.color}`:""} ${t.flags.material?`· ${t.flags.material}`:""}</h3>
+          <div style="font-size:12px;color:var(--muted)">da <b>${uname(t.buyerId)}</b> · <span class="pill">${t.id}</span> · budget ${fmt(t.budget)} cr · ${t.where} ${statusTag(t.status)}</div></div>
+        <div>${unrel?`<span class="tag bad">buyer inaffidabile</span>`:`<span class="tag ok">buyer ok</span>`}</div>
+      </div>
+      ${already? `<div style="margin-top:10px"><span class="tag info">Hai già suggerito: ${prod(already.productId)?.name}</span></div>`
+      : `<div class="row" style="margin-top:10px">
+          <div><label>Suggerisci un prodotto</label>
+            <select id="sg_${t.id}">${sugg.map(p=>`<option value="${p.id}">${p.name} · ${p.category} · base ${fmt(p.basePrice)}€</option>`).join("")}</select></div>
+          <div style="flex:0 0 auto;display:flex;align-items:flex-end"><button class="btn" onclick="suggest('${t.id}')">💡 Suggerisci</button></div>
+        </div>
+        ${unrel?`<p class="hint">⚠️ Il buyer ha troppe richieste aperte: non guadagnerai crediti su questo suggerimento.</p>`:""}`}
+      ${t.suggestions.length?`<div class="divider"></div><b style="font-size:12px">Suggerimenti ricevuti (${t.suggestions.length})</b>
+        ${suggSummary(t)}`:""}
+    </div>`;
+  }).join("")
+  :`<div class="card"><div class="empty">Nessuna richiesta ti sta raggiungendo ora. Cambia identità o pubblica un Ask da un altro utente.</div></div>`);
+}
+function suggSummary(t){
+  const byProd={};
+  t.suggestions.forEach(s=>{ (byProd[s.productId]=byProd[s.productId]||[]).push(s.shaererId); });
+  return `<table><tr><th>Prodotto</th><th>Suggerito da</th><th>#</th></tr>`+
+    Object.entries(byProd).map(([pid,who])=>`<tr><td>${prod(pid)?.name||pid}</td><td>${who.map(uname).join(", ")}</td><td>${who.length}</td></tr>`).join("")+`</table>`;
+}
+function suggest(txnId){
+  const t=state.txns.find(x=>x.id===txnId); const me=state.ui.actor;
+  const pid=document.getElementById("sg_"+txnId).value;
+  t.suggestions.push({shaererId:me, productId:pid, ts:now()});
+  if(t.status==="OPEN")t.status="SUGGESTED";
+  // credito "consiglio pubblicato" solo se buyer affidabile
+  if(!isUnreliable(t.buyerId)) addCredits(me,5,`Consiglio pubblicato (${t.id})`,t.id);
+  notify(t.buyerId,`${uname(me)} ti ha suggerito ${prod(pid)?.name} (${t.id})`,t.id);
+  toast("Suggerimento inviato"); save(); render(); renderNav(); renderWallet();
+}
+
+/* ---- tabella TXN riutilizzabile + scheda dettaglio ---- */
+function txnTable(list){
+  return `<table><tr><th>TXN</th><th>Categoria</th><th>Stato</th><th>Suggerimenti</th><th>Scelto</th><th></th></tr>`+
+  list.map(t=>`<tr>
+    <td><span class="pill">${t.id}</span></td>
+    <td>${t.category}${t.flags.color?` · ${t.flags.color}`:""}</td>
+    <td>${statusTag(t.status)}</td>
+    <td>${t.suggestions.length}</td>
+    <td>${t.chosenProductId?prod(t.chosenProductId)?.name:"—"}</td>
+    <td><button class="btn sm ghost" onclick="openTxn('${t.id}')">Apri</button></td></tr>`).join("")+`</table>`;
+}
+let modalTxn=null;
+function openTxn(id){ modalTxn=id; render(); document.getElementById("main").scrollTo(0,0);
+  // inietta scheda in cima
+  const t=state.txns.find(x=>x.id===id);
+  const m=document.getElementById("main");
+  m.insertAdjacentHTML("afterbegin", txnDetailCard(t));
+}
+function txnDetailCard(t){
+  const isBuyer = t.buyerId===state.ui.actor;
+  const pv=previewSplit(t);
+  const sugg=[...new Set(t.suggestions.map(s=>s.productId))];
+  const sellersFor = pid => state.catalog.filter(c=>c.productId===pid);
+  return `<div class="card" style="border:2px solid var(--orange)">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3>Scheda <span class="pill">${t.id}</span> ${statusTag(t.status)}</h3>
+      <button class="btn sm ghost" onclick="modalTxn=null;render()">Chiudi ✕</button></div>
+    <div class="row">
+      <div><label>Buyer</label>${uname(t.buyerId)} ${isUnreliable(t.buyerId)?'<span class="tag bad">inaffidabile</span>':''}</div>
+      <div><label>Richiesta</label>${t.category} ${t.flags.color||""} ${t.flags.material||""}</div>
+      <div><label>Budget buyer</label>${fmt(t.budget)} cr</div>
+      <div><label>Targeting</label>${t.targeting.type}${t.targeting.listId?` · ${state.lists.find(l=>l.id===t.targeting.listId)?.name||""}`:""}</div>
+    </div>
+    ${t.campaignId?`<p class="hint">Campagna collegata: <span class="pill">${t.campaignId}</span> · pool ricompensa ${fmt(camp(t.campaignId)?.rewardPool)} cr · residuo budget ${fmt(camp(t.campaignId).budget-camp(t.campaignId).spent)} cr</p>`:`<p class="hint">⚠️ Nessuna campagna ancora collegata (si collega quando scegli un prodotto con campagna attiva).</p>`}
+    <div class="divider"></div>
+    <b style="font-size:13px">Suggerimenti</b>${t.suggestions.length?suggSummary(t):'<div class="empty">Ancora nessuno.</div>'}
+    ${isBuyer && ["SUGGESTED","OPEN"].includes(t.status) && t.suggestions.length?`
+      <div class="row" style="margin-top:10px">
+        <div><label>Scegli il prodotto vincente</label>
+          <select id="choose_${t.id}">${sugg.map(pid=>`<option value="${pid}">${prod(pid)?.name} (${t.suggestions.filter(s=>s.productId===pid).length} consigli)</option>`).join("")}</select></div>
+        <div style="flex:0 0 auto;display:flex;align-items:flex-end"><button class="btn" onclick="chooseSuggestion('${t.id}')">✔️ Scegli (distribuisce 2%+2%)</button></div>
+      </div>`:""}
+    ${pv?`<div class="divider"></div><b style="font-size:13px">Anteprima ripartizione (pool ${fmt(pv.pool)} cr)</b>
+      <table class="split-table">
+        <tr><th>Voce</th><th>%</th><th>Importo</th><th>Diviso tra</th></tr>
+        <tr><td>Partecipazione</td><td>${state.config.pct_participation}%</td><td>${fmt(pv.base)}</td><td>${pv.baseGroup||0} ${state.config.participation_scope==='all'?'(tutti)':'(solo scelti)'}</td></tr>
+        <tr><td>Suggerimento scelto</td><td>+${state.config.pct_chosen}%</td><td>${fmt(pv.bonus)}</td><td>${pv.chosen}</td></tr>
+        <tr><td>Acquisto verificato</td><td>${state.config.pct_purchase}%</td><td>${fmt(pv.buy)}</td><td>${pv.chosen}</td></tr>
+        <tr><td>Cashback buyer</td><td>${state.config.pct_cashback}%</td><td>${fmt(pv.cash)}</td><td>1 (buyer)</td></tr>
+      </table>`:""}
+    ${t.status==="IN_PROGRESS"?`<p class="hint">In attesa che il Seller confermi la vendita (sezione “Conferma vendita (QR)” nel profilo Seller).</p>`:""}
+  </div>`;
+}
+function chooseSuggestion(txnId){
+  const t=state.txns.find(x=>x.id===txnId);
+  t.chosenProductId=document.getElementById("choose_"+txnId).value;
+  // collega la campagna attiva del prodotto scelto (se esiste)
+  const c=state.campaigns.find(c=>c.status==="active" && c.productId===t.chosenProductId);
+  t.campaignId = c? c.id : null;
+  // seller scelto: primo seller che ha quel prodotto in catalogo
+  const cat=state.catalog.find(x=>x.productId===t.chosenProductId);
+  t.sellerId = cat? cat.sellerId : null;
+  t.status="IN_PROGRESS";
+  // segna i suggerimenti scelti
+  t.suggestions.forEach(s=>s.chosen = s.productId===t.chosenProductId);
+  const r=distributeOnChoice(t);
+  notify(t.buyerId,`Hai scelto ${prod(t.chosenProductId)?.name}. Vai da ${uname(t.sellerId)} per completare. (${t.id})`,t.id);
+  toast(r.spent?`Distribuiti ${fmt(r.spent)} cr (2%+2%)`:"Scelta registrata (nessuna campagna collegata)");
+  modalTxn=null; save(); render(); renderNav(); renderWallet();
+}
+
+function viewWishlist(){
+  const a=actor();
+  const mine=state.wishlist.filter(w=>w.ownerId===a.id);
+  const approved=state.products.filter(p=>p.status==="approved");
+  const mySellers=state.catalog;
+  return head("🎁 Wishlist & Regali","Crea desideri con un seller pre-scelto. I tuoi contatti li vedranno in home e potranno contribuire.")+
+  `<div class="card"><h3>Aggiungi alla wishlist</h3>
+    <div class="row">
+      <div><label>Prodotto</label><select id="wl_prod">${approved.map(p=>`<option value="${p.id}">${p.name}</option>`).join("")}</select></div>
+      <div><label>Seller</label><select id="wl_seller">${[...new Set(mySellers.map(c=>c.sellerId))].map(s=>`<option value="${s}">${uname(s)}</option>`).join("")}</select></div>
+      <div><label>Evento</label><select id="wl_event"><option>compleanno</option><option>matrimonio</option><option>nuovo figlio</option><option>regalo</option><option>beneficenza</option></select></div>
+      <div><label>Scadenza</label><input type="date" id="wl_deadline"></div>
+    </div>
+    <div style="margin-top:12px"><button class="btn" onclick="addWishlist()">➕ Aggiungi</button></div>
+  </div>
+  <div class="card"><h3>La mia wishlist</h3>
+    ${mine.length? mine.map(w=>{const pct=Math.min(100,Math.round(w.raised/w.target*100));
+      return `<div style="margin-bottom:12px"><b>${prod(w.productId)?.name}</b> · ${w.event} · da ${uname(w.sellerId)}
+        <div class="bar" style="margin:6px 0"><i style="width:${pct}%"></i></div>
+        <span style="font-size:12px">${fmt(w.raised)}/${fmt(w.target)} cr · ${w.contributors.length} partecipanti</span></div>`;}).join("")
+      :`<div class="empty">Nessun desiderio ancora.</div>`}
+  </div>`;
+}
+function addWishlist(){
+  const a=actor(); const pid=document.getElementById("wl_prod").value;
+  const p=prod(pid); const sid=document.getElementById("wl_seller").value;
+  const cat=state.catalog.find(c=>c.productId===pid && c.sellerId===sid);
+  state.wishlist.unshift({id:newId(),ownerId:a.id,productId:pid,sellerId:sid,
+    event:document.getElementById("wl_event").value, target:(cat?cat.resalePrice:p.basePrice),
+    raised:0,contributors:[],deadline:document.getElementById("wl_deadline").value||today()});
+  toast("Aggiunto alla wishlist"); save(); render();
+}
+
+function viewSocial(){
+  const a=actor();
+  const following=state.follows.filter(f=>f.a===a.id).map(f=>f.b);
+  const followers=state.follows.filter(f=>f.b===a.id).map(f=>f.a);
+  const candidates=state.users.filter(u=>u.id!==a.id && u.roles.includes("BUYER") && !following.includes(u.id));
+  const myLists=state.lists.filter(l=>l.ownerId===a.id);
+  const buyers=state.users.filter(u=>u.roles.includes("BUYER")&&u.id!==a.id);
+  return head("👥 Rete & Liste","Segui i contatti (rubrica simulata) e crea liste mirate con filtri: familiari, chi compra spesso, interessi specifici.")+
+  `<div class="grid g2">
+    <div class="card"><h3>📇 Rubrica — aggiungi contatti</h3>
+      ${candidates.length? candidates.map(u=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)">
+        <span>${u.name} <span class="tag">${u.city}</span></span>
+        <button class="btn sm" onclick="follow('${u.id}')">+ Segui</button></div>`).join("")
+        :`<div class="empty">Segui già tutti i contatti disponibili.</div>`}
+      <p class="hint">Regola coperta (punto 3 lista A): ci si segue tramite rubrica o aggiungendo dalla lista amici.</p>
+    </div>
+    <div class="card"><h3>Seguiti (${following.length}) · Follower (${followers.length})</h3>
+      <table><tr><th>Contatto</th><th>Relazione</th></tr>
+      ${state.users.filter(u=>following.includes(u.id)||followers.includes(u.id)).map(u=>{
+        const f=following.includes(u.id), fo=followers.includes(u.id);
+        return `<tr><td>${u.name}</td><td>${f?'<span class="tag ok">segui</span> ':''}${fo?'<span class="tag info">ti segue</span>':''}</td></tr>`;}).join("")}
+      </table>
+    </div>
+  </div>
+  <div class="card"><h3>🎯 Liste mirate</h3>
+    <div class="row">
+      <div><label>Nome lista</label><input id="lst_name" placeholder="es. Famiglia"></div>
+      <div><label>Filtro / criterio</label>
+        <select id="lst_filter"><option value="familiari">Familiari</option><option value="acquirenti_frequenti">Chi compra spesso</option><option value="interesse:tech">Interesse: tech</option><option value="interesse:moda">Interesse: moda</option><option value="interesse:sport">Interesse: sport</option></select></div>
+      <div style="flex:0 0 auto;display:flex;align-items:flex-end"><button class="btn" onclick="createList()">➕ Crea lista</button></div>
+    </div>
+    <div class="divider"></div>
+    ${myLists.length? myLists.map(l=>`<div style="margin-bottom:12px">
+      <b>${l.name}</b> <span class="tag">${l.filter}</span> · ${l.members.length} membri
+      <div style="margin-top:6px">${l.members.map(m=>`<span class="tag" style="margin:2px">${uname(m)}</span>`).join("")||'<span class="empty">vuota</span>'}</div>
+      <div class="row" style="margin-top:8px">
+        <div><select id="addm_${l.id}">${buyers.filter(b=>!l.members.includes(b.id)).map(b=>`<option value="${b.id}">${b.name}</option>`).join("")}</select></div>
+        <div style="flex:0 0 auto"><button class="btn sm" onclick="addMember('${l.id}')">+ Aggiungi membro</button></div>
+      </div></div>`).join("")
+      :`<div class="empty">Nessuna lista. Creane una per inviare Ask mirati.</div>`}
+    <p class="hint">Regola coperta (punto 4 lista A): liste mirate per categoria di persone.</p>
+  </div>`;
+}
+function follow(id){ const a=actor(); state.follows.push({a:a.id,b:id}); toast("Ora segui "+uname(id)); save(); render(); }
+function createList(){ const a=actor(); const name=document.getElementById("lst_name").value.trim(); if(!name){toast("Inserisci un nome");return;}
+  state.lists.push({id:newId(),ownerId:a.id,name,filter:document.getElementById("lst_filter").value,members:[]});
+  toast("Lista creata"); save(); render(); }
+function addMember(lid){ const l=state.lists.find(x=>x.id===lid); const m=document.getElementById("addm_"+lid).value;
+  if(m&&!l.members.includes(m))l.members.push(m); save(); render(); }
+
+/* ============================================================================
+   WALLET (condiviso) + NOTIFICHE
+   ========================================================================== */
+function viewWallet(){
+  const me=state.ui.actor; const a=U(me);
+  const led=state.ledger.filter(l=>l.userId===me).slice(0,60);
+  const notif=state.notifications.filter(n=>n.userId===me).slice(0,40);
+  state.notifications.forEach(n=>{ if(n.userId===me)n.read=true; }); save(); renderNav();
+  return head("💳 Wallet & Storico", `Saldo e movimenti di ${a.name}.`)+
+  `<div class="grid g3">
+    <div class="kpi orange"><div class="v">${fmt(a.credits||0)}</div><div class="l">Saldo crediti</div></div>
+    <div class="kpi"><div class="v">${led.filter(l=>l.amount>0).length}</div><div class="l">Accrediti</div></div>
+    <div class="kpi"><div class="v">${led.filter(l=>l.amount<0).length}</div><div class="l">Addebiti</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>🔔 Notifiche</h3><div class="miniledger">
+      ${notif.length? notif.map(n=>`<div style="padding:7px 0;border-bottom:1px solid var(--line);font-size:13px">${n.text}<div style="font-size:11px;color:var(--muted)">${new Date(n.ts).toLocaleString("it-IT")}</div></div>`).join("")
+        :`<div class="empty">Nessuna notifica.</div>`}
+    </div></div>
+    <div class="card"><h3>🧾 Credit Ledger</h3><div class="miniledger">
+      <table><tr><th>Movimento</th><th>Crediti</th><th>TXN</th></tr>
+      ${led.length? led.map(l=>`<tr><td>${l.note}<div style="font-size:11px;color:var(--muted)">${new Date(l.ts).toLocaleString("it-IT")}</div></td>
+        <td style="color:${l.amount>=0?'var(--ok)':'var(--bad)'};font-weight:700">${l.amount>=0?'+':''}${fmt(l.amount)}</td>
+        <td>${l.txnId?`<span class="pill">${l.txnId}</span>`:'—'}</td></tr>`).join("")
+        :`<tr><td colspan="3" class="empty">Nessun movimento.</td></tr>`}
+      </table></div></div>
+  </div>`;
+}
+
+/* ============================================================================
+   SELLER VIEWS
+   ========================================================================== */
+function viewSellerDash(){
+  const me=state.ui.actor;
+  const myCat=state.catalog.filter(c=>c.sellerId===me);
+  const myTxns=state.txns.filter(t=>t.sellerId===me);
+  const done=myTxns.filter(t=>t.status==="COMPLETED");
+  const revenue=done.reduce((s,t)=>s+(t.valueFinal||0),0);
+  const incoming=myTxns.filter(t=>t.status==="IN_PROGRESS");
+  return head("📊 Dashboard Seller","KPI operativi, transazioni in arrivo, prodotti in vetrina.")+
+  `<div class="grid g4">
+    <div class="kpi orange"><div class="v">${fmt(revenue)}</div><div class="l">Venduto (cr)</div></div>
+    <div class="kpi"><div class="v">${done.length}</div><div class="l">Vendite completate</div></div>
+    <div class="kpi"><div class="v">${incoming.length}</div><div class="l">Clienti in arrivo</div></div>
+    <div class="kpi"><div class="v">${myCat.length}</div><div class="l">Prodotti in vetrina</div></div>
+  </div>
+  <div class="card"><h3>🛎️ Clienti in arrivo (da confermare)</h3>
+    ${incoming.length? incoming.map(t=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)">
+      <span><b>${uname(t.buyerId)}</b> · ${prod(t.chosenProductId)?.name} · <span class="pill">${t.id}</span></span>
+      <button class="btn sm" onclick="setView('sconfirm')">Vai a conferma →</button></div>`).join("")
+      :`<div class="empty">Nessun cliente in arrivo.</div>`}
+  </div>`;
+}
+
+function viewB2B(){
+  const me=state.ui.actor;
+  const approved=state.products.filter(p=>p.status==="approved");
+  const myContracts=state.contracts.filter(c=>c.sellerId===me);
+  const contractedPids=myContracts.map(c=>c.productId);
+  const available=approved.filter(p=>!contractedPids.includes(p.id));
+  return head("🏭 Acquisti B2B — Contratti con i Producer","Il Seller acquista/contrattualizza i prodotti dei Producer. Solo i prodotti contrattualizzati possono finire in vetrina.")+
+  `<div class="card"><h3>Prodotti disponibili dai Producer</h3>
+    ${available.length? `<table><tr><th>Prodotto</th><th>Producer</th><th>Categoria</th><th>Prezzo base</th><th></th></tr>`+
+      available.map(p=>`<tr><td>${p.name} <span class="pill">${p.id}</span></td><td>${uname(p.producerId)}</td><td>${p.category}</td><td>${fmt(p.basePrice)}€</td>
+        <td><button class="btn sm" onclick="signContract('${p.id}')">📝 Contrattualizza</button></td></tr>`).join("")+`</table>`
+      :`<div class="empty">Hai già contrattualizzato tutti i prodotti disponibili.</div>`}
+  </div>
+  <div class="card"><h3>I miei contratti B2B</h3>
+    ${myContracts.length? `<table><tr><th>Prodotto</th><th>Producer</th><th>Data</th><th>In vetrina?</th></tr>`+
+      myContracts.map(c=>{const inShop=state.catalog.some(x=>x.sellerId===me&&x.productId===c.productId);
+        return `<tr><td>${prod(c.productId)?.name}</td><td>${uname(c.producerId)}</td><td>${c.date}</td>
+        <td>${inShop?'<span class="tag ok">sì</span>':'<span class="tag warn">no → aggiungi in Vetrina</span>'}</td></tr>`;}).join("")+`</table>`
+      :`<div class="empty">Nessun contratto ancora.</div>`}
+  </div>`;
+}
+function signContract(pid){const me=state.ui.actor;const p=prod(pid);
+  state.contracts.push({id:newId(),sellerId:me,producerId:p.producerId,productId:pid,date:today()});
+  toast("Contratto B2B firmato per "+p.name); save(); render(); }
+
+function viewVetrina(){
+  const me=state.ui.actor;
+  const contracted=state.contracts.filter(c=>c.sellerId===me).map(c=>c.productId);
+  const inShop=state.catalog.filter(c=>c.sellerId===me).map(c=>c.productId);
+  const addable=contracted.filter(pid=>!inShop.includes(pid));
+  const myShop=state.catalog.filter(c=>c.sellerId===me);
+  return head("🛍️ Vetrina pubblica","Aggiungi i prodotti contrattualizzati, imposta prezzo di rivendita e bonus marketing personalizzato.")+
+  `<div class="card"><h3>➕ Aggiungi prodotto alla vetrina</h3>
+    ${addable.length?`<div class="row">
+      <div><label>Prodotto (contrattualizzato)</label><select id="v_prod">${addable.map(pid=>`<option value="${pid}">${prod(pid)?.name}</option>`).join("")}</select></div>
+      <div><label>Prezzo rivendita (€)</label><input type="number" id="v_price" value="79"></div>
+      <div><label>Bonus marketing (%)</label><input type="number" id="v_bonus" value="0"></div>
+      <div style="flex:0 0 auto;display:flex;align-items:flex-end"><button class="btn" onclick="addToShop()">Aggiungi</button></div>
+    </div>`:`<div class="empty">Contrattualizza prima dei prodotti nella sezione “Acquisti B2B”.</div>`}
+  </div>
+  <div class="card"><h3>Vetrina attuale</h3>
+    ${myShop.length? `<table><tr><th>Prodotto</th><th>Prezzo base</th><th>Prezzo rivendita</th><th>Bonus mktg</th><th></th></tr>`+
+      myShop.map(c=>`<tr><td>${prod(c.productId)?.name} <span class="pill">${c.productId}</span></td>
+        <td>${fmt(prod(c.productId)?.basePrice)}€</td>
+        <td><input style="width:90px" type="number" value="${c.resalePrice}" onchange="updShop('${c.id}','resalePrice',this.value)"></td>
+        <td><input style="width:70px" type="number" value="${c.bonusPct}" onchange="updShop('${c.id}','bonusPct',this.value)">%</td>
+        <td><button class="btn sm ghost" onclick="rmShop('${c.id}')">Rimuovi</button></td></tr>`).join("")+`</table>`
+      :`<div class="empty">Vetrina vuota.</div>`}
+  </div>`;
+}
+function addToShop(){const me=state.ui.actor;
+  state.catalog.push({id:newId(),sellerId:me,productId:document.getElementById("v_prod").value,
+    resalePrice:+document.getElementById("v_price").value,bonusPct:+document.getElementById("v_bonus").value});
+  toast("Prodotto in vetrina"); save(); render(); }
+function updShop(id,field,val){const c=state.catalog.find(x=>x.id===id);c[field]=+val;save();toast("Aggiornato");}
+function rmShop(id){state.catalog=state.catalog.filter(x=>x.id!==id);save();render();toast("Rimosso dalla vetrina");}
+
+function viewSellerCamp(){ return campaignView("SELLER"); }
+function viewProducerCamp(){ return campaignView("PRODUCER"); }
+
+/* ============================================================================
+   CAMPAGNE  (Producer + Seller + Collaborative)  — punti 5-12
+   ========================================================================== */
+function campaignView(role){
+  const me=state.ui.actor;
+  const mine=state.campaigns.filter(c=>c.creators.includes(me));
+  // prodotti disponibili per campagna: producer → i propri; seller → quelli in vetrina
+  const myProds = role==="PRODUCER"
+    ? state.products.filter(p=>p.producerId===me)
+    : state.catalog.filter(c=>c.sellerId===me).map(c=>prod(c.productId)).filter(Boolean);
+  const otherCreators = role==="PRODUCER"
+    ? state.users.filter(u=>u.roles.includes("PRODUCER")&&u.id!==me)
+    : state.users.filter(u=>u.roles.includes("SELLER")&&u.id!==me);
+  const pendingForMe=state.campaigns.filter(c=>c.type==="collab"&&c.creators.includes(me)&&!c.approvals[me]);
+  return head(`📣 Campagne & Bonus — ${role}`,
+    "Crea incentivi (bonus) su città/nazione e pubblico. Imposta budget giornaliero/mensile, partenza e scadenza. Il budget approvato va in escrow su Shaer.it come garanzia; quando si esaurisce, la campagna si chiude.")+
+  `${pendingForMe.length?`<div class="card" style="border-color:var(--warn)"><h3>⏳ Campagne collaborative da approvare</h3>
+    ${pendingForMe.map(c=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0">
+      <span><span class="pill">${c.id}</span> · con ${c.creators.filter(x=>x!==me).map(uname).join(", ")} · quota ${fmt(c.shares[me]||0)} cr</span>
+      <button class="btn sm" onclick="approveCollab('${c.id}')">✔️ Approva & versa quota</button></div>`).join("")}
+  </div>`:""}
+  <div class="card"><h3>Nuova campagna</h3>
+    <div class="row">
+      <div><label>Prodotto</label><select id="cmp_prod">${myProds.map(p=>`<option value="${p.id}">${p.name}</option>`).join("")||'<option value="">— nessun prodotto —</option>'}</select></div>
+      <div><label>Tipo</label><select id="cmp_type" onchange="document.getElementById('collabWrap').style.display=this.value==='collab'?'block':'none'">
+        <option value="${role.toLowerCase()}">Singola (${role})</option>
+        <option value="collab">Collaborativa (budget comune)</option></select></div>
+    </div>
+    <div class="row">
+      <div><label>Ambito geografico</label><select id="cmp_geo" onchange="document.getElementById('cityWrap').style.display=this.value==='città'?'block':'none'">
+        <option value="nazionale">Nazionale</option><option value="città">Città specifiche</option><option value="locale">Locale (zona)</option></select></div>
+      <div id="cityWrap" style="display:none"><label>Città (separate da virgola)</label><input id="cmp_cities" placeholder="Roma, Milano"></div>
+      <div><label>Pubblico (interesse)</label><select id="cmp_aud"><option value="tutti">Tutti</option><option value="sport">sport</option><option value="tech">tech</option><option value="moda">moda</option><option value="beauty">beauty</option><option value="casa">casa</option></select></div>
+    </div>
+    <div class="row">
+      <div><label>Budget totale (cr)</label><input type="number" id="cmp_budget" value="1000"></div>
+      <div><label>Pool ricompensa per richiesta (cr)</label><input type="number" id="cmp_pool" value="200"></div>
+      <div><label>Cap giornaliero (cr)</label><input type="number" id="cmp_daily" value="300"></div>
+    </div>
+    <div class="row">
+      <div><label>Partenza</label><input type="date" id="cmp_start" value="${today()}"></div>
+      <div><label>Scadenza</label><input type="date" id="cmp_end"></div>
+    </div>
+    <div id="collabWrap" style="display:none">
+      <label>Co-creatori (la campagna parte solo quando tutti approvano e versano la quota)</label>
+      ${otherCreators.map(u=>`<span class="chk"><input type="checkbox" value="${u.id}" class="collabCk"> ${u.name}</span>`).join("")}
+    </div>
+    <div style="margin-top:14px"><button class="btn" onclick="createCampaign('${role}')">🚀 Crea campagna</button></div>
+    <p class="hint">Punti 5-9: bonus geo/pubblico, budget giorno/mese, abilita-disabilita-modifica, consumo del credito dal creatore.</p>
+  </div>
+  <div class="card"><h3>Le mie campagne</h3>
+    ${mine.length? `<table><tr><th>ID</th><th>Prodotto</th><th>Tipo</th><th>Geo</th><th>Pubblico</th><th>Budget</th><th>Speso</th><th>Stato</th><th></th></tr>`+
+      mine.map(c=>{const resid=c.budget-c.spent;const pct=Math.round(c.spent/c.budget*100);
+        return `<tr><td><span class="pill">${c.id}</span></td><td>${prod(c.productId)?.name||"—"}</td>
+        <td>${c.type}</td><td>${c.geoScope}${c.cities?.length?`: ${c.cities.join(", ")}`:""}</td><td>${c.audience}</td>
+        <td>${fmt(c.budget)}</td><td>${fmt(c.spent)} (${pct}%)</td>
+        <td><span class="tag ${c.status==='active'?'ok':c.status==='paused'?'warn':c.status==='pending_approval'?'info':'exp'}">${c.status}</span></td>
+        <td>${c.status==='active'?`<button class="btn sm ghost" onclick="toggleCampaign('${c.id}','paused')">⏸</button>`:
+             c.status==='paused'?`<button class="btn sm" onclick="toggleCampaign('${c.id}','active')">▶</button>`:""}
+            ${['active','paused'].includes(c.status)?`<button class="btn sm ghost" onclick="topUp('${c.id}')">+500</button>`:""}</td></tr>`;}).join("")+`</table>`
+      :`<div class="empty">Nessuna campagna.</div>`}
+  </div>`;
+}
+function createCampaign(role){
+  const me=state.ui.actor;
+  const type=document.getElementById("cmp_type").value;
+  const budget=+document.getElementById("cmp_budget").value;
+  const pool=+document.getElementById("cmp_pool").value;
+  const geo=document.getElementById("cmp_geo").value;
+  const cities=geo==="città"?document.getElementById("cmp_cities").value.split(",").map(s=>s.trim()).filter(Boolean):[];
+  const base={id:newCampaignId(), productId:document.getElementById("cmp_prod").value,
+    geoScope:geo, cities, audience:document.getElementById("cmp_aud").value,
+    budget, rewardPool:pool, dailyCap:+document.getElementById("cmp_daily").value,
+    start:document.getElementById("cmp_start").value, end:document.getElementById("cmp_end").value, spent:0};
+  if(type==="collab"){
+    const co=[...document.querySelectorAll(".collabCk:checked")].map(c=>c.value);
+    const creators=[me,...co];
+    const share=Math.round(budget/creators.length);
+    const shares={}; creators.forEach(c=>shares[c]=share);
+    const approvals={}; creators.forEach(c=>approvals[c]=false); approvals[me]=true;
+    // il creatore versa subito la sua quota in escrow
+    addCredits(me,-share,`Quota campagna collaborativa (${base.id})`,"");
+    state.shaerEscrow+=share; ledger("SHAER_ESCROW","escrow_in",share,`Quota ${uname(me)} ${base.id}`,"");
+    co.forEach(c=>notify(c,`Sei stato invitato alla campagna collaborativa ${base.id}. Quota richiesta: ${fmt(share)} cr.`,""));
+    state.campaigns.unshift({...base,type:"collab",creators,shares,approvals,status:"pending_approval"});
+    toast("Campagna collaborativa creata · in attesa di approvazioni");
+  } else {
+    // versa budget in escrow subito
+    if((actor().credits||0)<budget){ toast("Crediti insufficienti per finanziare il budget"); return; }
+    addCredits(me,-budget,`Finanziamento campagna (${base.id})`,"");
+    state.shaerEscrow+=budget; ledger("SHAER_ESCROW","escrow_in",budget,`Budget ${base.id}`,"");
+    state.campaigns.unshift({...base,type:role.toLowerCase(),creators:[me],approvals:{[me]:true},status:"active"});
+    toast("Campagna attiva · budget in escrow Shaer.it");
+  }
+  save(); render(); renderWallet();
+}
+function approveCollab(id){
+  const c=camp(id); const me=state.ui.actor; const share=c.shares[me]||0;
+  if((actor().credits||0)<share){ toast("Crediti insufficienti per la quota"); return; }
+  addCredits(me,-share,`Quota campagna collaborativa (${id})`,"");
+  state.shaerEscrow+=share; ledger("SHAER_ESCROW","escrow_in",share,`Quota ${uname(me)} ${id}`,"");
+  c.approvals[me]=true;
+  if(Object.values(c.approvals).every(Boolean)){ c.status="active";
+    c.creators.forEach(x=>notify(x,`Campagna ${id} ATTIVA: tutte le quote versate in escrow.`,"")); toast("Approvata · campagna attiva"); }
+  else toast("Quota versata · in attesa degli altri");
+  save(); render(); renderWallet();
+}
+function toggleCampaign(id,st){ camp(id).status=st; save(); render(); toast("Campagna "+(st==="active"?"riattivata":"in pausa")); }
+function topUp(id){ const c=camp(id); const me=state.ui.actor;
+  if((actor().credits||0)<500){toast("Crediti insufficienti");return;}
+  addCredits(me,-500,`Ricarica campagna (${id})`,""); c.budget+=500; state.shaerEscrow+=500;
+  ledger("SHAER_ESCROW","escrow_in",500,`Top-up ${id}`,""); if(c.status==="ended")c.status="active";
+  save(); render(); renderWallet(); toast("Budget ricaricato +500"); }
+
+/* ---- SELLER: conferma vendita (QR) ---- */
+function viewConfirm(){
+  const me=state.ui.actor;
+  const toConfirm=state.txns.filter(t=>t.sellerId===me && t.status==="IN_PROGRESS");
+  return head("✅ Conferma vendita (scansione QR simulata)",
+    "Il Seller 'scansiona' il QR del buyer in arrivo, vede il payload e conferma la vendita + metodo di pagamento. Questo distribuisce il 25% ai suggeritori e il 3% di cashback.")+
+  (toConfirm.length? toConfirm.map(t=>{
+    const cat=state.catalog.find(x=>x.productId===t.chosenProductId&&x.sellerId===me);
+    return `<div class="card">
+      <h3>📷 QR <span class="pill">${t.id}</span></h3>
+      <div class="flowbox">
+        <b>PAYLOAD QR</b><br>
+        Buyer: ${uname(t.buyerId)} (rank ${isUnreliable(t.buyerId)?'⚠️ inaffidabile':'ok'})<br>
+        Prodotto richiesto: ${prod(t.chosenProductId)?.name}<br>
+        Budget buyer: ${fmt(t.budget)} cr · Crediti disponibili: ${fmt(U(t.buyerId).credits||0)}<br>
+        Prezzo vetrina: ${cat?fmt(cat.resalePrice)+'€':'—'}
+      </div>
+      <div class="row" style="margin-top:12px">
+        <div><label>Importo finale vendita (cr)</label><input type="number" id="cf_val_${t.id}" value="${cat?cat.resalePrice:t.budget}"></div>
+        <div><label>Metodo pagamento</label><select id="cf_pay_${t.id}"><option>contanti</option><option>carta</option><option>crediti</option><option>misto</option></select></div>
+        <div style="flex:0 0 auto;display:flex;align-items:flex-end"><button class="btn" onclick="confirmSale('${t.id}')">✅ Conferma vendita</button></div>
+      </div>
+    </div>`;}).join("")
+  :`<div class="card"><div class="empty">Nessuna vendita da confermare. Un buyer deve prima scegliere un tuo prodotto.</div></div>`);
+}
+function confirmSale(txnId){
+  const t=state.txns.find(x=>x.id===txnId);
+  t.valueFinal=+document.getElementById("cf_val_"+txnId).value;
+  t.paymentMethod=document.getElementById("cf_pay_"+txnId).value;
+  t.status="COMPLETED"; t.completedAt=now();
+  const r=distributeOnPurchase(t);
+  // credito recensione (bidirezionale) simbolico
+  addCredits(t.sellerId,2,`Vendita completata (${t.id})`,t.id);
+  notify(t.buyerId,`Acquisto completato da ${uname(t.sellerId)}! Crediti distribuiti. (${t.id})`,t.id);
+  toast(r.spent?`Vendita completata · distribuiti ${fmt(r.spent)} cr (25% + ${fmt(r.cashback)} cashback)`:"Vendita completata (nessuna campagna)");
+  save(); render(); renderNav(); renderWallet();
+}
+
+/* ============================================================================
+   PRODUCER VIEWS
+   ========================================================================== */
+function viewProducts(){
+  const me=state.ui.actor;
+  const mine=state.products.filter(p=>p.producerId===me);
+  return head("📦 Prodotti & Servizi","Solo il Producer crea prodotti/servizi. Ogni prodotto ottiene un Product ID e resta 'pending' fino all'approvazione ADMIN.")+
+  `<div class="card"><h3>Crea prodotto / servizio</h3>
+    <div class="row">
+      <div><label>Nome</label><input id="p_name" placeholder="es. Sneaker Aura / Consulenza 1h"></div>
+      <div><label>Categoria</label><select id="p_cat"><option>sport</option><option>tech</option><option>moda</option><option>beauty</option><option>casa</option><option>servizi</option></select></div>
+      <div><label>Prezzo base (€)</label><input type="number" id="p_price" value="50"></div>
+      <div><label>Ambito</label><select id="p_geo"><option>nazionale</option><option>regionale</option><option>locale</option><option>globale</option></select></div>
+    </div>
+    <div style="margin-top:12px"><button class="btn" onclick="createProduct()">➕ Crea (→ in approvazione)</button></div>
+  </div>
+  <div class="card"><h3>I miei prodotti</h3>
+    ${mine.length? `<table><tr><th>Product ID</th><th>Nome</th><th>Categoria</th><th>Prezzo base</th><th>Stato</th><th>Seller che lo vendono</th></tr>`+
+      mine.map(p=>{const sellers=state.catalog.filter(c=>c.productId===p.id).length;
+        return `<tr><td><span class="pill">${p.id}</span></td><td>${p.name}</td><td>${p.category}</td><td>${fmt(p.basePrice)}€</td>
+        <td><span class="tag ${p.status==='approved'?'ok':p.status==='pending'?'warn':'bad'}">${p.status}</span></td><td>${sellers}</td></tr>`;}).join("")+`</table>`
+      :`<div class="empty">Nessun prodotto ancora.</div>`}
+  </div>`;
+}
+function createProduct(){const me=state.ui.actor;const name=document.getElementById("p_name").value.trim();if(!name){toast("Inserisci un nome");return;}
+  state.products.unshift({id:newProductId(),producerId:me,name,category:document.getElementById("p_cat").value,
+    basePrice:+document.getElementById("p_price").value,status:"pending",geo:document.getElementById("p_geo").value});
+  toast("Prodotto creato · in attesa di approvazione ADMIN"); save(); render(); }
+
+function viewProducerAnalytics(){
+  const me=state.ui.actor;
+  const mine=state.products.filter(p=>p.producerId===me);
+  const share=state.config.data_share;
+  return head("📈 Analytics Producer","Dati aggregati e anonimizzati. L'ADMIN decide quali dati condividere (vedi 'Condivisione dati').")+
+  `<div class="grid g3">
+    <div class="kpi"><div class="v">${mine.length}</div><div class="l">Prodotti a catalogo</div></div>
+    <div class="kpi"><div class="v">${mine.filter(p=>p.status==='approved').length}</div><div class="l">Approvati</div></div>
+    <div class="kpi orange"><div class="v">${state.txns.filter(t=>t.status==='COMPLETED'&&mine.some(p=>p.id===t.chosenProductId)).length}</div><div class="l">Vendite verificate</div></div>
+  </div>
+  <div class="card"><h3>Performance prodotti ${share.producer_geo?'':'<span class="tag bad">geo non condiviso da ADMIN</span>'}</h3>
+    <table><tr><th>Prodotto</th><th>In vetrina (n. seller)</th><th>Suggerimenti</th><th>Vendite</th>${share.producer_geo?'<th>Città vendite</th>':''}</tr>
+    ${mine.map(p=>{const sells=state.txns.filter(t=>t.status==='COMPLETED'&&t.chosenProductId===p.id);
+      const sugg=state.txns.reduce((n,t)=>n+t.suggestions.filter(s=>s.productId===p.id).length,0);
+      const cities=share.producer_geo?[...new Set(sells.map(t=>U(t.buyerId).city))].join(", "):'—';
+      return `<tr><td>${p.name}</td><td>${state.catalog.filter(c=>c.productId===p.id).length}</td><td>${sugg}</td><td>${sells.length}</td>${share.producer_geo?`<td>${cities||'—'}</td>`:''}</tr>`;}).join("")}
+    </table>
+  </div>`;
+}
+
+/* ============================================================================
+   ADMIN VIEWS
+   ========================================================================== */
+function viewApprovals(){
+  const pendP=state.products.filter(p=>p.status==="pending");
+  return head("✔️ Approvazioni","Approva prodotti creati dai Producer. (Seller/Producer onboarding: manuale nell'MVP.)")+
+  `<div class="card"><h3>Prodotti in attesa (${pendP.length})</h3>
+    ${pendP.length? `<table><tr><th>Product ID</th><th>Nome</th><th>Producer</th><th>Categoria</th><th></th></tr>`+
+      pendP.map(p=>`<tr><td><span class="pill">${p.id}</span></td><td>${p.name}</td><td>${uname(p.producerId)}</td><td>${p.category}</td>
+        <td><button class="btn sm" onclick="approveProduct('${p.id}',1)">Approva</button>
+            <button class="btn sm ghost" onclick="approveProduct('${p.id}',0)">Rifiuta</button></td></tr>`).join("")+`</table>`
+      :`<div class="empty">Nessun prodotto in attesa.</div>`}
+  </div>`;
+}
+function approveProduct(id,ok){const p=prod(id);p.status=ok?"approved":"rejected";
+  notify(p.producerId,`Il tuo prodotto ${p.name} è stato ${ok?"approvato ✅":"rifiutato ❌"}`,"");
+  save();render();toast(ok?"Approvato":"Rifiutato");}
+
+function viewConfig(){
+  const c=state.config;
+  return head("⚙️ Configurazione — Parametri del modello di ricompensa",
+    "Qui si testano 'diverse ipotesi di soluzioni efficaci' (punto 10). Cambia le percentuali e la logica e rilancia un ciclo per vedere l'effetto sulla ripartizione.")+
+  `<div class="card"><h3>Percentuali ripartizione (sul pool ricompensa della campagna)</h3>
+    <div class="row">
+      <div><label>% Partecipazione</label><input type="number" step="0.5" value="${c.pct_participation}" onchange="cfg('pct_participation',this.value)"></div>
+      <div><label>% Suggerimento scelto</label><input type="number" step="0.5" value="${c.pct_chosen}" onchange="cfg('pct_chosen',this.value)"></div>
+      <div><label>% Acquisto verificato</label><input type="number" step="0.5" value="${c.pct_purchase}" onchange="cfg('pct_purchase',this.value)"></div>
+      <div><label>% Cashback buyer</label><input type="number" step="0.5" value="${c.pct_cashback}" onchange="cfg('pct_cashback',this.value)"></div>
+    </div>
+    <div class="divider"></div>
+    <label>Ipotesi: chi riceve il 2% di partecipazione?</label>
+    <select onchange="cfg('participation_scope',this.value)" style="max-width:420px">
+      <option value="all" ${c.participation_scope==='all'?'selected':''}>TUTTI i partecipanti (regola generale)</option>
+      <option value="chosen" ${c.participation_scope==='chosen'?'selected':''}>SOLO chi ha suggerito il prodotto scelto (variante dell'esempio)</option>
+    </select>
+    <p class="hint">Nell'esempio del documento i "2%+2%" vanno agli 8 che hanno suggerito il prodotto scelto; nella regola generale il primo 2% va a tutti i partecipanti. Questo toggle ti fa testare entrambe le ipotesi → da bloccare come decisione (vedi conflitto C13).</p>
+    <div class="divider"></div>
+    <div class="row">
+      <div><label>Soglia "buyer inaffidabile" (TXN aperte)</label><input type="number" value="${c.unreliable_threshold}" onchange="cfg('unreliable_threshold',this.value)"></div>
+      <div><label>Crediti per 1 €</label><input type="number" value="${c.credits_per_euro}" onchange="cfg('credits_per_euro',this.value)"></div>
+    </div>
+  </div>
+  <div class="card"><h3>Simulazione veloce della ripartizione</h3>
+    <div class="row">
+      <div><label>Pool ricompensa (cr)</label><input type="number" id="sim_pool" value="200"></div>
+      <div><label>N. partecipanti totali</label><input type="number" id="sim_part" value="20"></div>
+      <div><label>N. che hanno suggerito il prodotto scelto</label><input type="number" id="sim_chosen" value="8"></div>
+      <div style="flex:0 0 auto;display:flex;align-items:flex-end"><button class="btn" onclick="simCalc()">Calcola</button></div>
+    </div>
+    <div id="simOut"></div>
+  </div>`;
+}
+function cfg(k,v){ state.config[k]=isNaN(+v)?v:+v; save(); render(); toast("Parametro aggiornato"); }
+function simCalc(){
+  const c=state.config, pool=+document.getElementById("sim_pool").value;
+  const part=+document.getElementById("sim_part").value, chosen=+document.getElementById("sim_chosen").value;
+  const baseGroup=c.participation_scope==='all'?part:chosen;
+  const base=pool*c.pct_participation/100, bonus=pool*c.pct_chosen/100, buy=pool*c.pct_purchase/100, cash=pool*c.pct_cashback/100;
+  document.getElementById("simOut").innerHTML=`<table class="split-table" style="margin-top:12px">
+    <tr><th>Voce</th><th>Totale</th><th>Per persona</th><th>Beneficiari</th></tr>
+    <tr><td>Partecipazione (${c.pct_participation}%)</td><td>${fmt(base)}</td><td>${fmt(baseGroup?base/baseGroup:0)}</td><td>${baseGroup}</td></tr>
+    <tr><td>Suggerimento scelto (+${c.pct_chosen}%)</td><td>${fmt(bonus)}</td><td>${fmt(chosen?bonus/chosen:0)}</td><td>${chosen}</td></tr>
+    <tr><td>Acquisto verificato (${c.pct_purchase}%)</td><td>${fmt(buy)}</td><td>${fmt(chosen?buy/chosen:0)}</td><td>${chosen}</td></tr>
+    <tr><td>Cashback buyer (${c.pct_cashback}%)</td><td>${fmt(cash)}</td><td>${fmt(cash)}</td><td>1</td></tr>
+    <tr style="font-weight:700"><td>Totale erogato dal pool</td><td>${fmt(base+bonus+buy+cash)}</td><td colspan="2">${fmt((base+bonus+buy+cash)/pool*100)}% del pool</td></tr>
+  </table>`;
+}
+
+function viewData(){
+  return head("🗂️ Tutti i dati","Vista grezza di tutte le tabelle (come saranno in PostgreSQL). Questo è ciò che alimenterà analytics e suggerimenti futuri.")+
+  dataTable("transactions (TXN)", state.txns.map(t=>({txn:t.id,buyer:uname(t.buyerId),cat:t.category,stato:t.status,sugg:t.suggestions.length,scelto:t.chosenProductId||"—",seller:t.sellerId?uname(t.sellerId):"—",pay:t.paymentMethod||"—",campagna:t.campaignId||"—"})))+
+  dataTable("products", state.products.map(p=>({id:p.id,nome:p.name,producer:uname(p.producerId),cat:p.category,base:p.basePrice,stato:p.status})))+
+  dataTable("campaigns", state.campaigns.map(c=>({id:c.id,tipo:c.type,prodotto:prod(c.productId)?.name||"—",budget:c.budget,speso:fmt(c.spent),pool:c.rewardPool,stato:c.status})))+
+  dataTable("catalog (vetrine)", state.catalog.map(c=>({seller:uname(c.sellerId),prodotto:prod(c.productId)?.name,rivendita:c.resalePrice,bonus:c.bonusPct+"%"})))+
+  `<div class="card"><h3>Wallet escrow Shaer.it (garanzia clienti)</h3>
+    <div class="kpi orange" style="max-width:280px"><div class="v">${fmt(state.shaerEscrow)}</div><div class="l">Crediti in garanzia</div></div>
+    <p class="hint">Punto 11-12: il budget approvato delle campagne è spostato qui come garanzia e da qui vengono erogate le ricompense.</p></div>`+
+  dataTable("credits_ledger (ultimi 40)", state.ledger.slice(0,40).map(l=>({utente:l.userId.startsWith("u_")?uname(l.userId):l.userId,tipo:l.type,cr:fmt(l.amount),nota:l.note,txn:l.txnId||"—"})));
+}
+function dataTable(title,rows){
+  if(!rows.length)return `<div class="card"><h3>${title}</h3><div class="empty">Vuota.</div></div>`;
+  const cols=Object.keys(rows[0]);
+  return `<div class="card"><h3>${title} <span class="tag">${rows.length}</span></h3>
+    <div style="overflow:auto"><table><tr>${cols.map(c=>`<th>${c}</th>`).join("")}</tr>
+    ${rows.map(r=>`<tr>${cols.map(c=>`<td>${typeof r[c]==='string'&&(r[c].startsWith('TXN-')||r[c].startsWith('PRD-')||r[c].startsWith('CMP-'))?`<span class="pill">${r[c]}</span>`:r[c]}</td>`).join("")}</tr>`).join("")}
+    </table></div></div>`;
+}
+
+function viewAdminAnalytics(){
+  const done=state.txns.filter(t=>t.status==="COMPLETED");
+  const gmv=done.reduce((s,t)=>s+(t.valueFinal||0),0);
+  const circulating=state.users.reduce((s,u)=>s+(u.credits||0),0);
+  const byCat={}; state.txns.forEach(t=>byCat[t.category]=(byCat[t.category]||0)+1);
+  return head("🌐 Analytics globali","Overview piattaforma: GMV, crediti circolanti, attività per categoria.")+
+  `<div class="grid g4">
+    <div class="kpi orange"><div class="v">${fmt(gmv)}</div><div class="l">GMV (cr)</div></div>
+    <div class="kpi"><div class="v">${state.txns.length}</div><div class="l">Richieste totali</div></div>
+    <div class="kpi"><div class="v">${done.length}</div><div class="l">Acquisti verificati</div></div>
+    <div class="kpi"><div class="v">${fmt(circulating)}</div><div class="l">Crediti circolanti</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>Richieste per categoria</h3><table><tr><th>Categoria</th><th>Richieste</th></tr>
+      ${Object.entries(byCat).map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join("")||'<tr><td colspan=2 class="empty">—</td></tr>'}</table></div>
+    <div class="card"><h3>Escrow & flussi</h3>
+      <p>In garanzia ora: <b>${fmt(state.shaerEscrow)}</b> cr</p>
+      <p>Erogato da escrow: <b>${fmt(state.ledger.filter(l=>l.userId==='SHAER_ESCROW'&&l.amount<0).reduce((s,l)=>s-l.amount,0))}</b> cr</p>
+      <p>Versato in escrow: <b>${fmt(state.ledger.filter(l=>l.userId==='SHAER_ESCROW'&&l.amount>0).reduce((s,l)=>s+l.amount,0))}</b> cr</p>
+    </div>
+  </div>`;
+}
+
+function viewShare(){
+  const s=state.config.data_share;
+  return head("🔐 Condivisione dati","L'ADMIN autorizza quali dati aggregati sono visibili a Producer e Seller (punto 17: 'admin può autorizzare quali dati condividere con chi').")+
+  `<div class="card"><h3>Permessi di condivisione</h3>
+    <span class="chk"><input type="checkbox" ${s.producer_geo?'checked':''} onchange="shareToggle('producer_geo',this.checked)"> Producer: dati geografici delle vendite</span><br>
+    <span class="chk"><input type="checkbox" ${s.producer_buyer_aggregated?'checked':''} onchange="shareToggle('producer_buyer_aggregated',this.checked)"> Producer: profilo acquirenti aggregato</span><br>
+    <span class="chk"><input type="checkbox" ${s.seller_analytics?'checked':''} onchange="shareToggle('seller_analytics',this.checked)"> Seller: analytics estese</span>
+    <p class="hint">Prova a disattivare "dati geografici" e controlla l'effetto nella vista Analytics del Producer.</p>
+  </div>`;
+}
+function shareToggle(k,v){ state.config.data_share[k]=v; save(); toast("Permesso aggiornato"); }
+
+/* ============================================================================
+   START
+   ========================================================================== */
+load(); boot();
+</script>
+</body>
+</html>

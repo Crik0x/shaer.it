@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shaer.it — Simulatore MVP v2</title>
+<style>
+  :root{
+    --navy:#0d1b2a; --navy2:#1b2a3d; --ink:#0d1b2a; --paper:#f4f6f9;
+    --card:#ffffff; --line:#e2e8f0; --muted:#64748b;
+    --orange:#ff7a18; --orange-d:#e85d04; --green:#16a34a; --red:#dc2626;
+    --blue:#2563eb; --violet:#7c3aed; --amber:#d97706;
+    --promo:#7c3aed; --purchased:#2563eb; --earned:#16a34a;
+    --r:14px; --sh:0 1px 3px rgba(13,27,42,.08),0 8px 24px rgba(13,27,42,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--paper);color:var(--ink);font-size:14px;line-height:1.5}
+  header{background:linear-gradient(120deg,var(--navy),var(--navy2));color:#fff;padding:14px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:sticky;top:0;z-index:50;box-shadow:var(--sh)}
+  .logo{font-weight:800;font-size:20px;letter-spacing:-.5px}
+  .logo b{color:var(--orange)}
+  .tag{font-size:11px;background:rgba(255,255,255,.12);padding:3px 8px;border-radius:99px;color:#cbd5e1}
+  .spacer{flex:1}
+  select,input,textarea{font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);width:100%}
+  header select{background:rgba(255,255,255,.95);min-width:160px;width:auto}
+  .roleswitch{display:flex;gap:4px;background:rgba(255,255,255,.1);padding:4px;border-radius:11px}
+  .roleswitch button{border:0;background:transparent;color:#cbd5e1;padding:7px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px}
+  .roleswitch button.on{background:var(--orange);color:#fff}
+  .roleswitch button:disabled{opacity:.35;cursor:not-allowed}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}
+  @media(max-width:820px){.g2,.g3{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--sh)}
+  .card h3{margin:0 0 4px;font-size:15px}
+  .card .sub{color:var(--muted);font-size:12px;margin-bottom:12px}
+  h2.sec{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:26px 0 10px;font-weight:700}
+  button.act{background:var(--orange);color:#fff;border:0;padding:9px 16px;border-radius:9px;font-weight:600;cursor:pointer;font-size:13px}
+  button.act:hover{background:var(--orange-d)}
+  button.ghost{background:#fff;color:var(--navy);border:1px solid var(--line);padding:8px 14px;border-radius:9px;cursor:pointer;font-weight:600;font-size:13px}
+  button.sm{padding:5px 10px;font-size:12px}
+  label{font-size:12px;color:var(--muted);font-weight:600;display:block;margin:10px 0 4px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  .pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700}
+  .pill.promo{background:#f3e8ff;color:var(--promo)}
+  .pill.purchased{background:#dbeafe;color:var(--purchased)}
+  .pill.earned{background:#dcfce7;color:var(--earned)}
+  .pill.ok{background:#dcfce7;color:var(--green)}.pill.wait{background:#fef9c3;color:var(--amber)}.pill.no{background:#fee2e2;color:var(--red)}
+  .kv{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--line)}
+  .kv b{font-variant-numeric:tabular-nums}
+  .big{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+  .muted{color:var(--muted)}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 18px;border-radius:10px;box-shadow:var(--sh);z-index:99;opacity:0;transition:.3s;font-size:13px}
+  .toast.show{opacity:1}
+  .wallet-strip{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+  .wbox{flex:1;min-width:150px;border:1px solid var(--line);border-radius:11px;padding:10px 12px;background:#fff}
+  .wbox .lab{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase}
+  .wbox .amt{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}
+  .classbar{display:flex;height:7px;border-radius:99px;overflow:hidden;margin-top:6px;background:#eef2f7}
+  .hint{font-size:11.5px;color:var(--muted);background:#f8fafc;border:1px dashed var(--line);border-radius:9px;padding:8px 10px;margin-top:8px}
+  .feeprev{font-size:12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:9px;padding:8px 10px;margin-top:8px;color:#9a3412}
+  .tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:14px;flex-wrap:wrap}
+  .tabs button{border:0;background:transparent;padding:9px 12px;cursor:pointer;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;font-size:13px}
+  .tabs button.on{color:var(--orange);border-bottom-color:var(--orange)}
+  svg .axis{stroke:var(--line)}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;margin-top:6px}
+  .legend span{display:flex;align-items:center;gap:4px}
+  .dot{width:9px;height:9px;border-radius:3px;display:inline-block}
+  .stat{text-align:center;padding:6px}
+  .badge-v{font-size:10px;background:#dcfce7;color:var(--green);padding:1px 6px;border-radius:99px;font-weight:700}
+  .badge-x{font-size:10px;background:#fee2e2;color:var(--red);padding:1px 6px;border-radius:99px;font-weight:700}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Shaer<b>.it</b></div>
+  <span class="tag">Simulatore MVP v2 · motore a partita doppia</span>
+  <div class="spacer"></div>
+  <select id="userSel" onchange="setUser(this.value)"></select>
+  <div class="roleswitch" id="roleSwitch"></div>
+  <button id="adminBtn" onclick="toggleAdmin()" style="background:rgba(255,255,255,.12);color:#fff;border:0;padding:8px 14px;border-radius:10px;cursor:pointer;font-weight:700;font-size:13px">🛠 Admin</button>
+  <button onclick="ui.view='register';render()" style="background:rgba(255,255,255,.12);color:#fff;border:0;padding:8px 14px;border-radius:10px;cursor:pointer;font-weight:700;font-size:13px">➕ Registrati</button>
+</header>
+
+<div class="wrap">
+  <div id="walletStrip" class="wallet-strip"></div>
+  <div id="panel"></div>
+
+  <h2 class="sec">Strumenti sessione</h2>
+  <div class="card">
+    <div class="row">
+      <button class="ghost sm" onclick="exportState()">⬇ Esporta JSON</button>
+      <button class="ghost sm" onclick="document.getElementById('imp').click()">⬆ Importa JSON</button>
+      <input type="file" id="imp" style="display:none" accept="application/json" onchange="importState(event)">
+      <button class="ghost sm" onclick="if(confirm('Reset completo ai dati seed?')){localStorage.removeItem('shaer_v2');location.reload()}">↺ Reset seed</button>
+      <span class="muted" style="font-size:11px">Unità interna: 100 crediti = 1,00 € · tutto closed-loop</span>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   SHAER.IT SIMULATORE v2 — MOTORE ECONOMICO
+   Principi: saldo derivato dal ledger · partita doppia (somma=0)
+   · classi credito promo/purchased/earned · take unico sul margine
+   ============================================================ */
+
+const SYS = ['SHAER_TREASURY','SHAER_ESCROW','SHAER_SETTLEMENT','SHAER_REVENUE','SHAER_ADV','SHAER_BURN'];
+const EUR = c => (c/100).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+const CR  = c => Math.round(c).toLocaleString('it-IT')+' cr';
+
+let state, ui = {role:'BUYER', view:'role', adminTab:'conti', prodTab:'catalogo'};
+
+/* ---------- SEED ---------- */
+function seed(){
+  return {
+    seq:{prod:1,lot:1,cmp:1,ask:1,sug:1,txn:1,dist:1,con:1},
+    euroReserve: 0,                 // € realmente versati a copertura
+    advPromoBudget: 50000,          // budget promo autorizzato (crediti) finanziato da TREASURY
+    users:[
+      mkUser('u1','Marco (Buyer)',{BUYER:1},{}, 'buyer_basic'),
+      mkUser('u2','Giulia (Buyer)',{BUYER:1},{}, 'buyer_silver'),
+      mkUser('u3','Bar Centrale (Seller)',{BUYER:1,SELLER:1},{SELLER:1}, 'seller_std'),
+      mkUser('u4','Sport Roma (Seller)',{BUYER:1,SELLER:1},{SELLER:1}, 'seller_std'),
+      mkUser('u5','NikeX SpA (Producer)',{PRODUCER:1,SELLER:1},{PRODUCER:1,SELLER:1}, 'producer_std'),
+      mkUser('u6','Anna (tri-ruolo)',{BUYER:1,SELLER:1,PRODUCER:1},{SELLER:1,PRODUCER:1}, 'seller_std'),
+    ],
+    products:[], lots:[], contracts:[], listings:[], campaigns:[], asks:[], suggestions:[], txns:[], dists:[],
+    categories:['Calzature','Abbigliamento','Accessori','Elettronica'],
+    feeRules: defaultFeeRules(),
+    notifications:[]
+  };
+}
+function mkUser(id,name,roles,verified,plan){return {id,name,roles,verified,plan,rank:50,status:'active'};}
+function defaultFeeRules(){return {
+  // valori in % ; gerarchia override-utente > piano > globale (qui solo globale+piano)
+  sale_take_pct:25, reward_pct:20, cashback_pct:1, seller_keep_pct:54, // split organico C31 (sul margine)
+  viewReward:50,                                                        // crediti "view" pagati per suggerimento sotto campagna (dal Reach)
+  promo_use_fee:{buyer_basic:20,buyer_silver:15,buyer_gold:10},          // C32 (sul margine)
+  b2b_brackets:[{upTo:50000000,pct:15},{upTo:200000000,pct:10},{upTo:Infinity,pct:3}], // crediti annui (500k€,2m€)
+  campaign:{seller_std:{intake:10,payout:15}, producer_std:{intake:8,payout:12}}
+};}
+
+/* ---------- LEDGER (partita doppia) ---------- */
+function post(d){
+  const sum = d.lines.reduce((s,l)=>s+l.amount,0);
+  if(Math.round(sum)!==0){ console.error('SBILANCIATA',d); toast('⚠ Distribuzione sbilanciata bloccata'); return false; }
+  d.id = 'D'+(state.seq.dist++); d.ts = Date.now();
+  state.dists.unshift(d);
+  return true;
+}
+function bal(account, klass=null){
+  let s=0;
+  for(const d of state.dists) for(const l of d.lines)
+    if(l.account===account && (!klass||l.class===klass)) s+=l.amount;
+  return s;
+}
+function wallet(uid, role){ // saldo per classe del wallet (utente,ruolo)
+  const a='user:'+uid+':'+role;
+  return {promo:bal(a,'promo'), purchased:bal(a,'purchased'), earned:bal(a,'earned'),
+          total:bal(a)};
+}
+function acc(uid,role){return 'user:'+uid+':'+role;}
+
+/* ---------- FEE B2B a scaglioni marginali (annui) ---------- */
+function b2bFee(producerId, lotValue){
+  // turnover B2B annuo già fatturato dal producer
+  const done = state.dists.filter(d=>d.type==='b2b'&&d.producerId===producerId)
+                 .reduce((s,d)=>s+(d.lotValue||0),0);
+  let remaining=lotValue, base=done, fee=0;
+  for(const b of state.feeRules.b2b_brackets){
+    if(base>=b.upTo) continue;
+    const slot=Math.min(remaining, b.upTo-base);
+    fee += slot*(b.pct/100); remaining-=slot; base+=slot;
+    if(remaining<=0) break;
+  }
+  return Math.round(fee);
+}
+
+/* ---------- UTENTE / RUOLO ---------- */
+function curUser(){return state.users.find(u=>u.id===ui.uid)||state.users[0];}
+function setUser(uid){ui.uid=uid; const u=curUser(); if(!u.roles[ui.role]) ui.role=Object.keys(u.roles).find(r=>u.roles[r]); render();}
+function setRole(r){ui.role=r; ui.view='role'; render();}
+function toggleAdmin(){ui.view = ui.view==='admin'?'role':'admin'; render();}
+
+/* ---------- helper UI ---------- */
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function notify(uid,msg){state.notifications.unshift({uid,msg,ts:Date.now()});}
+function save(){localStorage.setItem('shaer_v2',JSON.stringify(state));}
+function opt(arr,val,lab){return arr.map(a=>`<option value="${val(a)}" ${a._sel?'selected':''}>${lab(a)}</option>`).join('');}
+
+/* ============================================================
+   ON-RAMP & PROMO MINT
+   ============================================================ */
+function buyCredits(uid,role,eur){
+  const cr=Math.round(eur*100);
+  if(!post({type:'onramp', lines:[
+    {account:'SHAER_TREASURY',class:'purchased',amount:-cr,note:'emissione'},
+    {account:acc(uid,role),class:'purchased',amount:cr,note:'acquisto crediti '+eur+'€'}
+  ]})) return;
+  state.euroReserve += eur;
+  toast('Accreditati '+CR(cr)+' (coperti da '+eur+'€)'); save(); render();
+}
+function mintPromo(uid,amount,reason){
+  if(state.advPromoBudget<amount){toast('Budget promo ADV esaurito');return;}
+  if(!post({type:'promo_mint', lines:[
+    {account:'SHAER_TREASURY',class:'promo',amount:-amount,note:reason},
+    {account:acc(uid,'BUYER'),class:'promo',amount:amount,note:reason}
+  ]})) return;
+  state.advPromoBudget-=amount;
+}
+
+/* ============================================================
+   PRODUCER: prodotti, lotti B2B
+   ============================================================ */
+function createProduct(f){
+  const id='PRD-'+String(state.seq.prod++).padStart(3,'0');
+  state.products.push({id,producerId:ui.uid,name:f.name,category:f.cat,
+    compliance:{expiry:f.expiry,origin:f.origin,factory:f.factory,ean:f.ean},approved:false});
+  notify('admin','Nuovo prodotto da approvare: '+f.name);
+  toast('Prodotto creato — in attesa di approvazione admin'); save(); render();
+}
+function createLot(f){
+  const p=state.products.find(x=>x.id===f.productId);
+  if(!p){toast('Seleziona un prodotto');return;}
+  if(!p.approved){toast('Prodotto non ancora approvato');return;}
+  const id='LOT-'+String(state.seq.lot++).padStart(3,'0');
+  state.lots.push({id,productId:f.productId,producerId:ui.uid,
+    unitPrice:Math.round(f.unit*100),qty:f.qty,qtyLeft:f.qty,
+    transport:Math.round(f.transport*100),moq:f.moq,maxOrder:f.maxOrder,geo:f.geo||'IT'});
+  toast('Lotto B2B pubblicato'); save(); render();
+}
+
+/* ============================================================
+   SELLER: acquisto B2B (prepagato), vetrina, campagne, vendita
+   ============================================================ */
+function buyLot(lotId,qty){
+  const lot=state.lots.find(l=>l.id===lotId); if(!lot)return;
+  qty=parseInt(qty);
+  if(qty<lot.moq){toast('Sotto il minimo d\'ordine (MOQ '+lot.moq+')');return;}
+  if(qty>lot.maxOrder){toast('Oltre il massimo per ordine ('+lot.maxOrder+')');return;}
+  if(qty>lot.qtyLeft){toast('Quantità non disponibile');return;}
+  const value=lot.unitPrice*qty;                 // valore B2B (trasporto escluso ai fini fee)
+  const seller=ui.uid, producer=lot.producerId;
+  const w=wallet(seller,'SELLER');
+  if(w.purchased < value+lot.transport){toast('Crediti purchased insufficienti — acquista crediti');return;}
+  const fee=b2bFee(producer, value);             // la fee la paga il PRODUCER
+  // distribuzione bilanciata: seller paga (value+trasporto), producer incassa, producer paga fee a REVENUE
+  const ok=post({type:'b2b',producerId:producer,lotValue:value, lines:[
+    {account:acc(seller,'SELLER'),class:'purchased',amount:-(value+lot.transport),note:'acquisto B2B '+lot.productId},
+    {account:acc(producer,'PRODUCER'),class:'earned',amount:(value+lot.transport),note:'vendita B2B'},
+    {account:acc(producer,'PRODUCER'),class:'earned',amount:-fee,note:'fee B2B'},
+    {account:'SHAER_REVENUE',class:'earned',amount:fee,note:'fee B2B '+lot.productId}
+  ]});
+  if(!ok)return;
+  lot.qtyLeft-=qty;
+  // contratto con agreed_price versionato (snapshot del prezzo B2B unitario)
+  const cid='CON-'+String(state.seq.con++).padStart(3,'0');
+  state.contracts.push({id:cid,sellerId:seller,producerId:producer,productId:lot.productId,
+    agreedPrice:lot.unitPrice,version:1,validFrom:Date.now(),qty});
+  toast('Acquistati '+qty+' pz · fee B2B '+CR(fee)+' al producer'); save(); render();
+}
+function createListing(f){
+  const con=state.contracts.find(c=>c.id===f.contractId && c.sellerId===ui.uid);
+  if(!con){toast('Serve un contratto B2B');return;}
+  const resale=Math.round(f.resale*100);
+  if(resale<=con.agreedPrice){toast('Il prezzo di rivendita deve superare il B2B');return;}
+  state.listings.push({id:'L'+state.listings.length,sellerId:ui.uid,productId:con.productId,
+    contractId:con.id,resalePrice:resale,agreedPrice:con.agreedPrice});
+  toast('Prodotto in vetrina'); save(); render();
+}
+function createCampaign(f){
+  const id='CMP-'+String(state.seq.cmp++).padStart(3,'0');
+  const creatorRole = curUser().roles.PRODUCER && ui.role==='PRODUCER' ? 'PRODUCER':'SELLER';
+  const amount=Math.round(f.budget*100);
+  const w=wallet(ui.uid,creatorRole);
+  if(w.purchased<amount){toast('Crediti purchased insufficienti per il budget');return;}
+  // fee intake + riserva payout riconosciute subito (modello semplificato del simulatore)
+  const plan = creatorRole==='PRODUCER'?'producer_std':'seller_std';
+  const cf=state.feeRules.campaign[plan];
+  const intake=Math.round(amount*cf.intake/100), reserve=Math.round(amount*cf.payout/100);
+  const net=amount-intake-reserve;
+  const ok=post({type:'cmp_fund',campaignId:id, lines:[
+    {account:acc(ui.uid,creatorRole),class:'purchased',amount:-amount,note:'budget campagna'},
+    {account:'SHAER_REVENUE',class:'earned',amount:intake+reserve,note:'fee campagna (intake+riserva)'},
+    {account:'adv:'+id,class:'purchased',amount:net,note:'minipool netto'}
+  ]});
+  if(!ok)return;
+  const reachQ=Math.round(net*f.reachPct/100), saleQ=net-reachQ;
+  state.campaigns.push({id,productId:f.productId,geo:f.geo||'IT',
+    creators:[{userId:ui.uid,role:creatorRole,amount}],whitelist:f.whitelist||'',
+    reachQ,saleQ,reachLeft:reachQ,saleLeft:saleQ,reachPerDay:Math.round(f.reachDay*100),
+    status:'active',net});
+  // notifica al producer del prodotto se la campagna è di un seller
+  const prod=state.products.find(p=>p.id===f.productId);
+  if(prod && prod.producerId!==ui.uid) notify(prod.producerId,'Un seller ha lanciato una campagna sul tuo prodotto '+prod.name);
+  toast('Campagna '+id+' attiva · minipool '+CR(net)); save(); render();
+}
+function campaignForSale(productId, sellerId){
+  return state.campaigns.find(c=>{
+    if(c.productId!==productId || c.status!=='active') return false;
+    const creator=c.creators[0];
+    if(creator.role==='PRODUCER') return true;            // il producer promuove presso qualsiasi seller (C34)
+    const wl=c.whitelist? c.whitelist.split(',').map(s=>s.trim()).filter(Boolean):[];
+    return c.creators.some(cr=>cr.userId===sellerId) || wl.includes(sellerId); // campagna seller: creatore + whitelist
+  });
+}
+
+/* ============================================================
+   BUYER: Ask, suggerimenti (coppia), scelta, pagamento
+   ============================================================ */
+function createAsk(f){
+  const id='ASK-'+String(state.seq.ask++).padStart(3,'0');
+  state.asks.push({id,buyerId:ui.uid,productHint:f.hint,targeting:f.targeting,geo:f.geo,status:'open',chosen:null});
+  toast('Richiesta '+id+' pubblicata'); save(); render();
+}
+function eligibleSuggesters(){
+  // chi ha un contratto/acquisto (può suggerire una coppia) — stima resoconto
+  const sellers=[...new Set(state.contracts.map(c=>c.sellerId))];
+  return sellers.length;
+}
+function addSuggestion(askId,productId,sellerId){
+  const ask=state.asks.find(a=>a.id===askId); if(!ask||ask.status!=='open'){toast('Ask non disponibile');return;}
+  if(state.suggestions.some(s=>s.askId===askId&&s.suggesterId===ui.uid)){toast('Hai già suggerito in questo Ask (1 per Ask)');return;}
+  const listing=state.listings.find(l=>l.productId===productId&&l.sellerId===sellerId);
+  if(!listing){toast('Quella coppia prodotto+negozio non è in vetrina');return;}
+  state.suggestions.push({id:'S'+(state.seq.sug++),askId,suggesterId:ui.uid,productId,sellerId});
+  // VIEW CREDIT (engagement): se esiste una campagna attiva sul prodotto, esce SUBITO dal minipool (Reach)
+  const camp=campaignForSale(productId,sellerId);
+  if(camp){
+    const v=Math.min(state.feeRules.viewReward, camp.reachLeft);
+    if(v>0){
+      post({type:'view',campaignId:camp.id,phase:'engagement',lines:[
+        {account:'adv:'+camp.id,class:'purchased',amount:-v,note:'view credit'},
+        {account:acc(ui.uid,'BUYER'),class:'earned',amount:v,note:'view credit (engagement)'}]});
+      camp.reachLeft-=v;
+      if(camp.reachLeft<=0) notify(camp.creators[0].userId,'Budget Reach della campagna '+camp.id+' esaurito');
+      toast('Suggerimento inviato · +'+CR(v)+' view dal minipool');
+      save(); render(); return;
+    }
+  }
+  toast('Suggerimento (coppia) inviato'); save(); render();
+}
+function chooseSuggestion(askId,sugId){
+  const ask=state.asks.find(a=>a.id===askId); const s=state.suggestions.find(x=>x.id===sugId);
+  if(!ask||!s)return;
+  ask.chosen=sugId; ask.status='chosen';
+  toast('Coppia scelta — procedi al pagamento'); save(); render();
+}
+function payAndConfirm(askId, klass){
+  const ask=state.asks.find(a=>a.id===askId); const s=state.suggestions.find(x=>x.id===ask.chosen);
+  const listing=state.listings.find(l=>l.productId===s.productId&&l.sellerId===s.sellerId);
+  const buyer=ask.buyerId, seller=s.sellerId;
+  if(buyer===seller){toast('Anti-frode: buyer ≠ seller nella stessa TXN (rank/recensione)');return;}
+  const resale=listing.resalePrice, margin=resale-listing.agreedPrice;
+  const w=wallet(buyer,'BUYER');
+  if(w[klass]<resale){toast('Saldo '+klass+' insufficiente');return;}
+  const txnId='TXN-'+String(state.seq.txn++).padStart(4,'0');
+  const winners=state.suggestions.filter(x=>x.askId===askId&&x.productId===s.productId&&x.sellerId===s.sellerId);
+  const camp=campaignForSale(s.productId,seller);
+  let lines=[]; let info='';
+
+  if(camp && klass==='purchased'){
+    // SOTTO CAMPAGNA: margine non toccato, seller tiene tutto; reward+cashback dal minipool
+    const reward=Math.min(Math.round(listing.agreedPrice*0.25), camp.saleLeft); // 25% del B2B
+    if(camp.saleLeft<reward||reward<=0){toast('Pool vendita esaurito — campagna in pausa');camp.status='paused';save();render();return;}
+    const cashback=Math.round(reward*0.04);
+    lines=[
+      {account:acc(buyer,'BUYER'),class:'purchased',amount:-resale,note:'pagamento '+txnId},
+      {account:acc(seller,'SELLER'),class:'earned',amount:resale,note:'incasso vendita (margine pieno)'},
+    ];
+    post({type:'sale_pay',txnId,phase:'purchase',lines});
+    // payout reward dal minipool
+    const each=Math.floor(reward/winners.length); let rem=reward-each*winners.length;
+    const rl=[{account:'adv:'+camp.id,class:'purchased',amount:-(reward),note:'reward campagna'}];
+    winners.forEach((wn,i)=>rl.push({account:acc(wn.suggesterId,'BUYER'),class:'earned',amount:each+(i<rem?1:0),note:'reward suggerimento'}));
+    post({type:'sale_reward',txnId,campaignId:camp.id,phase:'reward',lines:rl});
+    // cashback promo
+    post({type:'cashback',txnId,campaignId:camp.id,phase:'cashback',lines:[
+      {account:'adv:'+camp.id,class:'purchased',amount:-cashback,note:'cashback'},
+      {account:acc(buyer,'BUYER'),class:'promo',amount:cashback,note:'cashback'}]});
+    camp.saleLeft-=(reward+cashback);
+    info='Campagna '+camp.id+': seller tiene il margine pieno; reward '+CR(reward)+' a '+winners.length+' suggeritori; cashback '+CR(cashback);
+    if(camp.saleLeft< Math.round(listing.agreedPrice*0.25)){camp.status='paused'; notify(seller,'Campagna '+camp.id+' in pausa: pool vendita sotto soglia');}
+  } else {
+    // ORGANICO (o pagamento promo): take unico sul margine C31
+    const fr=state.feeRules;
+    const shaer=Math.round(margin*fr.sale_take_pct/100);
+    const reward=Math.round(margin*fr.reward_pct/100);
+    const cashback=Math.round(margin*fr.cashback_pct/100);
+    const sellerKeep=resale-shaer-reward-cashback; // = agreed + 54% margine
+    const sellerClass = klass==='promo'?'promo':'earned'; // R2: promo→seller resta promo
+    lines=[
+      {account:acc(buyer,'BUYER'),class:klass,amount:-resale,note:'pagamento '+txnId},
+      {account:acc(seller,'SELLER'),class:sellerClass,amount:sellerKeep,note:'incasso netto vendita'},
+      {account:'SHAER_REVENUE',class:'earned',amount:shaer,note:'take 25% margine'},
+      {account:acc(buyer,'BUYER'),class:'promo',amount:cashback,note:'cashback'}
+    ];
+    // reward ai suggeritori coppia vincente
+    const each=Math.floor(reward/winners.length); let rem=reward-each*winners.length;
+    winners.forEach((wn,i)=>lines.push({account:acc(wn.suggesterId,'BUYER'),class:'earned',amount:each+(i<rem?1:0),note:'reward suggerimento'}));
+    post({type:'sale_organic',txnId,phase:'purchase',price_snapshot:listing.agreedPrice,lines});
+    info='Organico — margine '+CR(margin)+': Shaer '+CR(shaer)+' / reward '+CR(reward)+' a '+winners.length+' / cashback '+CR(cashback)+' / seller '+CR(sellerKeep);
+    if(klass==='promo'){
+      // fee uso promo a carico del buyer (C32) sul margine, per tier
+      const tier=fr.promo_use_fee[curUser().plan]||20;
+      const pf=Math.round(margin*tier/100);
+      post({type:'promo_use_fee',txnId,phase:'promofee',lines:[
+        {account:acc(buyer,'BUYER'),class:'promo',amount:-pf,note:'fee uso promo '+tier+'%'},
+        {account:'SHAER_REVENUE',class:'promo',amount:pf,note:'fee uso promo'}]});
+      info+=' · fee uso promo buyer '+CR(pf);
+    }
+  }
+  state.txns.push({id:txnId,askId,buyerId:buyer,sellerId:seller,productId:s.productId,
+    suggestionId:s.id,status:'completed',paymentClass:klass});
+  ask.status='completed';
+  notify(seller,'Vendita confermata '+txnId);
+  winners.forEach(wn=>notify(wn.suggesterId,'Hai ricevuto un reward per il tuo suggerimento ('+txnId+')'));
+  toast('✔ '+txnId+' completata'); console.log(info); save(); render();
+}
+
+/* ============================================================
+   RESO (punti 4 e 5)
+   - rimborsa tutto tranne i crediti "view" (engagement, non legati al TXN)
+   - vietato se il buyer ha consigliato quel prodotto
+   ============================================================ */
+function canReturn(txn){
+  if(txn.status!=='completed') return {ok:false,why:'TXN non rimborsabile'};
+  // punto 5: il buyer ha consigliato (suggerito) quel prodotto? → niente reso
+  if(state.suggestions.some(s=>s.suggesterId===txn.buyerId && s.productId===txn.productId))
+    return {ok:false,why:'Hai consigliato questo prodotto: il reso non è ammesso'};
+  return {ok:true};
+}
+function returnTxn(txnId){
+  const txn=state.txns.find(t=>t.id===txnId); if(!txn)return;
+  const chk=canReturn(txn); if(!chk.ok){toast('⛔ '+chk.why);return;}
+  // reverso SOLO le distribuzioni legate a questo TXN (pagamento, reward, cashback, take, fee promo).
+  // Le distribuzioni 'view' NON sono legate al TXN → restano (punto 4).
+  const related=state.dists.filter(d=>d.txnId===txnId &&
+    ['sale_pay','sale_organic','sale_reward','cashback','promo_use_fee'].includes(d.type));
+  if(!related.length){toast('Nessun movimento da rimborsare');return;}
+  related.forEach(d=>{
+    post({type:'reversal',txnId,phase:'return',lines:d.lines.map(l=>({account:l.account,class:l.class,amount:-l.amount,note:'reso '+d.type}))});
+    // ripristino il minipool campagna se reward/cashback venivano da lì
+    if(d.campaignId && (d.type==='sale_reward'||d.type==='cashback')){
+      const c=state.campaigns.find(x=>x.id===d.campaignId);
+      if(c){ const back=d.lines.filter(l=>l.account==='adv:'+c.id).reduce((s,l)=>s-l.amount,0); c.saleLeft+=back; if(c.status==='paused')c.status='active'; }
+    }
+  });
+  txn.status='returned';
+  const ask=state.asks.find(a=>a.id===txn.askId); if(ask) ask.status='returned';
+  notify(txn.sellerId,'Reso effettuato per '+txnId);
+  toast('↩ Reso '+txnId+': rimborsato tutto tranne i crediti view'); save(); render();
+}
+function withdraw(uid,role,amount){
+  if(!curUser().verified[role]){toast('Ruolo non verificato');return;}
+  const w=wallet(uid,role);
+  if(w.earned<amount){toast('Solo crediti earned sono prelevabili');return;}
+  post({type:'withdraw_burn',lines:[
+    {account:acc(uid,role),class:'earned',amount:-amount,note:'richiesta prelievo'},
+    {account:'SHAER_BURN',class:'earned',amount:amount,note:'burn — bonifico € manuale'}]});
+  state.euroReserve-=amount/100;
+  notify('admin','Richiesta prelievo '+CR(amount)+' da '+curUser().name+' — approvare e bonificare');
+  toast('Richiesta prelievo inviata (burn + bonifico manuale)'); save(); render();
+}
+function transferInternal(uid,from,to,klass,amount){
+  if(!curUser().verified[from]&&from!=='BUYER'){toast('Ruolo origine non verificato');return;}
+  if(!curUser().verified[to]&&to!=='BUYER'){toast('Ruolo destinazione non verificato');return;}
+  const w=wallet(uid,from);
+  if(w[klass]<amount){toast('Saldo insufficiente');return;}
+  post({type:'transfer',lines:[          // 1:1, classe preservata (R1)
+    {account:acc(uid,from),class:klass,amount:-amount,note:'transfer interno'},
+    {account:acc(uid,to),class:klass,amount:amount,note:'transfer interno'}]});
+  toast('Trasferiti '+CR(amount)+' ('+klass+') '+from+'→'+to); save(); render();
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function render(){
+  const u=curUser();
+  document.getElementById('userSel').innerHTML=state.users.map(x=>`<option value="${x.id}" ${x.id===u.id?'selected':''}>${x.name}${x.status==='pending'?' (in attesa)':''}</option>`).join('');
+  // role switch
+  document.getElementById('roleSwitch').innerHTML=['BUYER','SELLER','PRODUCER'].map(r=>{
+    const has=u.roles[r]; const on=ui.role===r;
+    return `<button class="${on?'on':''}" ${has?'':'disabled'} onclick="setRole('${r}')">${r.charAt(0)+r.slice(1).toLowerCase()}${has&&!u.verified[r]&&r!=='BUYER'?' ⚠':''}</button>`;
+  }).join('');
+  renderWallet();
+  // pulsante admin attivo?
+  const ab=document.getElementById('adminBtn');
+  if(ab){ ab.style.background = ui.view==='admin'?'var(--orange)':'rgba(255,255,255,.12)'; }
+  const p=document.getElementById('panel');
+  const strip=document.getElementById('walletStrip');
+  if(ui.view==='register'){
+    if(strip) strip.style.display='none';
+    p.innerHTML=viewRegister();
+  } else if(ui.view==='admin'){
+    if(strip) strip.style.display='none';
+    p.innerHTML = `<div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 class="sec" style="margin:0">Pannello Admin · Shaer.it</h2><button class="ghost sm" onclick="ui.view='role';render()">← torna alla vista ${ui.role.toLowerCase()}</button></div>`+viewAdmin();
+  } else if(u.status==='pending'){
+    if(strip) strip.style.display='none';
+    p.innerHTML=`<div class="card" style="border-color:var(--amber)"><h3>⏳ Account in attesa di approvazione</h3><div class="sub">L'account <b>${u.name}</b> è stato registrato ma deve essere approvato dall'admin prima di poter operare. Vai nel pannello Admin → tab "account" per approvarlo (in questa demo).</div></div>`;
+  } else {
+    if(strip) strip.style.display='flex';
+    if(ui.role==='BUYER') p.innerHTML=viewBuyer();
+    else if(ui.role==='SELLER') p.innerHTML=viewSeller();
+    else p.innerHTML=viewProducer();
+  }
+  save();
+}
+function viewRegister(){
+  return `<div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 class="sec" style="margin:0">Registrazione nuovo account</h2><button class="ghost sm" onclick="ui.view='role';render()">← annulla</button></div>
+  <div class="card" style="max-width:520px">
+    <h3>Crea un account</h3><div class="sub">L'account resta <b>in attesa</b> finché l'admin non lo approva. Per SELLER/PRODUCER serve documentazione (P.IVA, visura) → verifica del ruolo all'approvazione.</div>
+    <label>Nome / Ragione sociale</label><input id="rgName" placeholder="es. Calzature Bianchi srl">
+    <label>Email</label><input id="rgEmail" placeholder="email@dominio.it">
+    <label>Ruoli richiesti</label>
+    <div class="row" style="gap:14px;margin-top:4px">
+      <label style="display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="rgBuyer" checked style="width:auto"> Buyer</label>
+      <label style="display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="rgSeller" style="width:auto"> Seller <span class="muted">(doc)</span></label>
+      <label style="display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="rgProducer" style="width:auto"> Producer <span class="muted">(doc)</span></label>
+    </div>
+    <div class="hint">Buyer è immediato; Seller/Producer richiedono verifica documentale gestita dall'admin.</div>
+    <div class="row" style="margin-top:12px"><button class="act" onclick="registerAccount()">Invia registrazione</button></div>
+  </div>`;
+}
+function registerAccount(){
+  const name=document.getElementById('rgName').value.trim();
+  if(!name){toast('Inserisci un nome');return;}
+  const roles={}, verifReq={};
+  if(document.getElementById('rgBuyer').checked) roles.BUYER=1;
+  if(document.getElementById('rgSeller').checked){roles.SELLER=1; verifReq.SELLER=1;}
+  if(document.getElementById('rgProducer').checked){roles.PRODUCER=1; verifReq.PRODUCER=1;}
+  if(!Object.keys(roles).length){toast('Seleziona almeno un ruolo');return;}
+  const id='u'+(state.users.length+1)+'_'+Date.now().toString().slice(-4);
+  const u=mkUser(id,name,roles,{},'buyer_basic');
+  u.status='pending'; u.verifReq=verifReq; u.email=document.getElementById('rgEmail').value;
+  state.users.push(u);
+  notify('admin','Nuovo account da approvare: '+name+' ('+Object.keys(roles).join('/')+')');
+  ui.view='role'; toast('Registrazione inviata — in attesa di approvazione admin'); save(); render();
+}
+function approveAccount(uid){
+  const u=state.users.find(x=>x.id===uid); if(!u)return;
+  u.status='active';
+  if(u.verifReq){ for(const r in u.verifReq) u.verified[r]=1; }
+  notify(uid,'Il tuo account è stato approvato e i ruoli verificati');
+  toast('Account approvato: '+u.name); save(); render();
+}
+function renderWallet(){
+  const u=curUser(); const roles=Object.keys(u.roles).filter(r=>u.roles[r]);
+  document.getElementById('walletStrip').innerHTML=roles.map(r=>{
+    const w=wallet(u.id,r); const t=Math.max(w.total,1);
+    const seg=(v,c)=>v>0?`<span class="dot" style="background:${c};width:${Math.max(6,100*v/t)}%;height:7px;border-radius:0"></span>`:'';
+    return `<div class="wbox"><div class="lab">${r} ${u.verified[r]?'<span class="badge-v">verif.</span>':(r!=='BUYER'?'<span class="badge-x">non verif.</span>':'')}</div>
+      <div class="amt">${CR(w.total)}</div>
+      <div class="muted" style="font-size:11px">${EUR(w.total)}</div>
+      <div class="classbar">${seg(w.promo,'var(--promo)')}${seg(w.purchased,'var(--purchased)')}${seg(w.earned,'var(--earned)')}</div>
+      <div class="legend"><span><i class="dot" style="background:var(--promo)"></i>promo ${CR(w.promo)}</span><span><i class="dot" style="background:var(--purchased)"></i>purch. ${CR(w.purchased)}</span><span><i class="dot" style="background:var(--earned)"></i>earn. ${CR(w.earned)}</span></div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- BUYER ---------- */
+function viewBuyer(){
+  const u=curUser();
+  const myAsks=state.asks.filter(a=>a.buyerId===u.id);
+  const openAsks=state.asks.filter(a=>a.status==='open'&&a.buyerId!==u.id);
+  return `
+  <div class="grid g2">
+    <div class="card"><h3>💳 Acquista crediti (on-ramp)</h3><div class="sub">Versi € → TREASURY conia crediti <span class="pill purchased">purchased</span> coperti</div>
+      <label>Importo €</label><input id="bcEur" type="number" value="100">
+      <div class="row" style="margin-top:10px"><button class="act" onclick="buyCredits('${u.id}','BUYER',parseFloat(bcEur.value))">Acquista</button></div>
+      <div class="hint">I crediti purchased sono spendibili e trasferibili, ma non prelevabili (closed-loop).</div>
+    </div>
+    <div class="card"><h3>🔎 Crea una richiesta (Ask)</h3><div class="sub">Resoconto idonei: <b>${eligibleSuggesters()}</b> possibili suggeritori · recensori già attivi: <b>${state.txns.length}</b></div>
+      <label>Cosa cerchi</label><input id="askHint" placeholder="es. scarpe da running">
+      <label>A chi chiedere (targeting)</label>
+      <select id="askTarget"><option value="public">Pubblico</option><option value="network">La mia rete</option><option value="list">Lista mirata</option></select>
+      <label>Area</label><select id="askGeo"><option>IT</option><option>Roma</option><option>Milano</option></select>
+      <div class="row" style="margin-top:10px"><button class="act" onclick="createAsk({hint:askHint.value,targeting:askTarget.value,geo:askGeo.value})">Pubblica</button></div>
+    </div>
+  </div>
+
+  <h2 class="sec">Le mie richieste</h2>
+  <div class="grid g2">${myAsks.length?myAsks.map(a=>askCard(a,true)).join(''):'<div class="card muted">Nessuna richiesta.</div>'}</div>
+
+  <h2 class="sec">Richieste aperte — suggerisci una coppia (prodotto + negozio)</h2>
+  <div class="grid g2">${openAsks.length?openAsks.map(a=>askCard(a,false)).join(''):'<div class="card muted">Nessuna richiesta aperta di altri utenti.</div>'}</div>
+
+  <h2 class="sec">I miei ordini</h2>
+  <div class="grid g2">${myOrders(u)}</div>
+
+  <h2 class="sec">Wallet & strumenti</h2>
+  <div class="card">${walletTools(u,'BUYER')}</div>`;
+}
+function myOrders(u){
+  const orders=state.txns.filter(t=>t.buyerId===u.id);
+  if(!orders.length) return '<div class="card muted">Nessun ordine.</div>';
+  return orders.map(t=>{
+    const p=state.products.find(x=>x.id===t.productId); const seller=state.users.find(x=>x.id===t.sellerId);
+    const chk=canReturn(t);
+    return `<div class="card"><h3>${t.id} <span class="pill ${t.status==='completed'?'ok':t.status==='returned'?'no':''}">${t.status}</span></h3>
+      <div class="sub">${p?p.name:t.productId} @ ${seller?seller.name:t.sellerId} · pagato in ${t.paymentClass}</div>
+      ${t.status==='completed'?(chk.ok?`<button class="ghost sm" onclick="returnTxn('${t.id}')">↩ Restituisci</button>`:`<div class="hint">Reso non disponibile: ${chk.why}</div>`):''}
+    </div>`;
+  }).join('');
+}
+function askCard(a,mine){
+  const sugs=state.suggestions.filter(s=>s.askId===a.id);
+  const list=sugs.map(s=>{
+    const seller=state.users.find(u=>u.id===s.sellerId);
+    const prod=state.products.find(p=>p.id===s.productId);
+    const listing=state.listings.find(l=>l.productId===s.productId&&l.sellerId===s.sellerId);
+    const suggester=state.users.find(u=>u.id===s.suggesterId);
+    return `<div class="kv"><span>${prod?prod.name:s.productId} @ <b>${seller?seller.name:s.sellerId}</b> · ${listing?EUR(listing.resalePrice):'-'} <span class="muted">(da ${suggester?suggester.name:''})</span></span>
+      ${mine&&a.status==='open'?`<button class="ghost sm" onclick="chooseSuggestion('${a.id}','${s.id}')">Scegli</button>`:''}</div>`;
+  }).join('')||'<div class="muted" style="font-size:12px">Ancora nessun suggerimento.</div>';
+
+  let actions='';
+  if(!mine && a.status==='open'){
+    // selettore coppia tra le vetrine (solo prodotti che l'utente "ha comprato" → ha contratto come seller, o semplificazione: tutte le vetrine)
+    const opts=state.listings.map(l=>{const se=state.users.find(u=>u.id===l.sellerId);const pr=state.products.find(p=>p.id===l.productId);return `<option value="${l.productId}|${l.sellerId}">${pr?pr.name:l.productId} @ ${se?se.name:l.sellerId} (${EUR(l.resalePrice)})</option>`}).join('');
+    actions=`<label>Suggerisci una coppia</label><select id="sg_${a.id}">${opts}</select>
+      <div class="row" style="margin-top:8px"><button class="act sm" onclick="(function(){var v=document.getElementById('sg_${a.id}').value.split('|');addSuggestion('${a.id}',v[0],v[1])})()">Invia suggerimento</button></div>`;
+  }
+  if(mine && a.status==='chosen'){
+    actions=`<div class="hint">Coppia scelta. Paga per completare e distribuire i reward.</div>
+      <div class="row"><button class="act sm" onclick="payAndConfirm('${a.id}','purchased')">Paga con purchased</button>
+      <button class="ghost sm" onclick="payAndConfirm('${a.id}','promo')">Paga con promo (fee)</button></div>`;
+  }
+  return `<div class="card"><h3>${a.id} <span class="pill ${a.status==='completed'?'ok':a.status==='chosen'?'wait':''}">${a.status}</span></h3>
+    <div class="sub">"${a.productHint}" · target ${a.targeting} · ${a.geo} · ${sugs.length} suggerimenti</div>
+    ${list}${actions}</div>`;
+}
+
+/* ---------- SELLER ---------- */
+function viewSeller(){
+  const u=curUser();
+  const lots=state.lots.filter(l=>l.qtyLeft>0);
+  const myContracts=state.contracts.filter(c=>c.sellerId===u.id);
+  const myListings=state.listings.filter(l=>l.sellerId===u.id);
+  const myCamps=state.campaigns.filter(c=>c.creators.some(cr=>cr.userId===u.id));
+  const sellListings = state.listings.filter(l=>l.sellerId===u.id);
+  return `
+  ${!u.verified.SELLER?'<div class="card" style="border-color:var(--red)"><b>⚠ Ruolo SELLER non verificato.</b> Invia documentazione per operare e prelevare.</div>':''}
+  <div class="grid g2">
+    <div class="card"><h3>🏭 Acquisto all'ingrosso (B2B)</h3><div class="sub">Paghi in <span class="pill purchased">purchased</span>; la <b>fee B2B la paga il producer</b>. Serve il prezzo B2B → base del reward.</div>
+      ${lots.length?`<label>Lotto</label><select id="lotSel">${lots.map(l=>{const p=state.products.find(x=>x.id===l.productId);return `<option value="${l.id}">${p?p.name:l.productId} · ${EUR(l.unitPrice)}/pz · disp.${l.qtyLeft} · MOQ ${l.moq}</option>`}).join('')}</select>
+      <label>Quantità</label><input id="lotQty" type="number" value="100">
+      <div id="b2bPrev" class="feeprev"></div>
+      <div class="row" style="margin-top:8px"><button class="act" onclick="buyLot(lotSel.value,lotQty.value)">Acquista lotto</button>
+      <button class="ghost sm" onclick="previewB2B()">Anteprima fee</button></div>`:'<div class="muted">Nessun lotto disponibile (creane uno dal pannello Producer).</div>'}
+    </div>
+    <div class="card"><h3>🛍️ Metti in vetrina</h3><div class="sub">Prezzo di rivendita &gt; prezzo B2B. Margine = rivendita − B2B.</div>
+      ${myContracts.length?`<label>Contratto B2B</label><select id="conSel">${myContracts.map(c=>{const p=state.products.find(x=>x.id===c.productId);return `<option value="${c.id}">${p?p.name:c.productId} · B2B ${EUR(c.agreedPrice)}/pz</option>`}).join('')}</select>
+      <label>Prezzo rivendita €</label><input id="resaleP" type="number" value="6">
+      <div class="row" style="margin-top:8px"><button class="act" onclick="createListing({contractId:conSel.value,resale:parseFloat(resaleP.value)})">Pubblica in vetrina</button></div>`:'<div class="muted">Prima acquista un lotto B2B.</div>'}
+    </div>
+  </div>
+
+  <div class="card"><h3>📣 Crea campagna marketing</h3><div class="sub">Budget in <span class="pill purchased">purchased</span>. Slider Reach↔Vendita. Sotto campagna il margine resta al seller; reward/cashback dal minipool.</div>
+    ${sellListings.length?`<div class="grid g3">
+      <div><label>Prodotto</label><select id="cmpProd">${[...new Set(sellListings.map(l=>l.productId))].map(pid=>{const p=state.products.find(x=>x.id===pid);return `<option value="${pid}">${p?p.name:pid}</option>`}).join('')}</select></div>
+      <div><label>Budget €</label><input id="cmpBudget" type="number" value="2000"></div>
+      <div><label>Area</label><select id="cmpGeo"><option>IT</option><option>Roma</option><option>Milano</option></select></div>
+    </div>
+    <div class="grid g3">
+      <div><label>Reach % del pool: <b id="rpVal">30</b>%</label><input id="cmpReach" type="range" min="0" max="100" value="30" oninput="rpVal.textContent=this.value;previewCampaign()"></div>
+      <div><label>Reach €/giorno</label><input id="cmpReachDay" type="number" value="12" oninput="previewCampaign()"></div>
+      <div><label>Whitelist seller (id, vuoto=tutti)</label><input id="cmpWl" placeholder="es. u3,u4"></div>
+    </div>
+    <div id="cmpPrev" class="feeprev"></div>
+    <div class="row" style="margin-top:8px"><button class="act" onclick="createCampaign({productId:cmpProd.value,budget:parseFloat(cmpBudget.value),geo:cmpGeo.value,reachPct:parseInt(cmpReach.value),reachDay:parseFloat(cmpReachDay.value),whitelist:cmpWl.value})">Lancia campagna</button>
+    <button class="ghost sm" onclick="previewCampaign()">Mini-simulatore</button></div>`:'<div class="muted">Metti prima un prodotto in vetrina.</div>'}
+  </div>
+
+  <div class="grid g2">
+    <div class="card"><h3>Le mie campagne</h3>${myCamps.length?myCamps.map(c=>{const p=state.products.find(x=>x.id===c.productId);return `<div class="kv"><span>${c.id} · ${p?p.name:c.productId} <span class="pill ${c.status==='active'?'ok':'wait'}">${c.status}</span></span><b>${CR(bal('adv:'+c.id))}</b></div><div class="muted" style="font-size:11px">Reach left ${CR(c.reachLeft)} · Sale left ${CR(c.saleLeft)} <span class="muted">· i view-credit escono dal Reach a ogni suggerimento</span></div>`}).join(''):'<div class="muted">Nessuna campagna.</div>'}</div>
+    <div class="card"><h3>Vendite & vetrina</h3>${myListings.map(l=>{const p=state.products.find(x=>x.id===l.productId);return `<div class="kv"><span>${p?p.name:l.productId} · margine ${CR(l.resalePrice-l.agreedPrice)}</span><b>${EUR(l.resalePrice)}</b></div>`}).join('')||'<div class="muted">Vetrina vuota.</div>'}
+      ${u.verified.SELLER?walletTools(u,'SELLER'):''}</div>
+  </div>`;
+}
+function previewB2B(){
+  const lot=state.lots.find(l=>l.id===document.getElementById('lotSel').value); if(!lot)return;
+  const qty=parseInt(document.getElementById('lotQty').value)||0;
+  const val=lot.unitPrice*qty; const fee=b2bFee(lot.producerId,val);
+  document.getElementById('b2bPrev').innerHTML=`Valore lotto <b>${CR(val)}</b> (${EUR(val)}) + trasporto ${CR(lot.transport)} · <b>fee B2B a carico producer: ${CR(fee)}</b> (scaglione annuo)`;
+}
+function previewCampaign(){
+  const budget=Math.round((parseFloat(document.getElementById('cmpBudget').value)||0)*100);
+  const reachPct=parseInt(document.getElementById('cmpReach').value)||0;
+  const reachDay=Math.round((parseFloat(document.getElementById('cmpReachDay').value)||0)*100);
+  const plan = (curUser().roles.PRODUCER&&ui.role==='PRODUCER')?'producer_std':'seller_std';
+  const cf=state.feeRules.campaign[plan];
+  const intake=Math.round(budget*cf.intake/100), reserve=Math.round(budget*cf.payout/100);
+  const net=budget-intake-reserve; const reachQ=Math.round(net*reachPct/100), saleQ=net-reachQ;
+  const days=reachDay?Math.floor(reachQ/reachDay):0;
+  // stima vendite: reward indicativo 25% di un B2B medio in vetrina
+  const list=state.listings.filter(l=>l.productId===document.getElementById('cmpProd').value)[0];
+  const reward=list?Math.round(list.agreedPrice*0.25):0;
+  const sales=reward?Math.floor(saleQ/reward):0;
+  let warn = (list && saleQ<reward)?' ⚠ pool vendita non copre nemmeno 1 reward':'';
+  document.getElementById('cmpPrev').innerHTML=`Fee Shaer ${CR(intake+reserve)} · minipool netto <b>${CR(net)}</b> → Reach ${CR(reachQ)} (≈${days} giorni) / Vendita ${CR(saleQ)} (≈<b>${sales}</b> vendite finanziate)${warn}`;
+}
+function simReachDay(cid){
+  const c=state.campaigns.find(x=>x.id===cid); if(!c||c.status!=='active')return;
+  if(c.reachLeft<c.reachPerDay){toast('Reach esaurito');c.status='paused';save();render();return;}
+  // paga i suggeritori del prodotto (qualsiasi Ask) — engagement, parti uguali
+  const sg=[...new Set(state.suggestions.filter(s=>s.productId===c.productId).map(s=>s.suggesterId))];
+  if(!sg.length){toast('Nessun suggeritore del prodotto ancora');return;}
+  const each=Math.floor(c.reachPerDay/sg.length); let rem=c.reachPerDay-each*sg.length;
+  const lines=[{account:'adv:'+c.id,class:'purchased',amount:-c.reachPerDay,note:'reach day'}];
+  sg.forEach((id,i)=>lines.push({account:acc(id,'BUYER'),class:'earned',amount:each+(i<rem?1:0),note:'reach engagement'}));
+  post({type:'reach',campaignId:cid,phase:'reach_day',lines});
+  c.reachLeft-=c.reachPerDay;
+  toast('Reach distribuito a '+sg.length+' suggeritori'); save(); render();
+}
+
+/* ---------- PRODUCER ---------- */
+function viewProducer(){
+  const u=curUser();
+  const myProd=state.products.filter(p=>p.producerId===u.id);
+  const myLots=state.lots.filter(l=>l.producerId===u.id);
+  return `
+  ${!u.verified.PRODUCER?'<div class="card" style="border-color:var(--red)"><b>⚠ Ruolo PRODUCER non verificato.</b> Invia documentazione aziendale.</div>':''}
+  <div class="tabs">
+    <button class="${ui.prodTab==='catalogo'?'on':''}" onclick="ui.prodTab='catalogo';render()">Catalogo & Lotti</button>
+    <button class="${ui.prodTab==='sim'?'on':''}" onclick="ui.prodTab='sim';render()">Simulatore finanziario</button>
+  </div>
+  ${ui.prodTab==='catalogo'?`
+  <div class="grid g2">
+    <div class="card"><h3>🆕 Crea prodotto (scheda conformità)</h3><div class="sub">Approvazione admin richiesta. Dati di etichetta di legge.</div>
+      <label>Nome</label><input id="pName" placeholder="NikeX Runner">
+      <div class="grid g2"><div><label>Categoria</label><select id="pCat">${state.categories.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div><div><label>EAN</label><input id="pEan" value="800123456789"></div></div>
+      <div class="grid g2"><div><label>Scadenza/durata</label><input id="pExp" value="n/a"></div><div><label>Provenienza</label><input id="pOri" value="Vietnam"></div></div>
+      <label>Stabilimento di produzione</label><input id="pFac" value="Plant #4">
+      <div class="row" style="margin-top:8px"><button class="act" onclick="createProduct({name:pName.value,cat:pCat.value,ean:pEan.value,expiry:pExp.value,origin:pOri.value,factory:pFac.value})">Crea prodotto</button></div>
+    </div>
+    <div class="card"><h3>📦 Pubblica lotto B2B</h3><div class="sub">Vendita all'ingrosso a seller/producer. Tu paghi la fee B2B alla chiusura.</div>
+      ${myProd.filter(p=>p.approved).length?`<label>Prodotto</label><select id="lpProd">${myProd.filter(p=>p.approved).map(p=>`<option value="${p.id}">${p.name}</option>`).join('')}</select>
+      <div class="grid g3"><div><label>Prezzo/pz €</label><input id="lpUnit" type="number" value="4.5"></div><div><label>Quantità</label><input id="lpQty" type="number" value="1000"></div><div><label>Trasporto € tot</label><input id="lpTr" type="number" value="50"></div></div>
+      <div class="grid g3"><div><label>MOQ</label><input id="lpMoq" type="number" value="50"></div><div><label>Max/ordine</label><input id="lpMax" type="number" value="500"></div><div><label>Area</label><select id="lpGeo"><option>IT</option><option>Roma</option></select></div></div>
+      <div class="row" style="margin-top:8px"><button class="act" onclick="createLot({productId:lpProd.value,unit:parseFloat(lpUnit.value),qty:parseInt(lpQty.value),transport:parseFloat(lpTr.value),moq:parseInt(lpMoq.value),maxOrder:parseInt(lpMax.value),geo:lpGeo.value})">Pubblica lotto</button></div>`:'<div class="muted">Crea e fai approvare un prodotto prima.</div>'}
+    </div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>I miei prodotti</h3>${myProd.map(p=>`<div class="kv"><span>${p.name} <span class="muted">${p.id}</span></span><span class="pill ${p.approved?'ok':'wait'}">${p.approved?'approvato':'in attesa'}</span></div>`).join('')||'<div class="muted">Nessun prodotto.</div>'}</div>
+    <div class="card"><h3>I miei lotti</h3>${myLots.map(l=>{const p=state.products.find(x=>x.id===l.productId);return `<div class="kv"><span>${p?p.name:l.productId} · ${EUR(l.unitPrice)}/pz</span><b>${l.qtyLeft}/${l.qty} pz</b></div>`}).join('')||'<div class="muted">Nessun lotto.</div>'}
+      ${u.verified.PRODUCER?walletTools(u,'PRODUCER'):''}</div>
+  </div>`:producerSim()}`;
+}
+function producerSim(){
+  return `<div class="card"><h3>📊 Simulatore finanziario (con vs senza campagna)</h3><div class="sub">Costi esterni in €; flussi piattaforma in crediti+€. Modifica e ricalcola.</div>
+    <div class="grid g3">
+      <div><label>BOM €/unità (materiali)</label><input id="sBom" type="number" value="1.8" oninput="calcSim()"></div>
+      <div><label>Altri COGS €/unità</label><input id="sCogs" type="number" value="0.9" oninput="calcSim()"></div>
+      <div><label>Prezzo B2B €/unità</label><input id="sPrice" type="number" value="4.5" oninput="calcSim()"></div>
+    </div>
+    <div class="grid g3">
+      <div><label>Unità vendute</label><input id="sUnits" type="number" value="1000" oninput="calcSim()"></div>
+      <div><label>Costi fissi €</label><input id="sFixed" type="number" value="800" oninput="calcSim()"></div>
+      <div><label>Spesa campagna €</label><input id="sCampaign" type="number" value="2000" oninput="calcSim()"></div>
+    </div>
+    <div class="grid g3"><div><label>Nuovi buyer acquisiti</label><input id="sCac" type="number" value="120" oninput="calcSim()"></div>
+      <div><label>Investimento € (per ROI)</label><input id="sInv" type="number" value="5000" oninput="calcSim()"></div></div>
+    <div id="simOut" class="grid g3" style="margin-top:14px"></div>
+  </div>`;
+}
+function calcSim(){
+  const g=id=>parseFloat(document.getElementById(id).value)||0;
+  const bom=g('sBom'),cogsX=g('sCogs'),price=g('sPrice'),units=g('sUnits'),fixed=g('sFixed'),camp=g('sCampaign'),cacN=g('sCac'),inv=g('sInv');
+  const cogs=(bom+cogsX);
+  const REV=price*units;
+  const COGS=cogs*units;
+  const GP=REV-COGS; const GPpct=REV?GP/REV*100:0;
+  // fee B2B stimata (scaglione iniziale 15% sul valore in crediti)
+  const feeB2B=REV* (0.15);
+  const NP=GP-fixed-camp-feeB2B;
+  const EBITDA=NP+fixed*0; // semplificato: NP prima di interessi/imposte/amm.
+  const contrib=price-cogs; const BEP=contrib>0?Math.ceil(fixed/contrib):'∞';
+  const ROI=inv?NP/inv*100:0;
+  const CAC=cacN?camp/cacN:0;
+  const CF=NP; // prepagato: cassa ≈ NP
+  const box=(l,v,s)=>`<div class="card stat"><div class="muted" style="font-size:11px">${l}</div><div class="big">${v}</div><div class="muted" style="font-size:11px">${s||''}</div></div>`;
+  document.getElementById('simOut').innerHTML=
+    box('REV',EUR(REV*100),'ricavo')+
+    box('COGS',EUR(COGS*100),'BOM+produzione')+
+    box('GP',EUR(GP*100),GPpct.toFixed(0)+'% margine lordo')+
+    box('Fee B2B',EUR(feeB2B*100),'stima 15%')+
+    box('NP',EUR(NP*100),'utile netto')+
+    box('EBITDA',EUR(EBITDA*100),'')+
+    box('BEP',BEP,'unità di pareggio')+
+    box('ROI',ROI.toFixed(0)+'%','')+
+    box('CAC',EUR(CAC*100),'per nuovo buyer');
+}
+
+/* ---------- shared wallet tools ---------- */
+function walletTools(u,role){
+  const w=wallet(u.id,role);
+  const roles=Object.keys(u.roles).filter(r=>u.roles[r]&&r!==role);
+  return `<div style="margin-top:12px;border-top:1px dashed var(--line);padding-top:10px">
+    <div class="row" style="justify-content:space-between"><b style="font-size:12px">Strumenti wallet ${role}</b></div>
+    ${(role==='SELLER'||role==='PRODUCER')?`<div class="row" style="margin-top:8px"><input id="wd_${role}" type="number" placeholder="crediti earned" style="max-width:160px"><button class="ghost sm" onclick="withdraw('${u.id}','${role}',parseInt(document.getElementById('wd_${role}').value))">Preleva (burn→€)</button><span class="muted" style="font-size:11px">prelevabile: ${CR(w.earned)}</span></div>`:''}
+    ${roles.length?`<div class="row" style="margin-top:8px">
+      <select id="tfc_${role}" style="max-width:120px"><option value="promo">promo</option><option value="purchased">purchased</option><option value="earned">earned</option></select>
+      <span>→</span><select id="tfr_${role}" style="max-width:120px">${roles.map(r=>`<option value="${r}">${r}</option>`).join('')}</select>
+      <input id="tfa_${role}" type="number" placeholder="crediti" style="max-width:120px">
+      <button class="ghost sm" onclick="transferInternal('${u.id}','${role}',document.getElementById('tfr_${role}').value,document.getElementById('tfc_${role}').value,parseInt(document.getElementById('tfa_${role}').value))">Trasferisci</button>
+    </div><div class="muted" style="font-size:11px">Transfer 1:1 tra propri ruoli verificati, classe preservata.</div>`:''}
+  </div>`;
+}
+
+/* ---------- ADMIN ---------- */
+function viewAdmin(){
+  return `<div class="card">
+    <div class="tabs">
+      ${['conti','account','approvazioni','categorie','fee','dati','analytics','notifiche'].map(t=>`<button class="${ui.adminTab===t?'on':''}" onclick="ui.adminTab='${t}';render()">${t}</button>`).join('')}
+    </div>
+    <div>${adminTab()}</div>
+  </div>`;
+}
+function adminTab(){
+  if(ui.adminTab==='account'){
+    const pend=state.users.filter(u=>u.status==='pending');
+    return `<h3>Account da approvare</h3>
+      ${pend.length?pend.map(u=>`<div class="kv"><span>${u.name} <span class="muted">${u.email||''} · ruoli ${Object.keys(u.roles).join('/')}${u.verifReq&&Object.keys(u.verifReq).length?' · verifica: '+Object.keys(u.verifReq).join('/'):''}</span></span><button class="act sm" onclick="approveAccount('${u.id}')">Approva</button></div>`).join(''):'<div class="muted">Nessun account in attesa.</div>'}
+      <h3 style="margin-top:14px">Account attivi</h3>
+      <table><tr><th>Nome</th><th>Ruoli</th><th>Verificati</th><th>Stato</th></tr>
+      ${state.users.filter(u=>u.status!=='pending').map(u=>`<tr><td>${u.name}</td><td>${Object.keys(u.roles).join(', ')}</td><td>${Object.keys(u.verified).filter(r=>u.verified[r]).join(', ')||'—'}</td><td><span class="pill ok">attivo</span></td></tr>`).join('')}
+      </table>`;
+  }
+  if(ui.adminTab==='categorie'){
+    return `<h3>Categorie prodotto</h3><div class="sub">Le categorie qui definite popolano il menu a tendina nella creazione prodotto del Producer.</div>
+      <div class="row"><input id="catNew" placeholder="Nuova categoria" style="max-width:240px"><button class="act sm" onclick="addCategory(document.getElementById('catNew').value)">Aggiungi</button></div>
+      <div style="margin-top:10px">${state.categories.map(c=>`<div class="kv"><span>${c}</span><button class="ghost sm" onclick="removeCategory('${c}')">Rimuovi</button></div>`).join('')||'<div class="muted">Nessuna categoria.</div>'}</div>`;
+  }
+  if(ui.adminTab==='conti'){
+    const covered=bal_all('purchased')+bal_all('earned'); // crediti coperti circolanti (solo wallet utenti)
+    const reserveCr=Math.round(state.euroReserve*100);
+    const solvent=reserveCr>=covered;
+    return `<h3>Conti di sistema</h3>
+      <table><tr><th>Conto</th><th>Saldo</th><th>Note</th></tr>
+      ${SYS.map(s=>`<tr><td>${s}</td><td><b>${CR(bal(s))}</b></td><td class="muted">${EUR(bal(s))}</td></tr>`).join('')}
+      ${state.campaigns.map(c=>`<tr><td>adv:${c.id}</td><td>${CR(bal('adv:'+c.id))}</td><td class="muted">minipool</td></tr>`).join('')}
+      </table>
+      <div class="card" style="margin-top:12px;background:${solvent?'#f0fdf4':'#fef2f2'};border-color:${solvent?'#bbf7d0':'#fecaca'}">
+        <b>Invariante di solvibilità:</b> riserva € ${CR(reserveCr)} ${solvent?'≥':'<'} crediti coperti circolanti ${CR(covered)} — <span class="pill ${solvent?'ok':'no'}">${solvent?'SOLVIBILE':'VIOLATA'}</span>
+        <div class="muted" style="font-size:11px;margin-top:4px">I crediti promo (${CR(bal_all('promo'))}) non sono coperti né prelevabili e non pretendono riserva.</div>
+      </div>`;
+  }
+  if(ui.adminTab==='approvazioni'){
+    const pend=state.products.filter(p=>!p.approved);
+    return `<h3>Prodotti da approvare</h3>${pend.length?pend.map(p=>{const pr=state.users.find(u=>u.id===p.producerId);return `<div class="kv"><span>${p.name} <span class="muted">${p.id} · ${pr?pr.name:''} · ${p.compliance.origin}/${p.compliance.factory}</span></span><button class="act sm" onclick="approveProduct('${p.id}')">Approva</button></div>`}).join(''):'<div class="muted">Nessun prodotto in attesa.</div>'}
+    <h3 style="margin-top:14px">Richieste prelievo (burn)</h3>${state.notifications.filter(n=>n.uid==='admin'&&/prelievo/.test(n.msg)).map(n=>`<div class="kv"><span>${n.msg}</span><span class="pill ok">bonificato</span></div>`).join('')||'<div class="muted">Nessuna richiesta.</div>'}`;
+  }
+  if(ui.adminTab==='fee'){
+    const f=state.feeRules;
+    return `<h3>fee_rules (configurabili)</h3>
+      <div class="sub">Gerarchia: override utente &gt; piano &gt; globale.</div>
+      <div class="grid g2">
+        <div class="card"><b>Split organico (sul margine) — C31</b>
+          <div class="kv"><span>Shaer (take)</span><b>${f.sale_take_pct}%</b></div>
+          <div class="kv"><span>Reward suggeritori</span><b>${f.reward_pct}%</b></div>
+          <div class="kv"><span>Cashback buyer (promo)</span><b>${f.cashback_pct}%</b></div>
+          <div class="kv"><span>Resta al seller</span><b>${f.seller_keep_pct}%</b></div></div>
+        <div class="card"><b>Fee uso promo buyer — C32</b>
+          <div class="kv"><span>Basic</span><b>${f.promo_use_fee.buyer_basic}%</b></div>
+          <div class="kv"><span>Silver</span><b>${f.promo_use_fee.buyer_silver}%</b></div>
+          <div class="kv"><span>Gold</span><b>${f.promo_use_fee.buyer_gold}%</b></div>
+          <b style="display:block;margin-top:10px">Fee B2B a scaglioni annui — C37</b>
+          <div class="kv"><span>≤ 500k€</span><b>15%</b></div>
+          <div class="kv"><span>500k–2m€</span><b>10%</b></div>
+          <div class="kv"><span>&gt; 2m€</span><b>3%</b></div></div>
+      </div>`;
+  }
+  if(ui.adminTab==='dati'){
+    return `<h3>Distribuzioni recenti (ledger)</h3>
+      <table><tr><th>ID</th><th>Tipo</th><th>Righe (account · classe · importo)</th></tr>
+      ${state.dists.slice(0,14).map(d=>`<tr><td>${d.id}</td><td>${d.type}</td><td class="muted" style="font-size:11px">${d.lines.map(l=>`${l.account.replace('user:','').replace('SHAER_','$')} <span class="pill ${l.class}">${l.class.slice(0,4)}</span> ${l.amount>0?'+':''}${l.amount}`).join(' · ')}</td></tr>`).join('')}
+      </table>`;
+  }
+  if(ui.adminTab==='analytics'){
+    return `<h3>Monitoraggio flusso prodotto</h3>
+      <div class="grid g3">
+        <div class="card"><b style="font-size:12px">Funnel Ask → vendita</b>${chartBar([
+          ['Ask',state.asks.length,'var(--blue)'],
+          ['Suggerimenti',state.suggestions.length,'var(--orange)'],
+          ['Scelte',state.asks.filter(a=>a.status!=='open').length,'var(--violet)'],
+          ['Vendite',state.txns.length,'var(--green)']])}</div>
+        <div class="card"><b style="font-size:12px">Ricavi Shaer per fonte (cr)</b>${chartBar(revenueBySource())}</div>
+        <div class="card"><b style="font-size:12px">Crediti circolanti per classe (cr)</b>${chartBar([
+          ['promo',bal_all('promo'),'var(--promo)'],
+          ['purchased',bal_all('purchased'),'var(--purchased)'],
+          ['earned',bal_all('earned'),'var(--earned)']])}</div>
+      </div>
+      <div class="card" style="margin-top:14px"><b style="font-size:12px">Crescita vendite cumulate</b>${chartLine(salesCumulative())}</div>`;
+  }
+  if(ui.adminTab==='notifiche'){
+    return `<h3>Notifiche</h3>${state.notifications.slice(0,20).map(n=>{const u=state.users.find(x=>x.id===n.uid);return `<div class="kv"><span>${n.msg}</span><span class="muted" style="font-size:11px">${u?u.name:n.uid}</span></div>`}).join('')||'<div class="muted">Nessuna notifica.</div>'}`;
+  }
+}
+function bal_all(klass){ // crediti in mano agli utenti (esclude conti di sistema)
+  let s=0;
+  for(const d of state.dists)for(const l of d.lines)
+    if(l.class===klass && l.account.startsWith('user:')) s+=l.amount;
+  return s;
+}
+function revenueBySource(){
+  const m={};
+  for(const d of state.dists)for(const l of d.lines)
+    if(l.account==='SHAER_REVENUE'&&l.amount>0){m[d.type]=(m[d.type]||0)+l.amount;}
+  const colors={b2b:'var(--amber)',cmp_fund:'var(--blue)',sale_organic:'var(--green)',promo_use_fee:'var(--violet)'};
+  return Object.keys(m).map(k=>[k.replace('_',' '),m[k],colors[k]||'var(--navy)']);
+}
+function salesCumulative(){
+  let c=0; const pts=[];
+  const sorted=[...state.dists].filter(d=>d.type==='sale_organic'||d.type==='sale_pay').reverse();
+  sorted.forEach((d,i)=>{c++;pts.push(c);});
+  return pts.length?pts:[0];
+}
+function approveProduct(id){const p=state.products.find(x=>x.id===id);if(p){p.approved=true;notify(p.producerId,'Prodotto '+p.name+' approvato');toast('Approvato');save();render();}}
+function addCategory(c){c=(c||'').trim();if(!c)return;if(state.categories.includes(c)){toast('Categoria già presente');return;}state.categories.push(c);toast('Categoria aggiunta');save();render();}
+function removeCategory(c){state.categories=state.categories.filter(x=>x!==c);toast('Categoria rimossa');save();render();}
+
+/* ---------- mini charts (SVG inline, no deps) ---------- */
+function chartBar(rows){
+  const max=Math.max(1,...rows.map(r=>r[1]));
+  const W=240,bh=22,gap=10,H=rows.length*(bh+gap)+6;
+  let y=4,b='';
+  rows.forEach(r=>{
+    const w=Math.max(2,(r[1]/max)*(W-90));
+    b+=`<text x="0" y="${y+15}" font-size="11" fill="#64748b">${r[0]}</text>
+        <rect x="78" y="${y}" width="${w}" height="${bh}" rx="5" fill="${r[2]}"></rect>
+        <text x="${82+w}" y="${y+15}" font-size="11" font-weight="700" fill="#0d1b2a">${Math.round(r[1]).toLocaleString('it-IT')}</text>`;
+    y+=bh+gap;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="margin-top:8px">${b}</svg>`;
+}
+function chartLine(vals){
+  const W=520,H=120,p=20,max=Math.max(1,...vals),n=vals.length;
+  const x=i=>p+(n<=1?0:i*(W-2*p)/(n-1)), y=v=>H-p-(v/max)*(H-2*p);
+  let d=vals.map((v,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="margin-top:8px">
+    <line class="axis" x1="${p}" y1="${H-p}" x2="${W-p}" y2="${H-p}"/>
+    <path d="${d}" fill="none" stroke="var(--orange)" stroke-width="2.5"/>
+    ${vals.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3" fill="var(--orange)"/>`).join('')}
+    <text x="${p}" y="14" font-size="11" fill="#64748b">vendite cumulate: ${vals[vals.length-1]}</text>
+  </svg>`;
+}
+
+/* ---------- export/import ---------- */
+function exportState(){const b=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='shaer_sim_v2.json';a.click();}
+function importState(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{state=JSON.parse(r.result);save();render();toast('Stato importato')}catch(err){toast('File non valido')}};r.readAsText(f);}
+
+/* ---------- bootstrap + seed demo data ---------- */
+function bootstrap(){
+  const saved=localStorage.getItem('shaer_v2');
+  if(saved){state=JSON.parse(saved);}
+  else{
+    state=seed(); ui.uid='u1';
+    // crea dati demo coerenti col motore
+    // 1) producer u5 crea prodotto + approvazione + lotto
+    ui.uid='u5'; ui.role='PRODUCER';
+    createProductSilent('u5','NikeX Runner','Calzature');
+    state.products[0].approved=true;
+    // lotto
+    state.lots.push({id:'LOT-001',productId:'PRD-001',producerId:'u5',unitPrice:450,qty:1000,qtyLeft:1000,transport:50,moq:50,maxOrder:500,geo:'IT'});
+    state.seq.lot=2;
+    // 2) crediti ai seller per comprare B2B
+    buyCreditsSilent('u4','SELLER',1000);
+    buyCreditsSilent('u3','SELLER',300);
+    buyCreditsSilent('u1','BUYER',50);
+    buyCreditsSilent('u2','BUYER',50);
+    // promo ai buyer (engagement)
+    mintPromo('u1',300,'registrazione+consigli'); mintPromo('u2',200,'registrazione');
+    // 3) seller u4 compra lotto, mette in vetrina
+    ui.uid='u4'; ui.role='SELLER';
+    buyLotSilent('u4','LOT-001',200);
+    state.listings.push({id:'L0',sellerId:'u4',productId:'PRD-001',contractId:state.contracts[0].id,resalePrice:600,agreedPrice:450});
+    ui.uid='u1'; ui.role='BUYER';
+    save();
+  }
+  if(!ui.uid) ui.uid='u1';
+  render();
+}
+function createProductSilent(pid,name,cat){const id='PRD-'+String(state.seq.prod++).padStart(3,'0');state.products.push({id,producerId:pid,name,category:cat,compliance:{expiry:'n/a',origin:'Vietnam',factory:'Plant #4',ean:'800123'},approved:false});}
+function buyCreditsSilent(uid,role,eur){const cr=Math.round(eur*100);post({type:'onramp',lines:[{account:'SHAER_TREASURY',class:'purchased',amount:-cr,note:'emissione'},{account:acc(uid,role),class:'purchased',amount:cr,note:'seed crediti'}]});state.euroReserve+=eur;}
+function buyLotSilent(seller,lotId,qty){const lot=state.lots.find(l=>l.id===lotId);const value=lot.unitPrice*qty;const fee=b2bFee(lot.producerId,value);post({type:'b2b',producerId:lot.producerId,lotValue:value,lines:[{account:acc(seller,'SELLER'),class:'purchased',amount:-(value+lot.transport),note:'B2B seed'},{account:acc(lot.producerId,'PRODUCER'),class:'earned',amount:(value+lot.transport),note:'B2B'},{account:acc(lot.producerId,'PRODUCER'),class:'earned',amount:-fee,note:'fee'},{account:'SHAER_REVENUE',class:'earned',amount:fee,note:'fee B2B'}]});lot.qtyLeft-=qty;const cid='CON-'+String(state.seq.con++).padStart(3,'0');state.contracts.push({id:cid,sellerId:seller,producerId:lot.producerId,productId:lot.productId,agreedPrice:lot.unitPrice,version:1,validFrom:Date.now(),qty});}
+
+bootstrap();
+</script>
+</body>
+</html>

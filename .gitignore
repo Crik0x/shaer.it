@@ -1,0 +1,11 @@
+# dipendenze e build
+node_modules/
+.next/
+.vercel/
+# segreti: mai nel repo
+.env*
+# binari e materiale di analisi: restano sul disco, non su git
+*.docx
+*.pptx
+*.pdf
+Analisi/

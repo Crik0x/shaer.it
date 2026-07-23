@@ -1,0 +1,90 @@
+#!/bin/sh
+# Controlli meccanici prima di ogni commit.
+#
+# Il principio: nota < lezione < regola < controllo meccanico < hook.
+# Cio' che finisce qui non ha piu' bisogno di essere ricordato da nessuno.
+#
+# Attivazione (una volta sola):
+#   git config core.hooksPath scripts/git-hooks
+
+RADICE=$(git rev-parse --show-toplevel)
+cd "$RADICE" || exit 1
+BLOCCO=0
+
+# ── 1 · Invariante del registro ────────────────────────────────────────────
+# Ogni T-NNN aperto nel REGISTRO deve comparire in TODO.md: un task non puo'
+# sparire da entrambi. Nasce da task realmente evaporati fra due commit.
+if [ -f memoria/REGISTRO.md ] && [ -f memoria/TODO.md ]; then
+  APERTI=$(grep -oE '^\| *(T-[0-9]{3}) *\|.*\| *(aperto|—|-)? *\| *$' memoria/REGISTRO.md 2>/dev/null \
+           | grep -oE 'T-[0-9]{3}')
+  for id in $APERTI; do
+    if ! grep -q "$id" memoria/TODO.md; then
+      echo "⛔ $id e' aperto nel REGISTRO ma non compare in TODO.md."
+      BLOCCO=1
+    fi
+  done
+fi
+
+# ── 2 · Budget del metodo ──────────────────────────────────────────────────
+# Il costo fisso non deve mangiarsi la finestra di contesto.
+if command -v node >/dev/null 2>&1 && [ -f scripts/costo.mjs ]; then
+  node scripts/costo.mjs --check || BLOCCO=1
+fi
+
+# ── 3 · Segreti ────────────────────────────────────────────────────────────
+# Un token o una password che entra nel sorgente ci resta anche dopo la
+# rimozione, perche' la storia git la conserva. Meglio non farcela entrare.
+# Il pattern cerca VALORI, non parole: «service_role» in prosa o «sk_test_...»
+# come placeholder di documentazione non sono segreti (falso positivo del
+# 23/07 alla prima installazione: bloccava due file di soli esempi).
+STAGED=$(git diff --cached --name-only --diff-filter=ACM)
+for f in $STAGED; do
+  [ -f "$f" ] || continue
+  case "$f" in scripts/git-hooks/*) continue ;; esac
+  if grep -qE '(ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk_(live|test)_[A-Za-z0-9]{16,}|eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.[A-Za-z0-9_-]{10,})' "$f" 2>/dev/null; then
+    echo "⛔ $f contiene qualcosa che somiglia a un segreto. Spostalo in .env."
+    BLOCCO=1
+  fi
+done
+
+# ── 4 · Tetti della memoria ────────────────────────────────────────────────
+# Avviso, non blocco: tre righe di troppo non devono sbarrare un commit urgente.
+for f in memoria/STATO.md memoria/TODO.md memoria/LEZIONI.md; do
+  [ -f "$f" ] || continue
+  BYTE=$(wc -c < "$f" | tr -d ' ')
+  if [ "$BYTE" -gt 15360 ]; then
+    echo "⚠️  $f e' $BYTE byte, oltre i 15 KB. Da potare."
+  fi
+done
+
+# ── 5 · Versionamento a mano ───────────────────────────────────────────────
+# Il versionamento a mano nel nome del file: la strada per ritrovarsi 14 copie,
+# alcune byte-identiche, e nessuna certezza su quale sia quella buona.
+for f in $STAGED; do
+  case "$f" in
+    *_v[0-9]*.*|*\ v[0-9]*.*|*" (1)"*|*" (2)"*)
+      echo "⚠️  $f ha una versione nel nome. Git versiona gia': serve davvero?"
+      ;;
+  esac
+done
+
+# ── 6 · Ogni task lascia un dossier ────────────────────────────────────────
+# L'analisi di un task non deve morire con la sessione: e' la spesa piu' cara
+# che si possa pagare due volte. Avviso e non blocco: un dossier mancante si
+# scrive in chiusura, non deve fermare un commit intermedio.
+if [ -f memoria/REGISTRO.md ] && [ -d dossier ]; then
+  CHIUSI=$(grep -oE '^\| *T-[0-9]{3} *\|[^|]*\|[^|]*\| *fatto *\|' memoria/REGISTRO.md 2>/dev/null \
+           | grep -oE 'T-[0-9]{3}')
+  for id in $CHIUSI; do
+    if ! grep -rqls "task:.*$id" dossier 2>/dev/null; then
+      echo "⚠️  $id risulta fatto ma non ha un dossier. L'analisi si perde."
+    fi
+  done
+fi
+
+if [ "$BLOCCO" -ne 0 ]; then
+  echo ""
+  echo "Commit fermato. Per forzare in emergenza: git commit --no-verify"
+  exit 1
+fi
+exit 0
