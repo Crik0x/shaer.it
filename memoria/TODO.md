@@ -1,6 +1,6 @@
 # TODO
 
-**Saldo: 5 aperti — 4 nuovi, 1 riportato**  ·  3 chiusi il 2026-07-24 (T-001, T-002, T-003)
+**Saldo: 4 aperti — 4 nuovi, 0 riportati**  ·  4 chiusi il 2026-07-24 (T-001, T-002, T-003, T-004)
 
 Stati: `[ ]` da fare · `[~]` scritto ma non provato · `[A]` provato e accettato ·
 `[x]` fatto con prova · `[>]` riportato (con `↻` e il suo dossier)
@@ -14,12 +14,6 @@ Solo la sezione «Per Nick» si sostituisce.
 
 ## Ora
 
-- [~] T-004 **Auth + dashboard scheletro** ↻1 — email+password + magic link via
-      `@supabase/ssr`, proxy di protezione, dashboard Server Components owner-scoped.
-      Codice completo, route provate (login 200, dashboard 307→login, /r intatto),
-      typecheck 0, revisore approvato. **Manca solo** il test auth verde: bloccato
-      da Confirm email ON → si sblocca con **T-008**. *Piano pronto e prova:
-      `dossier/T-004-auth-dashboard.md` §Stato e piano.*
 - [ ] T-005 **Generatore QR** — creazione QR con URL target, salvataggio,
       download PNG/SVG; il canvas di personalizzazione entra con `dynamic import`.
       *Precedente: `dossier/archivio/T-002` — l'insert di `qr_codes` passa da client
@@ -51,19 +45,22 @@ Solo la sezione «Per Nick» si sostituisce.
 - [x] T-003 **Redirect dinamico** · 2026-07-24 · `/r/[short_code]` → 302/404,
       scansione loggata (count 3), IP anonimizzato lato DB (`anonymize_ip`), 6/6 test,
       revisore approvato. Dossier: `archivio/T-003-redirect-dinamico.md`.
+- [x] T-004 **Auth + dashboard scheletro** · 2026-07-24 · email+password + magic
+      link via `@supabase/ssr`, proxy di protezione, dashboard Server Components
+      owner-scoped. Prova: test `lib/auth.test.ts` verde 1/1 (signup dà sessione,
+      utente nuovo vede count=0 su qr_codes/qr_scans → RLS, login ok); route login
+      200 / dashboard 307→login / `/r` 302; revisore approvato. Dossier:
+      `archivio/T-004-auth-dashboard.md`.
 
 ## Per Nick — comandi e azioni
 
 *(questa sezione si **sostituisce** a ogni avanzamento, non si accumula)*
 
-1. **Azione tua per chiudere T-004** — su Supabase (progetto `alrguvxspssjwfmtuhdw`):
-   Auth → Providers → Email → **disattiva «Confirm email»**. Poi lancia:
-   ```
-   cd apps/web && node --test --env-file=.env.local lib/auth.test.ts
-   ```
-   Verde = T-004 va a `[x]`. **Ricordati**: prima del lancio Confirm email torna ON (T-008).
-2. **Prova visiva** (dopo il toggle): apri `http://localhost:3000/login`, registrati,
-   vieni rediretto in `/dashboard`, «Esci» ti riporta al login.
+1. **T-004 chiuso** ✅ — test auth `lib/auth.test.ts` verde. Su Supabase ora Email
+   provider ON + Confirm email OFF (per dev). **Debito aperto T-008**: prima del
+   lancio Confirm email torna ON.
+2. **Prova visiva facoltativa**: `http://localhost:3000/login` → registrati →
+   vieni rediretto in `/dashboard` → «Esci» torna al login.
 3. **Prompt prossima sessione** (da dentro `D:\Desktop\Shaer.it`):
-   > /apertura. Prima sblocca **T-004** (Confirm email OFF + rilancio test → `[x]`),
-   > poi **T-005** (generatore QR). Chiudi con /chiusura.
+   > /apertura. Coda: **T-005** (generatore QR: URL target, salvataggio, download
+   > PNG/SVG; canvas in dynamic import). Chiudi con /chiusura.

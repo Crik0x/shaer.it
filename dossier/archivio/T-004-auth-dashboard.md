@@ -3,8 +3,8 @@ task: T-004
 tier: C
 titolo: Auth Supabase (email+password + magic link) e scheletro dashboard
 aree: [auth, sessione, rls, dashboard, multi-tenant, next16]
-stato: aperto        # aperto | chiuso
-riporti: 1           # ↻1: codice completo, test auth live bloccato da config Supabase
+stato: chiuso        # aperto | chiuso
+riporti: 1           # ↻1 poi chiuso 2026-07-24: test verde dopo Email ON + Confirm email OFF
 sessioni: [2026-07-24]
 ---
 

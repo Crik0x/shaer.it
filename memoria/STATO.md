@@ -7,14 +7,13 @@ riscrive. Tetto 3 KB.
 
 ## Dove siamo
 
-Il 24/07 (2ª sessione) è entrato **T-004**: autenticazione Supabase
-(email+password primario + magic link UX) via `@supabase/ssr`, con sessione nei
-cookie, proxy di refresh/protezione e scheletro dashboard a Server Components con
-indicatori owner-scoped. Codice completo, typecheck pulito, revisore approvato.
-Route provate a caldo. **Resta `[~]`** solo il test auth live: bloccato dal
-Confirm email **ON** sul progetto Supabase (429 al signup). T-004 è `↻1`.
-Prossimo: sbloccare T-004 (→ **T-008**, Confirm email OFF in dev + rilancio test),
-poi **T-005** (generatore QR).
+Il 24/07 (2ª sessione) è entrato **T-004**, chiuso con prova: autenticazione
+Supabase (email+password primario + magic link UX) via `@supabase/ssr`, sessione
+nei cookie, proxy di refresh/protezione e scheletro dashboard a Server Components
+con indicatori owner-scoped. Test `lib/auth.test.ts` **verde 1/1** (signup→sessione,
+RLS count=0, login), route provate, revisore approvato. Su Supabase dev: Email
+provider ON + Confirm email OFF (debito **T-008**: riattivare Confirm email prima
+del lancio). Prossimo: **T-005** (generatore QR).
 
 ## Cosa esiste
 
@@ -22,8 +21,8 @@ poi **T-005** (generatore QR).
   autenticato owner-scoped) · `supabase-browser.ts` · `proxy.ts` (Next 16: ex
   middleware — refresh sessione + protezione `/dashboard`, esclude `/r/*`) ·
   `app/(auth)/login/{page,login-form}.tsx` · `app/auth/{callback,signout}/route.ts`
-  · `app/dashboard/{layout,page}.tsx` · `lib/auth.test.ts` (integrazione, rosso
-  finché Confirm email è ON). Dep nuova: `@supabase/ssr`.
+  · `app/dashboard/{layout,page}.tsx` · `lib/auth.test.ts` (integrazione, verde
+  1/1). Dep nuova: `@supabase/ssr`.
 - **Redirect (T-003)**: `app/r/[short_code]/route.ts` · `lib/scan.ts` (+test 6/6)
   · `lib/supabase-public.ts` (client anon). Intatto.
 - **Schema (T-002)**: `supabase/migrations/20260724000001_qr_platform_initial.sql`
@@ -37,9 +36,9 @@ poi **T-005** (generatore QR).
 
 ## Cosa NON esiste ancora
 
-- Flusso auth **provato verde** (dipende da T-008). Generatore QR (T-005),
-  analytics UI (T-006), hardening grant/seed (T-007). Deploy Vercel, dominio
-  redirect (es. `qr.shaer.it`). Metadata `<title>` ancora "Create Next App".
+- Generatore QR (T-005), analytics UI (T-006), hardening grant/seed (T-007).
+  Deploy Vercel, dominio redirect (es. `qr.shaer.it`). Metadata `<title>` ancora
+  "Create Next App".
 
 ## Note operative
 
