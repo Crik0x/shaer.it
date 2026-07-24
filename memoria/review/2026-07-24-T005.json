@@ -1,0 +1,7 @@
+{
+  "task": "T-005",
+  "data": "2026-07-24",
+  "esito": "approvato",
+  "rilievi": [],
+  "sintesi": "Generatore QR: Server Action con getUser + owner_id dalla sessione + RLS with-check (doppia barriera), il QR codifica /r/{short_code} (regola 7), dettaglio owner-scoped (404 non leak), dynamic import per la foglia canvas, generatore short_code con rejection sampling. Prove: short-code 5/5, qr-create RLS 1/1, flusso UI end-to-end + redirect 302 del QR creato."
+}

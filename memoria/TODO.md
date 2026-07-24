@@ -1,6 +1,6 @@
 # TODO
 
-**Saldo: 4 aperti — 4 nuovi, 0 riportati**  ·  4 chiusi il 2026-07-24 (T-001, T-002, T-003, T-004)
+**Saldo: 3 aperti — 3 nuovi, 0 riportati**  ·  5 chiusi il 2026-07-24 (T-001…T-005)
 
 Stati: `[ ]` da fare · `[~]` scritto ma non provato · `[A]` provato e accettato ·
 `[x]` fatto con prova · `[>]` riportato (con `↻` e il suo dossier)
@@ -14,10 +14,6 @@ Solo la sezione «Per Nick» si sostituisce.
 
 ## Ora
 
-- [ ] T-005 **Generatore QR** — creazione QR con URL target, salvataggio,
-      download PNG/SVG; il canvas di personalizzazione entra con `dynamic import`.
-      *Precedente: `dossier/archivio/T-002` — l'insert di `qr_codes` passa da client
-      autenticato (owner_id lato server), mai anon; `short_code` immutabile via trigger.*
 - [ ] T-006 **Analytics prima lettura** — timeline scansioni per QR (derivata da
       `qr_scans`, mai contatori memorizzati), grafico Recharts in `dynamic import`.
       *Precedente: `dossier/archivio/T-003` — l'anon non legge `qr_scans` (RLS): leggere
@@ -51,16 +47,23 @@ Solo la sezione «Per Nick» si sostituisce.
       utente nuovo vede count=0 su qr_codes/qr_scans → RLS, login ok); route login
       200 / dashboard 307→login / `/r` 302; revisore approvato. Dossier:
       `archivio/T-004-auth-dashboard.md`.
+- [x] T-005 **Generatore QR** · 2026-07-24 · form crea (nome+URL) → Server Action
+      (`getUser`+owner_id+retry 23505) → dettaglio con QR di `/r/{short_code}`,
+      personalizzazione colori/logo (canvas in `dynamic import`), download PNG/SVG;
+      lista owner-scoped in dashboard. Prova: short-code 5/5, qr-create RLS 1/1,
+      flusso UI end-to-end (canvas 320² reso, `/r/vleDKAWd`→302, scansione contata),
+      revisore approvato. Dossier: `archivio/T-005-generatore-qr.md`.
 
 ## Per Nick — comandi e azioni
 
 *(questa sezione si **sostituisce** a ogni avanzamento, non si accumula)*
 
-1. **T-004 chiuso** ✅ — test auth `lib/auth.test.ts` verde. Su Supabase ora Email
-   provider ON + Confirm email OFF (per dev). **Debito aperto T-008**: prima del
-   lancio Confirm email torna ON.
-2. **Prova visiva facoltativa**: `http://localhost:3000/login` → registrati →
-   vieni rediretto in `/dashboard` → «Esci» torna al login.
-3. **Prompt prossima sessione** (da dentro `D:\Desktop\Shaer.it`):
-   > /apertura. Coda: **T-005** (generatore QR: URL target, salvataggio, download
-   > PNG/SVG; canvas in dynamic import). Chiudi con /chiusura.
+1. **T-004 e T-005 chiusi** ✅ — auth + generatore QR provati end-to-end. Puoi
+   provare tu: `http://localhost:3000/login` → registrati → «Crea QR» → personalizza
+   e scarica PNG/SVG. Utente di prova già creato: `t005ui.20260724@shaer.it`.
+2. **Nota deploy**: in produzione va impostata `NEXT_PUBLIC_SITE_URL` (oggi fallback
+   `localhost:3000`), altrimenti i QR codificano l'indirizzo locale.
+3. **Debito aperto T-008**: prima del lancio Confirm email torna ON su Supabase.
+4. **Prompt prossima sessione** (da dentro `D:\Desktop\Shaer.it`):
+   > /apertura. Coda: **T-006** (analytics: timeline scansioni per QR, derivata da
+   > `qr_scans`, grafico Recharts in dynamic import). Chiudi con /chiusura.
