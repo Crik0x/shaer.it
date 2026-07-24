@@ -3,38 +3,44 @@
 Fotografia: si **riscrive**, non si accumula. È il solo file di memoria che si
 riscrive. Tetto 3 KB.
 
-**Apertura:** _(la prima `/apertura` scriverà qui l'hash del commit)_
+**Apertura:** `e04fdb0`
 
 ## Dove siamo
 
-Il 23/07 il progetto è passato da «cartella di documenti» a cantiere: metodo 3Lab
-v1.2.0 installato e compilato, repo git nella radice, decisioni fondanti prese
-(D-001..D-004). Si costruisce **prima la QR Platform** (`MD/QR_PLATFORM.md`),
-prodotto autonomo; il dominio Shaer (`MD/SHAER_MASTER.md`) viene dopo e riuserà
-il motore QR/TXN. Nessuna riga di codice applicativo esiste ancora: il primo
-task è lo scaffold Next.js 16 (T-001).
+Esiste la prima riga di codice applicativo. Il 24/07 sono entrati **T-001, T-002,
+T-003**: app Next.js 16 scaffoldata in `apps/web/`, progetto Supabase reale con
+schema QR Platform (RLS multi-tenant, `SECURITY DEFINER`), e il **cuore** —
+redirect dinamico `/r/[short_code]` che risolve dal DB, logga la scansione (IP
+anonimizzato **lato DB**) e fa 302. Provato end-to-end. Prossimo: **T-004** (Auth
++ scheletro dashboard).
 
 ## Cosa esiste
 
-- `MD/QR_PLATFORM.md` — definizione prodotto QR Platform (era `SCANNER/project.md`)
-- `MD/SHAER_MASTER.md` — fonte canonica del dominio Shaer (crediti, TXN, recensioni)
-- `MD/SAAS_BUILD_PLAN_V1.md` — riferimento tecnico Next 16 + Supabase + Stripe
-- `Struttura/Schema/0001_initial_schema.sql` — schema Shaer smoke-tested, ma
-  codifica il **vecchio** modello crediti (audit A3 del Master) e riguarda Shaer,
-  **non** la QR Platform: non usarlo per T-002
-- `Struttura/Schema/Shaer_it_Simulatore_MVP*.html` — simulatori economici (storia)
-- `Archivio/2026-07-23/` — i doc superati assorbiti da SHAER_MASTER
+- `apps/web/` — Next 16.2.11, TS, Tailwind v4, App Router, shadcn/ui. `.env.local`
+  con URL + anon key Supabase (gitignored). Test via `node --test` (zero runner).
+- `apps/web/app/r/[short_code]/route.ts` — il redirect · `apps/web/lib/scan.ts`
+  (+ `scan.test.ts`, 6/6) · `apps/web/lib/supabase-public.ts` (client anon server).
+- `supabase/migrations/20260724000001_qr_platform_initial.sql` — schema live:
+  `qr_codes`, `qr_scans` (append-only, owner_id, RLS), trigger immutabilità
+  `short_code`, `resolve_qr` + `anonymize_ip` (definer).
+- DB Supabase `alrguvxspssjwfmtuhdw` con utente di test `seed@shaer.it` e QR
+  `demo123` → `https://example.com`.
+- `MD/QR_PLATFORM.md` (prodotto), `MD/SHAER_MASTER.md` (dominio Shaer, per dopo),
+  `MD/SAAS_BUILD_PLAN_V1.md` (riferimento tecnico).
+- `Struttura/Schema/0001_initial_schema.sql` — vecchio dominio Shaer, **non** per
+  la QR Platform.
 
 ## Cosa NON esiste ancora
 
-- L'app (`apps/web/`), il progetto Supabase dedicato, il remoto GitHub, il deploy
-  Vercel, il dominio tecnico di redirect (es. `qr.shaer.it`) — tutte cose che
-  nascono con T-001..T-003.
+- Auth utente + dashboard (T-004), generatore QR (T-005), analytics UI (T-006),
+  hardening grant/seed (T-007). Deploy Vercel, dominio redirect (es. `qr.shaer.it`).
 
 ## Note operative
 
-- Aprire la sessione **dentro** `D:\Desktop\Shaer.it`, non in una cartella che la
-  contiene, o il metodo resta spento.
-- Hook attivo via `git config core.hooksPath scripts/git-hooks` (già configurato).
-- Windows: negli script bash usare `$TEMP`, non `/tmp`; server dev da riusare,
-  mai due `next dev` sulla stessa cartella.
+- Aprire la sessione **dentro** `D:\Desktop\Shaer.it`.
+- Ogni modifica di schema nasce come file in `supabase/migrations/`, **mai** solo
+  dal SQL editor (T-002 era «fatto» ma lo schema non esisteva: buco carta↔realtà).
+- Con anon key pubblica il confine di sicurezza è il **DB** (RLS/definer), non
+  l'app — vedi `LEZIONI.md` L-001.
+- Server dev da riusare, mai due `next dev`. La cwd della tool Bash non persiste:
+  usare path assoluti. Hook attivo via `core.hooksPath scripts/git-hooks`.
