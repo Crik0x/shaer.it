@@ -15,3 +15,4 @@ comparire in `TODO.md`**. Un task non può sparire da entrambi.
 | T-005 | 2026-07-23 | Generatore QR con download PNG/SVG | | |
 | T-006 | 2026-07-23 | Analytics: timeline scansioni derivata, grafico Recharts | | |
 | T-007 | 2026-07-24 | Hardening: test grant anon + fixture supabase/seed.sql | | |
+| T-008 | 2026-07-24 | Riattivare Confirm email su Supabase prima del lancio (debito di T-004) | | |

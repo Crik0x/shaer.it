@@ -3,44 +3,55 @@
 Fotografia: si **riscrive**, non si accumula. È il solo file di memoria che si
 riscrive. Tetto 3 KB.
 
-**Apertura:** `e04fdb0`
+**Apertura:** `5357868`
 
 ## Dove siamo
 
-Esiste la prima riga di codice applicativo. Il 24/07 sono entrati **T-001, T-002,
-T-003**: app Next.js 16 scaffoldata in `apps/web/`, progetto Supabase reale con
-schema QR Platform (RLS multi-tenant, `SECURITY DEFINER`), e il **cuore** —
-redirect dinamico `/r/[short_code]` che risolve dal DB, logga la scansione (IP
-anonimizzato **lato DB**) e fa 302. Provato end-to-end. Prossimo: **T-004** (Auth
-+ scheletro dashboard).
+Il 24/07 (2ª sessione) è entrato **T-004**: autenticazione Supabase
+(email+password primario + magic link UX) via `@supabase/ssr`, con sessione nei
+cookie, proxy di refresh/protezione e scheletro dashboard a Server Components con
+indicatori owner-scoped. Codice completo, typecheck pulito, revisore approvato.
+Route provate a caldo. **Resta `[~]`** solo il test auth live: bloccato dal
+Confirm email **ON** sul progetto Supabase (429 al signup). T-004 è `↻1`.
+Prossimo: sbloccare T-004 (→ **T-008**, Confirm email OFF in dev + rilancio test),
+poi **T-005** (generatore QR).
 
 ## Cosa esiste
 
-- `apps/web/` — Next 16.2.11, TS, Tailwind v4, App Router, shadcn/ui. `.env.local`
-  con URL + anon key Supabase (gitignored). Test via `node --test` (zero runner).
-- `apps/web/app/r/[short_code]/route.ts` — il redirect · `apps/web/lib/scan.ts`
-  (+ `scan.test.ts`, 6/6) · `apps/web/lib/supabase-public.ts` (client anon server).
-- `supabase/migrations/20260724000001_qr_platform_initial.sql` — schema live:
-  `qr_codes`, `qr_scans` (append-only, owner_id, RLS), trigger immutabilità
+- **Auth + dashboard (T-004)**: `apps/web/lib/supabase-server.ts` (client
+  autenticato owner-scoped) · `supabase-browser.ts` · `proxy.ts` (Next 16: ex
+  middleware — refresh sessione + protezione `/dashboard`, esclude `/r/*`) ·
+  `app/(auth)/login/{page,login-form}.tsx` · `app/auth/{callback,signout}/route.ts`
+  · `app/dashboard/{layout,page}.tsx` · `lib/auth.test.ts` (integrazione, rosso
+  finché Confirm email è ON). Dep nuova: `@supabase/ssr`.
+- **Redirect (T-003)**: `app/r/[short_code]/route.ts` · `lib/scan.ts` (+test 6/6)
+  · `lib/supabase-public.ts` (client anon). Intatto.
+- **Schema (T-002)**: `supabase/migrations/20260724000001_qr_platform_initial.sql`
+  — `qr_codes`/`qr_scans` (append-only, owner_id, RLS), trigger immutabilità
   `short_code`, `resolve_qr` + `anonymize_ip` (definer).
-- DB Supabase `alrguvxspssjwfmtuhdw` con utente di test `seed@shaer.it` e QR
-  `demo123` → `https://example.com`.
-- `MD/QR_PLATFORM.md` (prodotto), `MD/SHAER_MASTER.md` (dominio Shaer, per dopo),
-  `MD/SAAS_BUILD_PLAN_V1.md` (riferimento tecnico).
-- `Struttura/Schema/0001_initial_schema.sql` — vecchio dominio Shaer, **non** per
-  la QR Platform.
+- DB Supabase `alrguvxspssjwfmtuhdw` con `seed@shaer.it` e QR `demo123` →
+  `https://example.com`.
+- `.claude/launch.json` — config dev server per `preview_start`.
+- `MD/QR_PLATFORM.md` (prodotto), `MD/SHAER_MASTER.md` (dominio, per dopo),
+  `MD/SAAS_BUILD_PLAN_V1.md` (riferimento).
 
 ## Cosa NON esiste ancora
 
-- Auth utente + dashboard (T-004), generatore QR (T-005), analytics UI (T-006),
-  hardening grant/seed (T-007). Deploy Vercel, dominio redirect (es. `qr.shaer.it`).
+- Flusso auth **provato verde** (dipende da T-008). Generatore QR (T-005),
+  analytics UI (T-006), hardening grant/seed (T-007). Deploy Vercel, dominio
+  redirect (es. `qr.shaer.it`). Metadata `<title>` ancora "Create Next App".
 
 ## Note operative
 
 - Aprire la sessione **dentro** `D:\Desktop\Shaer.it`.
-- Ogni modifica di schema nasce come file in `supabase/migrations/`, **mai** solo
-  dal SQL editor (T-002 era «fatto» ma lo schema non esisteva: buco carta↔realtà).
-- Con anon key pubblica il confine di sicurezza è il **DB** (RLS/definer), non
-  l'app — vedi `LEZIONI.md` L-001.
-- Server dev da riusare, mai due `next dev`. La cwd della tool Bash non persiste:
-  usare path assoluti. Hook attivo via `core.hooksPath scripts/git-hooks`.
+- **PRIMA DEL LANCIO**: riattivare Confirm email su Supabase (spento in dev per
+  T-004) → è **T-008**, non perderlo.
+- Dev server: `preview_start name=web` (usa `launch.json`, porta 3000). Un
+  `middleware.ts` non funziona in Next 16 — file `proxy.ts` (hook pre-commit §7
+  lo impone). Se cancelli un file sotto cache turbopack: `rm -rf .next/dev` +
+  restart.
+- Ogni modifica di schema nasce in `supabase/migrations/`, mai solo dal SQL editor.
+- Anon key pubblica → il confine è il **DB** (RLS/definer), non l'app (L-001).
+- Test auth: usare email con MX reali (`@shaer.it`), non `example.com` (L-002).
+- La cwd della tool Bash non persiste: usare path assoluti. Hook via
+  `core.hooksPath scripts/git-hooks`.

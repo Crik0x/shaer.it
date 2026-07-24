@@ -1,6 +1,6 @@
 # TODO
 
-**Saldo: 4 aperti — 4 nuovi, 0 riportati**  ·  3 chiusi il 2026-07-24 (T-001, T-002, T-003)
+**Saldo: 5 aperti — 4 nuovi, 1 riportato**  ·  3 chiusi il 2026-07-24 (T-001, T-002, T-003)
 
 Stati: `[ ]` da fare · `[~]` scritto ma non provato · `[A]` provato e accettato ·
 `[x]` fatto con prova · `[>]` riportato (con `↻` e il suo dossier)
@@ -14,10 +14,12 @@ Solo la sezione «Per Nick» si sostituisce.
 
 ## Ora
 
-- [ ] T-004 **Auth + dashboard scheletro** — Supabase Auth (magic link), layout
-      dashboard con Server Components, indicatori vuoti (QR creati, scansioni).
-      *Precedente: `dossier/archivio/T-002` e `T-003` — il seed su `auth.users` è
-      bloccato dalla FK (signup anon non basta); RLS owner-scoped già verificata.*
+- [~] T-004 **Auth + dashboard scheletro** ↻1 — email+password + magic link via
+      `@supabase/ssr`, proxy di protezione, dashboard Server Components owner-scoped.
+      Codice completo, route provate (login 200, dashboard 307→login, /r intatto),
+      typecheck 0, revisore approvato. **Manca solo** il test auth verde: bloccato
+      da Confirm email ON → si sblocca con **T-008**. *Piano pronto e prova:
+      `dossier/T-004-auth-dashboard.md` §Stato e piano.*
 - [ ] T-005 **Generatore QR** — creazione QR con URL target, salvataggio,
       download PNG/SVG; il canvas di personalizzazione entra con `dynamic import`.
       *Precedente: `dossier/archivio/T-002` — l'insert di `qr_codes` passa da client
@@ -31,6 +33,10 @@ Solo la sezione «Per Nick» si sostituisce.
       anon-accessibile fuori da una whitelist (oggi solo `resolve_qr`, `anonymize_ip`)
       — meccanizza L-001; (2) `supabase/seed.sql` versionato con CTE utente-dev + QR
       di prova, così il seed non si ri-deriva. *Nasce dai pattern di `dossier/PATTERN.md`.*
+- [ ] T-008 **Riattivare Confirm email prima del lancio** — debito di T-004: in dev
+      è OFF su Supabase (Auth → Providers → Email, progetto `alrguvxspssjwfmtuhdw`)
+      per far girare il test signup. Prima del lancio va ON, e il flusso va
+      riprovato con conferma via email reale. *Contesto: `dossier/T-004-auth-dashboard.md`.*
 
 ## Riportati
 
@@ -50,9 +56,14 @@ Solo la sezione «Per Nick» si sostituisce.
 
 *(questa sezione si **sostituisce** a ogni avanzamento, non si accumula)*
 
-1. **Utente di test già creato** (`seed@shaer.it`) + QR `demo123` → `https://example.com`.
-   Puoi cancellarli quando vuoi; T-007 li renderà una fixture riusabile.
-2. **Prompt prossima sessione** (copia-incolla, da dentro `D:\Desktop\Shaer.it`):
-   > /apertura. Coda: **T-004** (Supabase Auth magic link + scheletro dashboard con
-   > Server Components). Se c'è tempo, **T-007** (test dei grant anon + `seed.sql`).
-   > Chiudi con /chiusura.
+1. **Azione tua per chiudere T-004** — su Supabase (progetto `alrguvxspssjwfmtuhdw`):
+   Auth → Providers → Email → **disattiva «Confirm email»**. Poi lancia:
+   ```
+   cd apps/web && node --test --env-file=.env.local lib/auth.test.ts
+   ```
+   Verde = T-004 va a `[x]`. **Ricordati**: prima del lancio Confirm email torna ON (T-008).
+2. **Prova visiva** (dopo il toggle): apri `http://localhost:3000/login`, registrati,
+   vieni rediretto in `/dashboard`, «Esci» ti riporta al login.
+3. **Prompt prossima sessione** (da dentro `D:\Desktop\Shaer.it`):
+   > /apertura. Prima sblocca **T-004** (Confirm email OFF + rilancio test → `[x]`),
+   > poi **T-005** (generatore QR). Chiudi con /chiusura.

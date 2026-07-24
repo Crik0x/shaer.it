@@ -1,24 +1,8 @@
 {
+  "task": "T-004",
   "data": "2026-07-24",
-  "sessione": "T-001, T-002, T-003",
-  "round": [
-    {
-      "esito": "respinto",
-      "rilievo_bloccante": {
-        "gravita": 4,
-        "file": "supabase/migrations/20260724000001_qr_platform_initial.sql",
-        "problema": "anonimizzazione IP solo lato app (lib/scan.ts); resolve_qr (SECURITY DEFINER, grant anon) scriveva p_ip grezzo -> bypassabile chiamando la RPC direttamente con anon key pubblica.",
-        "rimedio": "spostare l'anonimizzazione nel DB dentro resolve_qr."
-      }
-    },
-    {
-      "esito": "approvato",
-      "rilievi": [],
-      "sintesi": "Fix corretto: anonymize_ip (immutable, search_path='') sposta la garanzia nel DB dentro resolve_qr; chiuso il bypass via anon key. Nessun nuovo rilievo.",
-      "residuo_non_bloccante": {
-        "gravita": 2,
-        "nota": "x-forwarded-for spoofabile senza proxy fidato -> nota di deploy (su Vercel affidabile)."
-      }
-    }
-  ]
+  "esito": "approvato",
+  "rilievi": [],
+  "sintesi": "T-004 rispetta il confine DB/RLS (getUser, non getSession), il redirect /r/* resta anonimo e intatto (matcher lo esclude), il pattern @supabase/ssr getAll/setAll è corretto per Server Component e proxy, il test auth+RLS è reale non narrativo, token del design system rispettati, statistiche derivate non memorizzate.",
+  "note_non_bloccanti": "STATO.md e costo.csv modificati nel working tree insieme al codice: sono le modifiche di /apertura, previste nel commit di chiusura."
 }
