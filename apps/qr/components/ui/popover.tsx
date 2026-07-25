@@ -25,9 +25,9 @@ function PopoverContent({
       <PopoverPrimitive.Positioner side={side} align={align} sideOffset={sideOffset}>
         <PopoverPrimitive.Popup
           className={cn(
-            "z-50 origin-[var(--transform-origin)] rounded-2xl border border-border bg-popover p-5 text-popover-foreground shadow-xl outline-none",
-            // Movimento lento e fluido, nessuno scatto: entra ed esce in scala+opacità.
-            "transition-[transform,opacity] duration-300 ease-out",
+            "z-50 origin-[var(--transform-origin)] rounded-2xl border border-border/70 bg-popover/90 p-5 text-popover-foreground shadow-[0_18px_54px_rgba(28,20,16,0.18)] backdrop-blur-xl outline-none",
+            // Movimento fluido con leggero rimbalzo, come i popover Arkés.
+            "transition-[transform,opacity] duration-300 ease-[cubic-bezier(.34,1.56,.64,1)]",
             "data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
             "data-[ending-style]:scale-95 data-[ending-style]:opacity-0",
             className,

@@ -69,6 +69,41 @@ Rimuovere i token pastello `--brand-blue/--brand-orange` che avevo aggiunto.
 Verifica: build pulita + browser (visivo, serve pane composito — L: rAF fermo se
 il pane non è a schermo, provato in questa sessione).
 
+## Stato esecuzione — 2026-07-26 (slice 2)
+Direzione confermata da Nick: albero rete **opzione A** = visivo + interazioni con
+**metriche QR** (scansioni/rete/profondità), **niente motore MLM** (payout/ritenuta/
+livelli/bonus/matrix restano dominio Arkés, esclusi di proposito).
+
+**Fatto e provato:**
+- **Build sbloccato** `[x]` — il deploy Vercel era rosso per type-error
+  `simulator-chart.tsx:39`: annotazione `(v:number)` in conflitto con `ValueType`
+  di Recharts. Corretto (`formatter={(value) => [value as number, "Totale"]}`).
+  Prova: `npx tsc --noEmit` exit 0.
+- **Estetica luxury** `[~]` (visivo, lo prova Nick) — `layout.tsx`: Cormorant+Jost
+  via `next/font/google` (0 dep nuove). `globals.css`: palette crema/oro/rosa +
+  `--flow:#e8821e`, via i token pastello (grep `brand-(blue|orange)` vuoto).
+  Restyle: header (Link+ink/oro), hero (serif+corsivo oro), simulatore (oro/rosa),
+  chart (oro), popover (vetro+rimbalzo).
+- **Albero rete** `[x]` logica / `[~]` visivo — motore puro
+  `lib/rete.ts` (children, subtreeScans rollup, subtreeSize, maxDepth, inFocus,
+  litEdges spina dorsale, layout DFS, nodeRadius/Color, nodeStats) portato fedele
+  da arkes `rt*`. Test `lib/rete.test.ts` **8/8 verde**. Componente
+  `network-tree.tsx` (client, SVG JSX, linea tracciata `flow`, pulse, focus,
+  hover-popover, zoom+pan pointer, aggiungi-nodo) + `network-tree.module.css`
+  (stile `rt-*` con token globali, animazioni dietro `prefers-reduced-motion`).
+  Entra in `page.tsx` via `network-tree-panel.tsx` (`dynamic ssr:false`, regola 9).
+  Seed rete dimostrativa 11 nodi.
+- Lint pulito (0), tsc 0.
+
+**NON verificato (onestà §6):** il rendering visivo e le animazioni. Il server
+dev dell'altra chat tiene il lock `next dev` sulla stessa cartella (PID 41576):
+non ho potuto aprire un mio preview. HMR di quel server ha comunque già i file →
+`localhost:3000` mostra il nuovo look. Prova visiva = Nick (browser o deploy).
+
+**Resta (slice 3+):** verifica visiva di Nick; poi dashboard aggregata reale,
+profilo/@handle, campagne (serve decisione schema). Eventuale: pannello analisi
+laterale del nodo selezionato (oggi solo hover-popover), gap-filling.
+
 ## Attrito noto
 - Verifica visiva: il Browser pane non compositava → rAF fermo → animazioni non
   osservabili headless. La prova visiva la dà Nick su `localhost:3000` o il deploy.

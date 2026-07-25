@@ -19,7 +19,7 @@ const SimulatorChart = dynamic(() => import("./simulator-chart"), {
   loading: () => <div className="h-[150px] rounded-xl bg-muted/40" />,
 });
 
-type Accent = "orange" | "blue";
+type Accent = "gold" | "rose";
 type Campaign = {
   key: string;
   label: string;
@@ -30,9 +30,9 @@ type Campaign = {
 };
 
 const CAMPAIGNS: Campaign[] = [
-  { key: "vendite", label: "Vendite", hint: "Campagna A", accent: "orange", icon: ShoppingBag, weight: 45 },
-  { key: "registrazioni", label: "Registrazioni", hint: "Campagna B", accent: "blue", icon: UserPlus, weight: 35 },
-  { key: "contatti", label: "Contatti WhatsApp", hint: "Campagna C", accent: "orange", icon: MessageCircle, weight: 20 },
+  { key: "vendite", label: "Vendite", hint: "Campagna A", accent: "gold", icon: ShoppingBag, weight: 45 },
+  { key: "registrazioni", label: "Registrazioni", hint: "Campagna B", accent: "rose", icon: UserPlus, weight: 35 },
+  { key: "contatti", label: "Contatti WhatsApp", hint: "Campagna C", accent: "gold", icon: MessageCircle, weight: 20 },
 ];
 
 const SEED: Record<string, number> = { vendite: 128, registrazioni: 74, contatti: 41 };
@@ -84,13 +84,13 @@ function AnimatedNumber({ value, className }: { value: number; className?: strin
 }
 
 const ACCENT: Record<Accent, { chip: string; ring: string }> = {
-  orange: {
-    chip: "bg-brand-orange-soft text-brand-orange",
-    ring: "ring-brand-orange/40",
+  gold: {
+    chip: "bg-gold-light text-gold-dark",
+    ring: "ring-gold/50",
   },
-  blue: {
-    chip: "bg-brand-blue-soft text-brand-blue",
-    ring: "ring-brand-blue/40",
+  rose: {
+    chip: "bg-rose/12 text-rose",
+    ring: "ring-rose/40",
   },
 };
 
@@ -127,7 +127,7 @@ export function Simulator() {
       {/* Alone pastello dietro la scheda */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -inset-8 -z-10 rounded-[2.5rem] bg-[radial-gradient(60%_60%_at_30%_0%,var(--brand-blue-soft),transparent_70%),radial-gradient(50%_50%_at_90%_20%,var(--brand-orange-soft),transparent_70%)] blur-xl"
+        className="pointer-events-none absolute -inset-8 -z-10 rounded-[2.5rem] bg-[radial-gradient(60%_60%_at_30%_0%,var(--gold-soft),transparent_70%),radial-gradient(50%_50%_at_90%_20%,var(--rose-soft),transparent_70%)] blur-xl"
       />
 
       <div className="rounded-3xl border border-border/70 bg-card/80 p-5 shadow-sm backdrop-blur-sm sm:p-6">
@@ -135,8 +135,8 @@ export function Simulator() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="relative flex size-2.5">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand-blue/60" />
-              <span className="relative inline-flex size-2.5 rounded-full bg-brand-blue" />
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-gold/60" />
+              <span className="relative inline-flex size-2.5 rounded-full bg-gold" />
             </span>
             <span className="text-xs font-medium text-muted-foreground">Dashboard live</span>
           </div>
@@ -151,7 +151,7 @@ export function Simulator() {
               value={total}
               className="text-4xl font-semibold tracking-tight tabular-nums text-foreground"
             />
-            <span className="mb-1.5 inline-flex items-center gap-1 rounded-full bg-brand-orange-soft px-2 py-0.5 text-xs font-medium text-brand-orange">
+            <span className="mb-1.5 inline-flex items-center gap-1 rounded-full bg-gold-light px-2 py-0.5 text-xs font-medium text-gold-dark">
               <TrendingUp className="size-3" /> live
             </span>
           </div>
@@ -190,7 +190,7 @@ export function Simulator() {
         <button
           type="button"
           onClick={scan}
-          className="group mt-5 flex w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-brand-blue to-brand-orange px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 ease-out hover:shadow-md active:scale-[0.98]"
+          className="group mt-5 flex w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-ink to-gold-dark px-5 py-3 text-sm font-semibold text-cream shadow-sm transition-all duration-300 ease-out hover:shadow-md active:scale-[0.98]"
         >
           <span key={pulse} className="flex size-5 items-center justify-center">
             <QrCode className="size-5 transition-transform duration-500 ease-out group-hover:rotate-6" />

@@ -7,9 +7,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-jost);
+  --font-display: var(--font-cormorant);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-cormorant);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -39,12 +40,15 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --color-brand-blue: var(--brand-blue);
-  --color-brand-blue-soft: var(--brand-blue-soft);
-  --color-brand-blue-foreground: var(--brand-blue-foreground);
-  --color-brand-orange: var(--brand-orange);
-  --color-brand-orange-soft: var(--brand-orange-soft);
-  --color-brand-orange-foreground: var(--brand-orange-foreground);
+  /* Palette luxury Arkés — brand shaer.it invariato (T-011) */
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-dark: var(--gold-dark);
+  --color-rose: var(--rose);
+  --color-cream: var(--cream);
+  --color-warm: var(--warm);
+  --color-ink: var(--ink);
+  --color-flow: var(--flow);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -55,84 +59,86 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --brand-blue: oklch(0.64 0.12 248);
-  --brand-blue-soft: oklch(0.955 0.028 248);
-  --brand-blue-foreground: oklch(0.985 0 0);
-  --brand-orange: oklch(0.72 0.145 55);
-  --brand-orange-soft: oklch(0.965 0.04 65);
-  --brand-orange-foreground: oklch(0.28 0.03 55);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Sorgenti Arkés (arkes.html) */
+  --gold: #c9a87c;
+  --gold-light: #f5ecd8;
+  --gold-dark: #8a6a3a;
+  --gold-soft: color-mix(in srgb, var(--gold) 28%, transparent);
+  --rose: #c4687a;
+  --rose-soft: color-mix(in srgb, var(--rose) 18%, transparent);
+  --cream: #faf7f4;
+  --warm: #f5ede8;
+  --ink: #1c1410;
+  --flow: #e8821e; /* linea produttiva tracciata */
+  --border-strong: color-mix(in srgb, var(--gold) 40%, transparent);
+
+  --background: #faf7f4;
+  --foreground: #2a2218;
+  --card: #ffffff;
+  --card-foreground: #2a2218;
+  --popover: #ffffff;
+  --popover-foreground: #2a2218;
+  --primary: #1c1410;
+  --primary-foreground: #faf7f4;
+  --secondary: #f5ede8;
+  --secondary-foreground: #2a2218;
+  --muted: #f5ede8;
+  --muted-foreground: #7a6a5a;
+  --accent: #f5ecd8;
+  --accent-foreground: #8a6a3a;
+  --destructive: #b03030;
+  --border: rgba(201, 168, 124, 0.22);
+  --input: rgba(201, 168, 124, 0.4);
+  --ring: #c9a87c;
+  --chart-1: #c9a87c;
+  --chart-2: #e8821e;
+  --chart-3: #c4687a;
+  --chart-4: #8a6a3a;
+  --chart-5: #b0a090;
+  --radius: 0.875rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #2a2218;
+  --sidebar-primary: #1c1410;
+  --sidebar-primary-foreground: #faf7f4;
+  --sidebar-accent: #f5ecd8;
+  --sidebar-accent-foreground: #8a6a3a;
+  --sidebar-border: rgba(201, 168, 124, 0.22);
+  --sidebar-ring: #c9a87c;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --brand-blue: oklch(0.72 0.115 248);
-  --brand-blue-soft: oklch(0.30 0.05 248);
-  --brand-blue-foreground: oklch(0.985 0 0);
-  --brand-orange: oklch(0.78 0.14 58);
-  --brand-orange-soft: oklch(0.32 0.06 55);
-  --brand-orange-foreground: oklch(0.985 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Variante scura luxury: fondo inchiostro, oro invariato come accento */
+  --background: #161009;
+  --foreground: #f2e9dd;
+  --card: #201810;
+  --card-foreground: #f2e9dd;
+  --popover: #201810;
+  --popover-foreground: #f2e9dd;
+  --primary: #c9a87c;
+  --primary-foreground: #1c1410;
+  --secondary: #2a2015;
+  --secondary-foreground: #f2e9dd;
+  --muted: #2a2015;
+  --muted-foreground: #b0a090;
+  --accent: #2a2015;
+  --accent-foreground: #e8cfa0;
+  --destructive: #d15a4a;
+  --border: rgba(201, 168, 124, 0.18);
+  --input: rgba(201, 168, 124, 0.28);
+  --ring: #c9a87c;
+  --chart-1: #c9a87c;
+  --chart-2: #e8821e;
+  --chart-3: #c4687a;
+  --chart-4: #d8b98a;
+  --chart-5: #b0a090;
+  --sidebar: #201810;
+  --sidebar-foreground: #f2e9dd;
+  --sidebar-primary: #c9a87c;
+  --sidebar-primary-foreground: #1c1410;
+  --sidebar-accent: #2a2015;
+  --sidebar-accent-foreground: #e8cfa0;
+  --sidebar-border: rgba(201, 168, 124, 0.18);
+  --sidebar-ring: #c9a87c;
 }
 
 @layer base {
@@ -144,5 +150,12 @@
   }
   html {
     @apply font-sans;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-cormorant), Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
   }
 }
