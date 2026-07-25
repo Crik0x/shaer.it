@@ -46,6 +46,6 @@ export async function proxy(request: NextRequest) {
 export const config = {
   // Tutto tranne asset statici e il redirect pubblico /r/*.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|r/|env-check|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|r/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
