@@ -16,5 +16,5 @@
 -- D'ora in poi la regola è: per rendere privata una funzione si revoca da
 -- `anon` (ed eventualmente `authenticated`), non da `public`.
 
-revoke execute on function public.qr_scans_timeline(text, text) from anon;
-revoke execute on function public.security_anon_surface()        from anon;
+
+
