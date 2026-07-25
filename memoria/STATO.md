@@ -3,7 +3,7 @@
 Fotografia: si **riscrive**, non si accumula. È il solo file di memoria che si
 riscrive. Tetto 3 KB.
 
-**Apertura:** `3b781cf`
+**Apertura:** `fb0ae6e`
 
 ## Dove siamo
 

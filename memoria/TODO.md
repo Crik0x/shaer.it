@@ -1,6 +1,6 @@
 # TODO
 
-**Saldo: 1 aperto — T-008 (`↻1`, bloccato su azione dashboard di Nick)**  ·  9 chiusi (T-001…T-005 il 2026-07-24; T-006, T-007, T-009, T-010 il 2026-07-25)
+**Saldo: 2 aperti — T-008 (`↻1`, bloccato su azione dashboard di Nick), T-011 (nuovo, slice 1 scritto)**  ·  9 chiusi (T-001…T-005 il 2026-07-24; T-006, T-007, T-009, T-010 il 2026-07-25)
 
 Stati: `[ ]` da fare · `[~]` scritto ma non provato · `[A]` provato e accettato ·
 `[x]` fatto con prova · `[>]` riportato (con `↻` e il suo dossier)
@@ -20,6 +20,17 @@ Solo la sezione «Per Nick» si sostituisce.
       riprovato con conferma via email reale. **Codice pronto** (`auth/callback/route.ts`
       fa lo scambio `code`→sessione): manca solo la config dashboard, azione di Nick.
       *Contesto: `dossier/T-004-auth-dashboard.md`.*
+
+- [~] T-011 **Landing + dashboard-simulatore** `slice 1 di N` — home pubblica su `/`
+      (era scaffold Next): header con login/signup in **popover**, hero, simulatore.
+      **Primo build (pastello shadcn) RESPINTO da Nick** («freddo, poco pro»).
+      **Nuova direzione**: reskin all'**estetica luxury Arkés** — brand shaer.it
+      invariato, palette crema/oro/rosa + Cormorant/Jost, e **import dell'albero
+      rete con linea tracciata** da `arkes.html`. Mappa completa righe→React e
+      sequenza già pronte in **`dossier/T-011-landing-simulatore.md`**.
+      Codice del primo build non committato (si ri-stila, non si butta).
+      *Prossimo: eseguire la sequenza del dossier. Poi dashboard aggregata reale,
+      profilo/@handle, campagne (serve decisione schema).*
 
 ## Riportati
 
