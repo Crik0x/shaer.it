@@ -9,7 +9,7 @@ il `distillatore` cerca precedenti simili. Un dossier chiuso va in `archivio/` �
 
 ## I tre livelli
 
-| | Quando | Cosa contiene |
+| | Quando | Cosa contiene | 
 |---|---|---|
 | **S · snella** | un file, nessuna decisione, nessuna incognita — *«cambia il colore del pulsante»* | solo gli **attriti**: cosa ha impedito che filasse liscio, e come si è risolto. Nessun attrito → tre righe e basta: l'assenza di attrito è essa stessa un dato |
 | **M · media** | più file, o una scelta tecnica da fare | attriti **+** le decisioni prese e le alternative scartate |
