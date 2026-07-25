@@ -1,0 +1,8 @@
+{
+  "task": "T-006",
+  "data": "2026-07-25",
+  "ancora": "9f819c4",
+  "esito": "approvato",
+  "rilievi": [],
+  "sintesi": "Timeline scansioni derivata correttamente da qr_scans via RPC SECURITY DEFINER owner-scoped, grant solo authenticated, nessuna dynamic SQL, client boundary e design tokens rispettati, prove presenti."
+}

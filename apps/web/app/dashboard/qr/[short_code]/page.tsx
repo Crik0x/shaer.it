@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 
 import { serverSupabase } from "@/lib/supabase-server";
 import { redirectUrl } from "@/lib/qr";
+import { buildSeries } from "@/lib/qr-timeline";
 import { QrPanel } from "./qr-panel";
+import { AnalyticsPanel } from "./analytics-panel";
 
 export default async function QrDetailPage({
   params,
@@ -24,6 +26,16 @@ export default async function QrDetailPage({
   if (!qr) notFound();
 
   const url = redirectUrl(qr.short_code);
+
+  // Timeline scansioni: aggregata lato DB (RPC owner-scoped), mai contatori
+  // memorizzati. Si leggono entrambe le granularità: il toggle client alterna
+  // due dataset già pronti, senza round-trip aggiuntivi.
+  const [{ data: dayRows }, { data: hourRows }] = await Promise.all([
+    supabase.rpc("qr_scans_timeline", { p_short_code: qr.short_code, p_bucket: "day" }),
+    supabase.rpc("qr_scans_timeline", { p_short_code: qr.short_code, p_bucket: "hour" }),
+  ]);
+  const daySeries = buildSeries(dayRows ?? [], "day");
+  const hourSeries = buildSeries(hourRows ?? [], "hour");
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -49,6 +61,8 @@ export default async function QrDetailPage({
       </div>
 
       <QrPanel content={url} filename={qr.short_code} />
+
+      <AnalyticsPanel day={daySeries} hour={hourSeries} />
     </div>
   );
 }

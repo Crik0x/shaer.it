@@ -20,7 +20,7 @@ Gerarchia della forza: nota < lezione < regola < controllo meccanico < hook.
 
 | id | nata | lezione | conversione | sessioni |
 |---|---|---|---|---|
-| L-001 | 2026-07-24 | Con anon key pubblica il confine di sicurezza è il **DB**, non l'app: ogni garanzia (mascheratura IP, permessi) va imposta dentro la funzione `SECURITY DEFINER`/RLS, mai solo lato applicazione | `→ regola` — target: test sui grant anon (**T-007**) | 2 |
-| L-002 | 2026-07-24 | Supabase valida l'email al signup con **MX reali**: domini di test senza MX (`example.com`, `test.shaer.it`) → 400 `email_address_invalid`. Nei test auth usare un dominio con MX veri (es. `shaer.it`) | `→ regola` — target: helper/fixture email di test in **T-007** | 1 |
+| L-001 | 2026-07-24 | Con anon key pubblica il confine di sicurezza è il **DB**, non l'app: ogni garanzia (mascheratura IP, permessi) va imposta dentro la funzione `SECURITY DEFINER`/RLS, mai solo lato applicazione | `→ regola` — target: test sui grant anon (**T-007**) | **3 ⚠** |
+| L-002 | 2026-07-24 | Supabase valida l'email al signup con **MX reali**: domini di test senza MX (`example.com`, `test.shaer.it`) → 400 `email_address_invalid`. Nei test auth usare un dominio con MX veri (es. `shaer.it`) | `→ regola` — target: helper/fixture email di test in **T-007** | 2 |
 
 ## Ritirate

@@ -13,6 +13,6 @@ comparire in `TODO.md`**. Un task non può sparire da entrambi.
 | T-003 | 2026-07-23 | Redirect dinamico /r/[short_code] con log scansione append-only | fatto 2026-07-24 | `/r/demo123`→302, `/r/x`→404, scans count 3, IP anon lato DB, 6/6 test, revisore ok · `archivio/T-003` |
 | T-004 | 2026-07-23 | Auth magic link + scheletro dashboard | fatto 2026-07-24 | test `lib/auth.test.ts` verde 1/1 (signup→sessione, RLS count=0, login ok) · login 200/dashboard 307→login/`/r` 302 · revisore ok · `archivio/T-004` |
 | T-005 | 2026-07-23 | Generatore QR con download PNG/SVG | fatto 2026-07-24 | short-code 5/5 · qr-create RLS 1/1 · flusso UI end-to-end (canvas reso, `/r/vleDKAWd`→302, scan contata) · revisore ok · `archivio/T-005` |
-| T-006 | 2026-07-23 | Analytics: timeline scansioni derivata, grafico Recharts | | |
+| T-006 | 2026-07-25 | Analytics: timeline scansioni derivata (RPC owner-scoped), grafico Recharts | chiuso | integ 1/1 + puro 2/2 + tsc + visiva DOM (QR ukqz91uh, 3 scan, toggle) + revisore ok |
 | T-007 | 2026-07-24 | Hardening: test grant anon + fixture supabase/seed.sql | | |
 | T-008 | 2026-07-24 | Riattivare Confirm email su Supabase prima del lancio (debito di T-004) | | |
