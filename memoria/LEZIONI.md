@@ -22,5 +22,6 @@ Gerarchia della forza: nota < lezione < regola < controllo meccanico < hook.
 | id | nata | lezione | conversione | sessioni |
 |---|---|---|---|---|
 | L-002 | 2026-07-24 | Supabase valida l'email al signup con **MX reali**: domini di test senza MX (`example.com`, `test.shaer.it`) → 400 `email_address_invalid`. Nei test auth usare un dominio con MX veri (es. `shaer.it`) | `→ regola` — target mai realizzato (helper email in T-007) | **3 ⚠ — decisione dovuta** |
+| L-003 | 2026-07-25 | Un client Supabase browser creato **nel corpo** di un componente `'use client'` gira anche nel **prerender di build**: se l'env `NEXT_PUBLIC_*` manca al build, una pagina statica (es. `/login`) fa fallire `next build`. Creare il client **dentro gli handler/effetti**, mai nel corpo | `→ regola` — provata col build senza env (`mv .env.local` → verde) | 0 |
 
 ## Ritirate

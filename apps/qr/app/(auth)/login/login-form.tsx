@@ -17,13 +17,14 @@ export function LoginForm() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const supabase = browserSupabase();
-
   async function onPassword(e: React.FormEvent) {
     e.preventDefault();
     setPending(true);
     setError(null);
     setMessage(null);
+    // Creato qui, non nel corpo: il client browser non deve girare durante il
+    // prerender di build (altrimenti /login esplode se manca l'env — L-003).
+    const supabase = browserSupabase();
     const fn =
       mode === "login"
         ? supabase.auth.signInWithPassword({ email, password })
@@ -47,6 +48,7 @@ export function LoginForm() {
     setPending(true);
     setError(null);
     setMessage(null);
+    const supabase = browserSupabase();
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
