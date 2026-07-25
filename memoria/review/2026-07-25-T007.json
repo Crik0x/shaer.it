@@ -1,0 +1,25 @@
+{
+  "data": "2026-07-25",
+  "sessione": "T-007 hardening — grant anon + seed",
+  "ancora": "bfcfbe3",
+  "iterazioni": [
+    {
+      "esito": "respinto",
+      "nota": "seed.sql v1 committava una password reale (dev-Password-123) per il progetto Supabase condiviso — gravità 5"
+    },
+    {
+      "esito": "approvato",
+      "rilievi": [
+        {
+          "gravita": 1,
+          "file": "supabase/seed.sql",
+          "riga": 21,
+          "problema": "Il seed riscritto non è ancora stato eseguito contro il DB reale (rischio-schema eliminato con la rimozione dell'insert su auth.users/identities)",
+          "regola": "Regola d'oro 1 — verificare la realtà prima della carta",
+          "rimedio": "Eseguirlo una volta per avere la prova → tracciato come T-009"
+        }
+      ],
+      "sintesi": "Blocco g5 chiuso; g2 sul seed risolti (delete rimosso → append-only, rischio-schema eliminato); coverage del controllo grant estesa a procedure e tabelle partizionate. resolve_qr/anonymize_ip intatti (regola d'oro 7)."
+    }
+  ]
+}

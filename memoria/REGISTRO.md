@@ -14,5 +14,6 @@ comparire in `TODO.md`**. Un task non può sparire da entrambi.
 | T-004 | 2026-07-23 | Auth magic link + scheletro dashboard | fatto 2026-07-24 | test `lib/auth.test.ts` verde 1/1 (signup→sessione, RLS count=0, login ok) · login 200/dashboard 307→login/`/r` 302 · revisore ok · `archivio/T-004` |
 | T-005 | 2026-07-23 | Generatore QR con download PNG/SVG | fatto 2026-07-24 | short-code 5/5 · qr-create RLS 1/1 · flusso UI end-to-end (canvas reso, `/r/vleDKAWd`→302, scan contata) · revisore ok · `archivio/T-005` |
 | T-006 | 2026-07-25 | Analytics: timeline scansioni derivata (RPC owner-scoped), grafico Recharts | chiuso | integ 1/1 + puro 2/2 + tsc + visiva DOM (QR ukqz91uh, 3 scan, toggle) + revisore ok |
-| T-007 | 2026-07-24 | Hardening: test grant anon + fixture supabase/seed.sql | | |
+| T-007 | 2026-07-24 | Hardening: test grant anon (meccanizza L-001) | fatto 2026-07-25 | `grants.test.ts` integ **1/1 verde sul DB reale** (migr. 0002+0003 applicate) · superficie anon = `{resolve_qr, anonymize_ip}` · ha scoperto e corretto `qr_scans_timeline` anon-eseguibile (default-grant Supabase) · revisore approvato (respinto→ok dopo tolta password da seed) · `archivio/T-007` |
 | T-008 | 2026-07-24 | Riattivare Confirm email su Supabase prima del lancio (debito di T-004) | | |
+| T-009 | 2026-07-25 | Eseguire e provare la fixture dev supabase/seed.sql (scorporo T-007) | aperto `[~]` | seed scritto+approvato revisore (g1: manca prova esecuzione) · `dossier/T-009` |
