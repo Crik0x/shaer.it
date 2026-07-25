@@ -86,7 +86,7 @@ fi
 # Next 16 ha rinominato Middleware → Proxy. Un middleware.ts a root non viene
 # registrato e rompe il dev server con un 500 "Could not parse module
 # middleware.ts" (attrito reale di T-004). Il file giusto e' proxy.ts.
-for f in apps/web/middleware.ts apps/web/middleware.js apps/web/src/middleware.ts apps/web/src/middleware.js; do
+for f in apps/qr/middleware.ts apps/qr/middleware.js apps/qr/src/middleware.ts apps/qr/src/middleware.js; do
   if [ -f "$f" ]; then
     echo "⛔ $f: in Next 16 il Middleware si chiama Proxy. Rinomina in proxy.ts (export 'proxy')."
     BLOCCO=1

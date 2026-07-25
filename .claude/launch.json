@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "web",
+      "name": "qr",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "cwd": "apps/web",
+      "cwd": "apps/qr",
       "port": 3000
     }
   ]

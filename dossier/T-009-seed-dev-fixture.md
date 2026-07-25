@@ -19,7 +19,7 @@ eseguito.
 ## Accertato
 - Il file è scorporato da T-007 (respinto per la password in chiaro, poi
   ridisegnato). Non crea più l'utente in `auth.users`: lo **cerca per email**.
-- `apps/web/lib/*` non dipende dalla fixture: la sua assenza non rompe nulla.
+- `apps/qr/lib/*` non dipende dalla fixture: la sua assenza non rompe nulla.
 
 ## Decisioni
 - **L'utente-dev NON si crea nel seed** (niente password in git). Scartato il

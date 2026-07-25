@@ -41,7 +41,7 @@ scritto+approvato non girato), **T-008** (Confirm email ON pre-lancio).
   `lib/supabase-public.ts` (anon). **Schema (T-002)**: migr. `qr_codes`/`qr_scans`
   (owner_id, RLS, trigger immut., `resolve_qr`+`anonymize_ip`).
 - DB Supabase `alrguvxspssjwfmtuhdw`. Dev: Email provider ON + Confirm email OFF.
-- `.claude/launch.json` — dev via `preview_start name=web` (:3000).
+- `.claude/launch.json` — dev via `preview_start name=qr` (:3000). App in `apps/qr/`.
 
 ## Cosa NON esiste ancora
 

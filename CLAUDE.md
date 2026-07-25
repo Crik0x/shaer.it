@@ -47,7 +47,7 @@ Le prime sei valgono ovunque. Dalla settima in poi sono di questo progetto.
 
 ## Stack (non cambiare senza chiedere)
 
-- **Next.js 16 App Router** (TypeScript) in `apps/web/`, deploy Vercel
+- **Next.js 16 App Router** (TypeScript) in `apps/qr/`, deploy Vercel
 - **Supabase**: PostgreSQL + Auth + Storage + RLS (progetto dedicato, non quello di damascati)
 - **Tailwind CSS + shadcn/ui** · qrcode (generazione) · ZXing (scanner) · Recharts
 - Fonti di verità di dominio in `MD/`: `QR_PLATFORM.md` (il prodotto che si

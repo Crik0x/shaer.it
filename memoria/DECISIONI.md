@@ -39,3 +39,17 @@ Cache Components/PPR quando servirà. Supera lo stack `SHAER_MASTER §1.3`.
 Perché: un solo runtime, lo stack già padroneggiato su damascati, i file più recenti
 (SAAS_BUILD_PLAN dell'11/07) convergono lì.
 Alternativa scartata: Next 14 PWA + Node/Express + FCM — due deploy da mantenere.
+
+## D-005 · 2026-07-25 · Monorepo ecosistema Shaer, Damascati fuori — [LOCKED]
+Contesto: QR Platform è il primo prodotto; Shaer MVP la userà come motore; Damascati
+la integrerà. Decisione: **una repo** per l'ecosistema Shaer — `apps/qr` (rinominata
+da `apps/web`), domani `apps/shaer`, con `packages/` per il codice condiviso (tipi DB,
+core QR, design system) e **lo stesso Supabase**. **Damascati resta la sua repo + il
+suo Supabase** e consuma il QR come *servizio* (dominio redirect / API). Vercel: **un
+project per app**, Root Directory su `apps/<nome>`, GitHub-connected (repo privata).
+Perché: integrare è un confine di rete, non di codice — solo l'accoppiamento forte
+(Shaer MVP↔motore: stessi tipi/RLS) giustifica la stessa repo; modifiche atomiche
+motore+consumatore, un solo `packages/` come verità.
+Alternativa scartata: (a) tutto in una repo incluso Damascati — accoppia due SaaS con
+DB diversi; (b) polyrepo QR/Shaer separati — sync cross-repo e pacchetto da pubblicare
+per ogni modifica trasversale, puro attrito per un dev solo.
