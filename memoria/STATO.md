@@ -7,16 +7,21 @@ riscrive. Tetto 3 KB.
 
 ## Dove siamo
 
-Il 25/07 (4ª sessione) è entrato **T-007** (hardening grant anon), chiuso con
-prova: un test verde vincola la superficie anon a `{resolve_qr, anonymize_ip}` e
-**ha trovato una violazione vera** — `qr_scans_timeline` era anon-eseguibile
-nonostante T-006 la dicesse «solo authenticated» (default-grant Supabase;
-corretto con migr. 0003). L'app fa il giro completo (registrazione → QR →
-redirect `/r/{short_code}` → timeline). Prossimo: **T-009** (provare `seed.sql`,
-scritto+approvato non girato), **T-008** (Confirm email ON pre-lancio).
+Il 25/07 (4ª/5ª sessione) sono entrati **T-007** (hardening grant anon, test
+verde che ha colto una violazione vera), **T-009** (seed dev provato: 3 QR + 6
+scansioni) e **T-010** (deploy produzione). **L'app è ONLINE su
+`https://qr.shaer.it`** (Vercel, repo `github.com/Crik0x/shaer.it`, `apps/qr`):
+login 200, giro completo registrazione → QR → redirect `/r/{short_code}` →
+timeline. Prossimo: **T-008** (Confirm email ON + `qr.shaer.it/auth/callback` nei
+Redirect URLs Supabase, pre-lancio) e lo **scan reale dal telefono**.
 
 ## Cosa esiste
 
+- **Produzione (T-010)**: `apps/qr` online → `https://qr.shaer.it` (Vercel, repo
+  `github.com/Crik0x/shaer.it`, Root Dir `apps/qr`, 3 env `NEXT_PUBLIC_*` su
+  Production). Fix build L-003 (client browser negli handler).
+- **Fixture dev (T-009)**: `supabase/seed.sql` provato (3 QR + 6 scansioni),
+  utente-dev fuori da git, idempotente.
 - **Hardening grant anon (T-007)**: migr. `…02` (RPC `security_anon_surface`
   introspette `pg_catalog`: funzioni anon-EXECUTE non-trigger + tabelle senza RLS;
   grant solo `authenticated`) + `…03` (revoke anon da `qr_scans_timeline` +
@@ -28,15 +33,12 @@ scritto+approvato non girato), **T-008** (Confirm email ON pre-lancio).
   `.pure.test.ts` 2/2 + `.test.ts` integ 1/1 · `qr/[short_code]/{analytics-panel`
   toggle Giorno/Ora`, analytics-chart` Recharts dynamic import`}`. Dep: `recharts`.
   Fetch server 2 granularità, toggle client.
-- **Generatore QR (T-005)**: `lib/short-code.ts` (base62, test 5/5) · `lib/qr.ts`
-  (`redirectUrl`) · `lib/qr-create.test.ts` (RLS 1/1) · `qr/actions.ts` (Server
-  Action `createQr`: getUser+owner_id+retry 23505) · `qr/new/*` · `qr/[short_code]/`
-  {`page` owner-scoped, `qr-panel`+`qr-canvas` designer/download} ·
-  `dashboard/page.tsx` (lista). Dep: `qrcode`.
-- **Auth + dashboard (T-004)**: `lib/supabase-server.ts` (owner-scoped) ·
-  `supabase-browser.ts` · `proxy.ts` (protegge `/dashboard`, esclude `/r/*`) ·
-  `app/(auth)/login/*` · `app/auth/{callback,signout}/route.ts` · `lib/auth.test.ts`
-  1/1. Dep: `@supabase/ssr`.
+- **Generatore QR (T-005)**: `lib/short-code.ts` (base62, 5/5) · `lib/qr.ts` ·
+  `qr/actions.ts` (`createQr`: owner_id+retry 23505) · `qr/new`, `qr/[short_code]`
+  (designer/download) · `dashboard` (lista). Dep: `qrcode`. RLS test 1/1.
+- **Auth + dashboard (T-004)**: `supabase-server.ts`/`-browser.ts` · `proxy.ts`
+  (protegge `/dashboard`, esclude `/r/*`) · `login`, `auth/{callback,signout}` ·
+  `auth.test.ts` 1/1. Dep: `@supabase/ssr`.
 - **Redirect (T-003)**: `app/r/[short_code]/route.ts` · `lib/scan.ts` (test 6/6) ·
   `lib/supabase-public.ts` (anon). **Schema (T-002)**: migr. `qr_codes`/`qr_scans`
   (owner_id, RLS, trigger immut., `resolve_qr`+`anonymize_ip`).
@@ -45,11 +47,11 @@ scritto+approvato non girato), **T-008** (Confirm email ON pre-lancio).
 
 ## Cosa NON esiste ancora
 
-- Fixture dev provata (T-009: `seed.sql` scritto+approvato, non ancora eseguito —
-  crea utente-dev fuori da git, aggancia QR/scansioni per email), riattivare
-  Confirm email pre-lancio (T-008). Gap-filling bucket vuoti timeline e timezone
-  locale (oggi UTC) rimandati. Deploy Vercel, dominio redirect (es. `qr.shaer.it`)
-  e `NEXT_PUBLIC_SITE_URL` in prod. Metadata `<title>` ancora "Create Next App".
+- Confirm email ON pre-lancio + `qr.shaer.it/auth/callback` nei Redirect URLs
+  Supabase (T-008). Scan reale end-to-end dal telefono su `qr.shaer.it` (atteso
+  ok, non ancora provato). Gap-filling bucket vuoti timeline e timezone locale
+  (oggi UTC) rimandati. Shaer MVP (`apps/shaer`) e `packages/` condivisi: futuri
+  (D-005). Preview deploy: le env sono anche su Preview, ok.
 
 ## Note operative
 
@@ -57,9 +59,8 @@ scritto+approvato non girato), **T-008** (Confirm email ON pre-lancio).
 - Test su Supabase: email con **MX reali** (`@shaer.it`), non `example.com` (L-002).
   Anon key pubblica → confine = **DB** (RLS/definer), non l'app (L-001, ora
   testata da `grants.test.ts`).
-- **Supabase default-privilege**: ogni funzione in `public` nasce con EXECUTE ad
-  `anon`; `revoke … from public` NON lo toglie. Per renderla privata si revoca da
-  `anon`. `grants.test.ts` lo intercetta.
+- **Supabase default-privilege**: funzione `public` nasce EXECUTE ad `anon`; per
+  renderla privata si revoca da `anon`, non da `public` (L-001, `grants.test.ts`).
 - Next 16: `proxy.ts`, non `middleware.ts` (hook §7). Cache turbopack sporca →
   `rm -rf .next/dev` + restart. `dynamic(ssr:false)` solo in Client Component.
 - Schema: nasce in `supabase/migrations/`, applicato da Nick nel SQL editor.

@@ -3,10 +3,14 @@ task: T-009
 tier: M
 titolo: Eseguire e provare la fixture dev (supabase/seed.sql)
 aree: [seed, fixture, supabase, sviluppo]
-stato: aperto
+stato: chiuso
 riporti: 0
 sessioni: [2026-07-25]
 ---
+
+> **Chiuso 2026-07-25 con prova**: Nick ha eseguito il seed sul progetto dev →
+> **3 QR + 6 scansioni** confermati. Idempotenza per costruzione (ON CONFLICT +
+> NOT EXISTS, nessun delete). Utente-dev creato fuori da git, agganciato per email.
 
 # T-009 · Seed dev — eseguire e provare
 
