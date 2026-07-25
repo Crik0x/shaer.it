@@ -21,7 +21,11 @@ Gerarchia della forza: nota < lezione < regola < controllo meccanico < hook.
 
 | id | nata | lezione | conversione | sessioni |
 |---|---|---|---|---|
-| L-002 | 2026-07-24 | Supabase valida l'email al signup con **MX reali**: domini di test senza MX (`example.com`, `test.shaer.it`) → 400 `email_address_invalid`. Nei test auth usare un dominio con MX veri (es. `shaer.it`) | `→ regola` — target mai realizzato (helper email in T-007) | **3 ⚠ — decisione dovuta** |
 | L-003 | 2026-07-25 | Client Supabase browser creato **nel corpo** di un `'use client'` gira nel **prerender di build**: se manca l'env `NEXT_PUBLIC_*`, una pagina statica (`/login`) fa fallire `next build`. Crearlo **negli handler/effetti** | `→ regola` — provata (build senza env → verde) | 0 |
 
 ## Ritirate
+
+- **L-002** (2026-07-24 → ritirata 2026-07-25) · «test auth: email con MX reali,
+  mai `@example.com`». Ferma su `→ regola` 3 sessioni; l'errore non si è più
+  ripresentato — usare `@shaer.it` nei test è ormai abitudine. Ritirata su
+  decisione di Nick: la protezione de-facto resta, il costo contesto sparisce.

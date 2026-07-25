@@ -1,6 +1,6 @@
 # TODO
 
-**Saldo: 1 aperto — T-008 (preesistente)**  ·  9 chiusi (T-001…T-005 il 2026-07-24; T-006, T-007, T-009, T-010 il 2026-07-25)
+**Saldo: 1 aperto — T-008 (`↻1`, bloccato su azione dashboard di Nick)**  ·  9 chiusi (T-001…T-005 il 2026-07-24; T-006, T-007, T-009, T-010 il 2026-07-25)
 
 Stati: `[ ]` da fare · `[~]` scritto ma non provato · `[A]` provato e accettato ·
 `[x]` fatto con prova · `[>]` riportato (con `↻` e il suo dossier)
@@ -14,10 +14,12 @@ Solo la sezione «Per Nick» si sostituisce.
 
 ## Ora
 
-- [ ] T-008 **Riattivare Confirm email prima del lancio** — debito di T-004: in dev
+- [>] T-008 **Riattivare Confirm email prima del lancio** `↻1` — debito di T-004: in dev
       è OFF su Supabase (Auth → Providers → Email, progetto `alrguvxspssjwfmtuhdw`)
       per far girare il test signup. Prima del lancio va ON, e il flusso va
-      riprovato con conferma via email reale. *Contesto: `dossier/T-004-auth-dashboard.md`.*
+      riprovato con conferma via email reale. **Codice pronto** (`auth/callback/route.ts`
+      fa lo scambio `code`→sessione): manca solo la config dashboard, azione di Nick.
+      *Contesto: `dossier/T-004-auth-dashboard.md`.*
 
 ## Riportati
 
@@ -41,20 +43,16 @@ budget contesto §10.)*
 
 *(questa sezione si **sostituisce** a ogni avanzamento, non si accumula)*
 
-1. **L'app è ONLINE** ✅ — `https://qr.shaer.it` (login 200, deploy verde). Il 500
-   era lo scope `Development` su `NEXT_PUBLIC_SUPABASE_URL` e `_SITE_URL`: corretto
-   a Production. Repo `github.com/Crik0x/shaer.it`. T-009 (seed) e T-010 (deploy)
-   chiusi con prova.
-2. **Scan reale dal telefono** — apri `qr.shaer.it`, accedi, crea/apri un QR e
-   scansionalo col telefono: ora deve risolvere davvero (non più localhost). È
-   l'ultima prova che manca.
-3. **T-008 (pre-lancio)**: su Supabase (progetto `alrguvxspssjwfmtuhdw`) →
-   Auth → Confirm email **ON**, e aggiungi `https://qr.shaer.it/auth/callback` ai
-   **Redirect URLs** (senza, magic link/callback si rompono in prod).
-4. **Decisione ancora dovuta — L-002** («test auth: email MX reali `@shaer.it`»,
-   `→ regola` da 3 sessioni). Due vie: a) **→ hook** che blocca `@example.com` nei
-   `*.test.ts`; b) **ritiro** (già abitudine). **Consiglio (b)**. Dimmi quale.
-5. **Prompt prossima sessione** (da `D:\Desktop\Shaer.it`):
-   > /apertura. Coda: provare lo **scan reale dal telefono** su `qr.shaer.it`;
-   > **T-008** (Confirm email ON + Redirect URL callback); decidere **L-002**.
-   > Chiudi con /chiusura.
+1. **L-002 ritirata** ✅ — usare email vere (`@shaer.it`) nei test è ormai
+   abitudine; niente hook. Lezioni in vigore: solo L-003.
+2. **Due azioni tue rimaste, entrambe sul telefono/dashboard (io non ho accesso):**
+   - **A · Scan reale** — apri `qr.shaer.it`, accedi, crea/apri un QR e
+     scansionalo col telefono: deve risolvere davvero. È l'ultima prova che manca.
+   - **B · T-008 (pre-lancio)** — su Supabase (progetto `alrguvxspssjwfmtuhdw`) →
+     Auth: Confirm email **ON**, e aggiungi `https://qr.shaer.it/auth/callback`
+     ai **Redirect URLs**. Il codice (`auth/callback/route.ts`) è già pronto: fa
+     lo scambio `code`→sessione e redirige alla dashboard. Manca solo la config.
+3. **Prompt prossima sessione** (da `D:\Desktop\Shaer.it`):
+   > /apertura. Coda: chiudere **T-008** con prova (Confirm email ON + Redirect
+   > URL fatti su Supabase, poi signup reale con conferma via email); registrare
+   > lo **scan reale** se fatto. Chiudi con /chiusura.

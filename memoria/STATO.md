@@ -3,17 +3,15 @@
 Fotografia: si **riscrive**, non si accumula. È il solo file di memoria che si
 riscrive. Tetto 3 KB.
 
-**Apertura:** `bfcfbe3`
+**Apertura:** `3b781cf`
 
 ## Dove siamo
 
-Il 25/07 (4ª/5ª sessione) sono entrati **T-007** (hardening grant anon, test
-verde che ha colto una violazione vera), **T-009** (seed dev provato: 3 QR + 6
-scansioni) e **T-010** (deploy produzione). **L'app è ONLINE su
-`https://qr.shaer.it`** (Vercel, repo `github.com/Crik0x/shaer.it`, `apps/qr`):
-login 200, giro completo registrazione → QR → redirect `/r/{short_code}` →
-timeline. Prossimo: **T-008** (Confirm email ON + `qr.shaer.it/auth/callback` nei
-Redirect URLs Supabase, pre-lancio) e lo **scan reale dal telefono**.
+Il 25/07 sono entrati **T-007** (hardening grant anon), **T-009** (seed provato) e
+**T-010** (deploy). **L'app è ONLINE su `https://qr.shaer.it`**: giro completo
+registrazione → QR → redirect → timeline. Poi **L-002 ritirata** (email vere nei
+test = abitudine). Prossimo: **T-008** (`↻1`, azione dashboard di Nick — codice
+pronto) e lo **scan reale dal telefono**.
 
 ## Cosa esiste
 
@@ -56,7 +54,8 @@ Redirect URLs Supabase, pre-lancio) e lo **scan reale dal telefono**.
 ## Note operative
 
 - **Button shadcn** = `@base-ui`: prop **`render={<Link/>}`**, non `asChild`.
-- Test su Supabase: email con **MX reali** (`@shaer.it`), non `example.com` (L-002).
+- Test su Supabase: email con **MX reali** (`@shaer.it`), non `example.com`
+  (abitudine — era L-002, ritirata il 25/07).
   Anon key pubblica → confine = **DB** (RLS/definer), non l'app (L-001, ora
   testata da `grants.test.ts`).
 - **Supabase default-privilege**: funzione `public` nasce EXECUTE ad `anon`; per
