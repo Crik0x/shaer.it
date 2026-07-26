@@ -1,12 +1,22 @@
 ---
 task: T-011
+tier: C
 titolo: Landing + dashboard-simulatore — reskin estetica luxury Arkés
-livello: C
-stato: aperto
-aperto: 2026-07-25
+aree: [landing, design-system, albero-rete, recharts, deploy]
+stato: chiuso
+riporti: 0
+sessioni: [2026-07-25, 2026-07-26]
 ---
 
 # T-011 · Landing + dashboard-simulatore
+
+> **Chiuso 2026-07-26.** Landing luxury (font Cormorant+Jost, palette crema/oro/
+> rosa) + albero rete interattivo con linea tracciata, live e verde su
+> `qr.shaer.it`. Prova: commit `0781ed7`, deploy Vercel verde, `lib/rete.test.ts`
+> 11/11. L'evoluzione della landing verso l'**analisi campagne / dashboard reale**
+> prosegue in **[[T-012-campaign-analytics]]** (l'albero è stato rifocalizzato da
+> rete-referral a gerarchia di campagne nella stessa sessione). Il profilo/@handle
+> resta come lavoro futuro non ancora aperto.
 
 ## Decisione di direzione (2026-07-26)
 Il primo build (shadcn neutro + pastello arancio/blu) è stato **respinto da Nick**:
@@ -104,7 +114,26 @@ non ho potuto aprire un mio preview. HMR di quel server ha comunque già i file 
 profilo/@handle, campagne (serve decisione schema). Eventuale: pannello analisi
 laterale del nodo selezionato (oggi solo hover-popover), gap-filling.
 
-## Attrito noto
-- Verifica visiva: il Browser pane non compositava → rAF fermo → animazioni non
-  osservabili headless. La prova visiva la dà Nick su `localhost:3000` o il deploy.
-- `next/font` con Cormorant/Jost: confermato nessuna dep npm nuova (asset font).
+## Attriti
+`attrito → causa vera → come risolto → prevenibile?`
+- **Deploy Vercel rosso** → type-error Recharts: `formatter={(v:number)=>…}` annotava
+  il parametro col tipo stretto, in conflitto con `Formatter<ValueType>` che infera
+  `ValueType`; residuo del primo build mai type-checkato in locale → tolta
+  l'annotazione (`(value) => [value as number, …]`), `tsc --noEmit` 0 → **sì, hook**:
+  nessun controllo locale girava `tsc` prima del commit, solo la build remota lo
+  scopriva. Convertito in `pre-commit §9` (vedi LEZIONI L-004).
+- **Revisore respinto al primo giro** → 3 funzioni pure nuove (`nodeRadius`,
+  `nodeColor`, `initials`) senza test (regola 5); il gate ha retto → aggiunti i test
+  (8/8→11/11) e ri-approvato → **no meccanizzabile**: è il revisore stesso il
+  controllo; la lezione è invocarlo *prima* di dichiarare pronto, non dopo.
+- **Commit concorrente** → due sessioni Claude sulla **stessa working tree**:
+  l'altra ha committato `da54567 "QRcode"` (il primo build col type-error dentro)
+  mentre questa lavorava, muovendo HEAD sotto l'ancora `fb0ae6e` → il mio lavoro era
+  un delta pulito e disgiunto, committato sopra senza conflitto → **prevenibile solo
+  organizzativamente** (una working tree, una sessione che scrive git per volta).
+- **Verifica visiva impossibile headless** → il Browser pane non compositava (rAF
+  fermo) **e** Next 16 rifiuta un secondo `next dev` nella stessa cartella (lock,
+  PID dell'altra sessione) → prova visiva delegata a Nick su `qr.shaer.it` → **no**,
+  limite d'ambiente, non un bug.
+- `next/font` con Cormorant/Jost: nessuna dep npm nuova (asset self-hosted) — non un
+  attrito, una conferma utile alla prossima volta.

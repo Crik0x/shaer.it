@@ -58,21 +58,21 @@ export default function Home() {
           </div>
         </section>
 
-        {/* La rete: ogni persona che condivide il tuo QR porta scansioni. La
-            linea tracciata segue i rami più forti. */}
+        {/* Analizzatore ramificato: un Progetto → campagne → sotto-campagne.
+            Le scansioni risalgono per ramo; la linea segue i rami più forti. */}
         <section className="border-t border-border py-16 sm:py-20">
           <div className="mx-auto max-w-2xl text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-gold-light/60 px-3 py-1 text-xs font-medium tracking-wide text-gold-dark">
-              La tua rete
+              Le tue campagne
             </span>
             <h2 className="mt-4 text-balance font-display text-4xl font-normal leading-tight text-ink sm:text-5xl">
-              Ogni QR condiviso{" "}
-              <em className="italic text-gold-dark">apre un ramo</em>.
+              Ogni campagna{" "}
+              <em className="italic text-gold-dark">si ramifica</em>.
             </h2>
             <p className="mx-auto mt-3 max-w-md text-pretty text-sm leading-7 text-muted-foreground">
-              Chi scansiona può condividere a sua volta: la rete cresce e la
-              linea segue i rami che portano più scansioni. Clicca un nodo per
-              metterlo a fuoco, «+» per farla crescere.
+              Un progetto, più campagne, ognuna in sotto-campagne: le scansioni
+              risalgono per ramo e la linea segue quelle che rendono di più.
+              Clicca una campagna per il focus, «+» per aggiungerne una.
             </p>
           </div>
           <div className="mt-10">

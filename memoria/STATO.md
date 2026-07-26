@@ -3,64 +3,62 @@
 Fotografia: si **riscrive**, non si accumula. È il solo file di memoria che si
 riscrive. Tetto 3 KB.
 
-**Apertura:** `fb0ae6e`
+**Apertura:** `0781ed7`
 
 ## Dove siamo
 
-Il 25/07 sono entrati **T-007** (hardening grant anon), **T-009** (seed provato) e
-**T-010** (deploy). **L'app è ONLINE su `https://qr.shaer.it`**: giro completo
-registrazione → QR → redirect → timeline. Poi **L-002 ritirata** (email vere nei
-test = abitudine). Prossimo: **T-008** (`↻1`, azione dashboard di Nick — codice
-pronto) e lo **scan reale dal telefono**.
+Il 26/07 chiuso **T-011**: la landing è **luxury e live su `qr.shaer.it`** (verde),
+font Cormorant+Jost, palette crema/oro/rosa, **albero interattivo con linea
+tracciata**. Scan reale verificato da Nick (l'apertura si registra). L'albero è
+stato **rifocalizzato** da rete-referral a **gerarchia di campagne** (Progetto →
+campagne → sotto-campagne): è il primo slice del nuovo **T-012** (analizzatore
+ramificato + dashboard di analisi pubblicitaria). Aperti: **T-008** (`↻2`, bloccato
+su config Supabase di Nick) e **T-012** (analisi pronta, reale in attesa di
+decisioni). Prossimo: le decisioni D-A/B/C di T-012, poi lo schema `campaigns`.
 
 ## Cosa esiste
 
-- **Produzione (T-010)**: `apps/qr` online → `https://qr.shaer.it` (Vercel, repo
-  `github.com/Crik0x/shaer.it`, Root Dir `apps/qr`, 3 env `NEXT_PUBLIC_*` su
-  Production). Fix build L-003 (client browser negli handler).
-- **Fixture dev (T-009)**: `supabase/seed.sql` provato (3 QR + 6 scansioni),
-  utente-dev fuori da git, idempotente.
-- **Hardening grant anon (T-007)**: migr. `…02` (RPC `security_anon_surface`
-  introspette `pg_catalog`: funzioni anon-EXECUTE non-trigger + tabelle senza RLS;
-  grant solo `authenticated`) + `…03` (revoke anon da `qr_scans_timeline` +
-  `security_anon_surface`) · `lib/grants.test.ts` **1/1 verde**, whitelist anon
-  `{resolve_qr, anonymize_ip}`. Meccanizza L-001.
-- **Analytics timeline (T-006)**: migr. `20260725000001` (RPC `qr_scans_timeline`
-  SECURITY DEFINER owner-scoped via `auth.uid()`, grant **solo `authenticated`**,
-  `date_trunc` day/hour su `created_at`) · `lib/qr-timeline.ts` (pure, UTC) +
-  `.pure.test.ts` 2/2 + `.test.ts` integ 1/1 · `qr/[short_code]/{analytics-panel`
-  toggle Giorno/Ora`, analytics-chart` Recharts dynamic import`}`. Dep: `recharts`.
-  Fetch server 2 granularità, toggle client.
-- **Generatore QR (T-005)**: `lib/short-code.ts` (base62, 5/5) · `lib/qr.ts` ·
-  `qr/actions.ts` (`createQr`: owner_id+retry 23505) · `qr/new`, `qr/[short_code]`
-  (designer/download) · `dashboard` (lista). Dep: `qrcode`. RLS test 1/1.
-- **Auth + dashboard (T-004)**: `supabase-server.ts`/`-browser.ts` · `proxy.ts`
-  (protegge `/dashboard`, esclude `/r/*`) · `login`, `auth/{callback,signout}` ·
-  `auth.test.ts` 1/1. Dep: `@supabase/ssr`.
-- **Redirect (T-003)**: `app/r/[short_code]/route.ts` · `lib/scan.ts` (test 6/6) ·
-  `lib/supabase-public.ts` (anon). **Schema (T-002)**: migr. `qr_codes`/`qr_scans`
-  (owner_id, RLS, trigger immut., `resolve_qr`+`anonymize_ip`).
-- DB Supabase `alrguvxspssjwfmtuhdw`. Dev: Email provider ON + Confirm email OFF.
-- `.claude/launch.json` — dev via `preview_start name=qr` (:3000). App in `apps/qr/`.
+- **Landing luxury (T-011)** `qr.shaer.it`: `layout.tsx` font Cormorant+Jost
+  (`next/font`, 0 dep), `globals.css` palette crema/oro/rosa + `--flow`/`--gold-soft`/
+  `--rose-soft`/`--border-strong` (color-mix sui token). Restyle header/hero/
+  simulatore/chart/popover. **Albero**: `lib/rete.ts` motore puro (rollup,
+  litEdges spina dorsale, layout DFS, raggio/colore) + `rete.test.ts` **11/11**;
+  `network-tree.tsx` (client, SVG, linea `flow`, pulse, focus, hover-popover,
+  zoom/pan, aggiungi-nodo) via `network-tree-panel.tsx` (`dynamic ssr:false`).
+  Commit `0781ed7`. Fix build: type-error Recharts `formatter` (annotazione
+  `(v:number)` vs `ValueType`) → risolto.
+- **T-012 (analisi)**: `dossier/T-012-campaign-analytics.md` — piano completo
+  (dati per scansione, dimensioni marketing, funzionalità dashboard, schema reale
+  `campaigns`+`campaign_id`, decisioni D-A/B/C). Slice fatto: refocus albero →
+  campagne (demo simulata, `[~]` da committare in questa chiusura).
+- **Scansione (T-002/003)**: `qr_scans` append-only cattura **created_at, device,
+  browser, ip anonimizzato**; `country`/`city` esistono ma il redirect li passa
+  **null** (nessun geo). RPC `resolve_qr` (definer) + `anonymize_ip` (`/24`-`/48`).
+- **Analytics (T-006)**: RPC `qr_scans_timeline` (day/hour, owner-scoped definer).
+- DB Supabase `alrguvxspssjwfmtuhdw`. Dev: Email ON + Confirm email OFF.
+- `.claude/launch.json` — dev via `preview_start name=qr` (:3000, autoPort no).
 
 ## Cosa NON esiste ancora
 
-- Confirm email ON pre-lancio + `qr.shaer.it/auth/callback` nei Redirect URLs
-  Supabase (T-008). Scan reale end-to-end dal telefono su `qr.shaer.it` (atteso
-  ok, non ancora provato). Gap-filling bucket vuoti timeline e timezone locale
-  (oggi UTC) rimandati. Shaer MVP (`apps/shaer`) e `packages/` condivisi: futuri
-  (D-005). Preview deploy: le env sono anche su Preview, ok.
+- **T-012 reale**: schema `campaigns` (owner_id, parent_id, RLS) + `qr_codes.
+  campaign_id`; arricchimento scan (geo via header Vercel, os, lang, visitor_hash);
+  RPC di aggregazione owner-scoped; dashboard reale (KPI, heatmap, geo, tabella,
+  export, consigli). **Bloccato sulle decisioni D-A/B/C di Nick** (profondità dati/
+  privacy, demo-vs-reale, forma gerarchia).
+- **T-008**: Confirm email ON + `qr.shaer.it/auth/callback` nei Redirect URLs
+  Supabase (azione di Nick). Profilo/@handle: futuro non aperto.
 
 ## Note operative
 
-- **Button shadcn** = `@base-ui`: prop **`render={<Link/>}`**, non `asChild`.
-- Test su Supabase: email con **MX reali** (`@shaer.it`), non `example.com`
-  (abitudine — era L-002, ritirata il 25/07).
-  Anon key pubblica → confine = **DB** (RLS/definer), non l'app (L-001, ora
-  testata da `grants.test.ts`).
-- **Supabase default-privilege**: funzione `public` nasce EXECUTE ad `anon`; per
-  renderla privata si revoca da `anon`, non da `public` (L-001, `grants.test.ts`).
-- Next 16: `proxy.ts`, non `middleware.ts` (hook §7). Cache turbopack sporca →
-  `rm -rf .next/dev` + restart. `dynamic(ssr:false)` solo in Client Component.
+- **Recharts**: non annotare i parametri dei callback (`formatter`, `labelFormatter`)
+  col tipo stretto — lascia inferire `ValueType`, o `next build` fallisce il type-check.
+- **Due sessioni Claude sulla stessa cartella**: Next 16 rifiuta un secondo
+  `next dev` (lock), e un commit dell'altra può muovere HEAD sotto di te (è
+  successo: `da54567`). Verifica visiva delegata a Nick quando il preview è occupato.
+- **Colori**: solo token in `globals.css` (regola 8). Nei CSS module usa
+  `var(--token)`/`color-mix`, mai hex di brand duplicati (il revisore li respinge).
+- **Button shadcn** = `@base-ui`: prop `render={<Link/>}`, non `asChild`.
+- Anon key pubblica → confine = **DB** (RLS/definer), testato da `grants.test.ts` (L-001).
+- Next 16: `proxy.ts`, non `middleware.ts` (hook §7). `dynamic(ssr:false)` solo in Client.
 - Schema: nasce in `supabase/migrations/`, applicato da Nick nel SQL editor.
-- La cwd della tool Bash non persiste: path assoluti.
+- La cwd della tool Bash non persiste: path assoluti. Test: `node --test lib/*.test.ts` (node 24 strippa TS).

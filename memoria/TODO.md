@@ -1,6 +1,6 @@
 # TODO
 
-**Saldo: 2 aperti — T-008 (`↻1`, bloccato su azione dashboard di Nick), T-011 (nuovo, slice 1 scritto)**  ·  9 chiusi (T-001…T-005 il 2026-07-24; T-006, T-007, T-009, T-010 il 2026-07-25)
+**Saldo: 2 aperti — T-008 (`↻2`, bloccato su config Supabase di Nick), T-012 (nuovo, analisi pronta + refocus fatto)**  ·  10 chiusi (T-001…T-005 il 2026-07-24; T-006, T-007, T-009, T-010 il 2026-07-25; T-011 il 2026-07-26)
 
 Stati: `[ ]` da fare · `[~]` scritto ma non provato · `[A]` provato e accettato ·
 `[x]` fatto con prova · `[>]` riportato (con `↻` e il suo dossier)
@@ -14,23 +14,20 @@ Solo la sezione «Per Nick» si sostituisce.
 
 ## Ora
 
-- [>] T-008 **Riattivare Confirm email prima del lancio** `↻1` — debito di T-004: in dev
-      è OFF su Supabase (Auth → Providers → Email, progetto `alrguvxspssjwfmtuhdw`)
-      per far girare il test signup. Prima del lancio va ON, e il flusso va
-      riprovato con conferma via email reale. **Codice pronto** (`auth/callback/route.ts`
-      fa lo scambio `code`→sessione): manca solo la config dashboard, azione di Nick.
-      *Contesto: `dossier/T-004-auth-dashboard.md`.*
+- [>] T-008 **Riattivare Confirm email prima del lancio** `↻2` — debito di T-004:
+      in dev è OFF su Supabase (Auth → Providers → Email, `alrguvxspssjwfmtuhdw`).
+      **Codice pronto** (`auth/callback/route.ts`): manca solo la config dashboard,
+      **azione di Nick** — riportato di nuovo perché Nick non l'ha ancora fatta, non
+      per re-analisi. A `↻3` va escalato. *Contesto: `dossier/T-004-auth-dashboard.md`.*
 
-- [~] T-011 **Landing + dashboard-simulatore** `slice 1 di N` — home pubblica su `/`
-      (era scaffold Next): header con login/signup in **popover**, hero, simulatore.
-      **Primo build (pastello shadcn) RESPINTO da Nick** («freddo, poco pro»).
-      **Nuova direzione**: reskin all'**estetica luxury Arkés** — brand shaer.it
-      invariato, palette crema/oro/rosa + Cormorant/Jost, e **import dell'albero
-      rete con linea tracciata** da `arkes.html`. Mappa completa righe→React e
-      sequenza già pronte in **`dossier/T-011-landing-simulatore.md`**.
-      Codice del primo build non committato (si ri-stila, non si butta).
-      *Prossimo: eseguire la sequenza del dossier. Poi dashboard aggregata reale,
-      profilo/@handle, campagne (serve decisione schema).*
+- [~] T-012 **Analizzatore campagne + dashboard analisi pubblicitaria** `slice 1 fatto` —
+      l'albero landing rifocalizzato da rete-referral a **gerarchia di campagne**
+      (Progetto → A/B/C/D → sotto-campagne), demo simulata, provato in locale (11/11)
+      ma non ancora in prod. Il **reale** (schema `campaigns`+`campaign_id`,
+      arricchimento scan geo/os/lang/hash, RPC aggregazione, dashboard KPI/heatmap/
+      geo/export/consigli) è **bloccato sulle decisioni D-A/B/C di Nick**. Analisi
+      completa, sequenza e **precedenti** (T-002/003/006/007) in
+      **`dossier/T-012-campaign-analytics.md`**.
 
 ## Riportati
 
@@ -49,21 +46,26 @@ budget contesto §10.)*
 - [x] T-007 **Hardening: test grant anon** · 2026-07-25 · `archivio/T-007-hardening-grant-anon.md`
 - [x] T-009 **Fixture dev seed provata** (3 QR + 6 scansioni) · 2026-07-25 · `archivio/T-009-seed-dev-fixture.md`
 - [x] T-010 **Deploy produzione** (qr.shaer.it online) · 2026-07-25 · `archivio/T-010-deploy-produzione.md`
+- [x] T-011 **Landing luxury + albero rete** (qr.shaer.it verde, commit `0781ed7`) · 2026-07-26 · `archivio/T-011-landing-simulatore.md`
 
 ## Per Nick — comandi e azioni
 
 *(questa sezione si **sostituisce** a ogni avanzamento, non si accumula)*
 
-1. **L-002 ritirata** ✅ — usare email vere (`@shaer.it`) nei test è ormai
-   abitudine; niente hook. Lezioni in vigore: solo L-003.
-2. **Due azioni tue rimaste, entrambe sul telefono/dashboard (io non ho accesso):**
-   - **A · Scan reale** — apri `qr.shaer.it`, accedi, crea/apri un QR e
-     scansionalo col telefono: deve risolvere davvero. È l'ultima prova che manca.
-   - **B · T-008 (pre-lancio)** — su Supabase (progetto `alrguvxspssjwfmtuhdw`) →
-     Auth: Confirm email **ON**, e aggiungi `https://qr.shaer.it/auth/callback`
-     ai **Redirect URLs**. Il codice (`auth/callback/route.ts`) è già pronto: fa
-     lo scambio `code`→sessione e redirige alla dashboard. Manca solo la config.
-3. **Prompt prossima sessione** (da `D:\Desktop\Shaer.it`):
-   > /apertura. Coda: chiudere **T-008** con prova (Confirm email ON + Redirect
-   > URL fatti su Supabase, poi signup reale con conferma via email); registrare
-   > lo **scan reale** se fatto. Chiudi con /chiusura.
+1. **Scan reale ✅ fatto** (verificato da te: l'apertura si registra) e **landing
+   luxury live e verde** su `qr.shaer.it`. T-011 chiuso.
+2. **Le 3 decisioni di T-012** — servono **prima** di costruire la dashboard reale
+   (dettaglio in `dossier/T-012-campaign-analytics.md`):
+   - **D-A · Profondità dati**: solo aggregati geo/os/lingua · **+** hash unici ·
+     **+** conversione con pixel (ROI vero ma tocca il sito dell'esercente).
+   - **D-B · Primo bersaglio**: demo simulata (fatta) → poi **dashboard reale
+     autenticata** su dati veri (serve schema + RPC).
+   - **D-C · Gerarchia**: `campaign_id` sul QR + `parent_id` sulle campagne
+     (semplice, raccomandato) vs molti-a-molti.
+3. **T-008 (`↻2`, tua azione)** — Supabase `alrguvxspssjwfmtuhdw` → Auth: Confirm
+   email **ON** + `https://qr.shaer.it/auth/callback` nei **Redirect URLs**. Codice
+   già pronto. A `↻3` lo escalo.
+4. **Prompt prossima sessione** (da `D:\Desktop\Shaer.it`):
+   > /apertura. Coda: decidere **D-A/B/C** di T-012, poi schema `campaigns` +
+   > refocus reale della dashboard. Chiudere **T-008** se hai fatto la config
+   > Supabase. Chiudi con /chiusura.

@@ -1,0 +1,16 @@
+{
+  "data": "2026-07-26",
+  "sessione": "T-011 reskin luxury + albero rete; T-012 refocus campagne",
+  "revisioni": [
+    {
+      "ambito": "T-011 — reskin luxury Arkés + albero rete (network-tree, lib/rete, restyle landing)",
+      "esito": "approvato",
+      "note": "Prima passata respinta (nodeRadius/nodeColor/initials senza test + colori duplicati fuori dai token + --border-strong fantasma); rilievi risolti e verificati: 11/11 test, tsc/eslint puliti, grep letterali brand vuoto, --border-strong definito in globals.css."
+    },
+    {
+      "ambito": "T-012 — refocus albero landing da rete-referral a gerarchia di campagne (network-tree.tsx seed+etichette, page.tsx copy)",
+      "esito": "approvato",
+      "note": "Rifocalizzazione dati+copy coerente, nessun riferimento orfano al vecchio dominio, motore puro lib/rete.ts invariato, tsc --noEmit 0 e node --test 11/11 verificati direttamente."
+    }
+  ]
+}

@@ -15,23 +15,27 @@ import {
 } from "@/lib/rete";
 import styles from "./network-tree.module.css";
 
-const ROOT = "n0";
+const ROOT = "c0";
 
-// Rete dimostrativa: la "rete" di chi condivide il tuo QR. I numeri sono
-// scansioni; volumi diversi per dare colore e una linea tracciata leggibile.
+// Gerarchia di campagne dimostrativa: un Progetto monitora più campagne
+// (canali), ognuna ramificata in sotto-campagne (posizionamenti). I numeri sono
+// scansioni; risalgono per ramo. Volumi diversi per una linea tracciata leggibile.
 function seed(): ReteTree {
   const t: [string, string | null, string, number][] = [
-    ["n0", null, "Tu", 40],
-    ["n1", "n0", "Giulia", 55],
-    ["n2", "n0", "Sara", 22],
-    ["n3", "n0", "Davide", 14],
-    ["n11", "n1", "Luca", 30],
-    ["n12", "n1", "Marco", 40],
-    ["n111", "n11", "Anna", 130],
-    ["n21", "n2", "Paolo", 180],
-    ["n22", "n2", "Elena", 12],
-    ["n31", "n3", "Chiara", 9],
-    ["n211", "n21", "Bruno", 60],
+    ["c0", null, "Progetto", 0],
+    ["a", "c0", "Volantino", 40],
+    ["b", "c0", "Instagram", 30],
+    ["c", "c0", "Fiera", 20],
+    ["d", "c0", "Email", 15],
+    ["a1", "a", "Vetrina", 60],
+    ["a2", "a", "Cassa", 35],
+    ["b1", "b", "Storie", 90],
+    ["b2", "b", "Post", 45],
+    ["b3", "b", "Reels", 120],
+    ["b4", "b", "Bio", 25],
+    ["c1", "c", "Stand", 80],
+    ["d1", "d", "Newsletter", 55],
+    ["d2", "d", "Firma", 18],
   ];
   const tree: ReteTree = {};
   for (const [id, parentId, name, scans] of t) tree[id] = { id, parentId, name, scans };
@@ -90,7 +94,7 @@ export default function NetworkTree() {
     const id = "x" + seq.current++;
     setTree((prev) => ({
       ...prev,
-      [id]: { id, parentId, name: "Nuovo", scans: 8 + Math.floor(Math.random() * 34) },
+      [id]: { id, parentId, name: "Sotto-campagna", scans: 8 + Math.floor(Math.random() * 34) },
     }));
     setSelId(id);
     setFocusId(parentId);
@@ -207,9 +211,9 @@ export default function NetworkTree() {
                 >
                   <circle className={styles.circle} r={r.toFixed(1)} fill={col} />
                   <text className={styles.init} style={{ fontSize: fs }}>
-                    {initials(n.id === ROOT ? "Tu" : n.name)}
+                    {initials(n.name)}
                   </text>
-                  <text className={styles.name} y={r + 14}>{n.id === ROOT ? "Tu" : n.name}</text>
+                  <text className={styles.name} y={r + 14}>{n.name}</text>
                   {vol > 0 && <text className={styles.vol} y={r + 26}>{fmt(vol)}</text>}
                   <g
                     className={styles.plus}
@@ -230,15 +234,15 @@ export default function NetworkTree() {
           <button type="button" className={styles.zoomBtn} onClick={() => zoom(1.2)} aria-label="Ingrandisci">+</button>
           <button type="button" className={styles.zoomBtn} onClick={() => zoom(0.83)} aria-label="Rimpicciolisci">−</button>
         </div>
-        <div className={styles.hint}>Trascina per spostarti · clicca un nodo per il focus · «+» per far crescere la rete</div>
+        <div className={styles.hint}>Trascina per spostarti · clicca una campagna per il focus · «+» per aggiungere una sotto-campagna</div>
       </div>
 
       {hover && stats && (
         <div className={`${styles.pop} ${styles.popShow}`} style={{ left: hover.x, top: hover.y }}>
-          <div className={styles.popNm}>{hover.id === ROOT ? "Tu" : tree[hover.id]?.name}</div>
-          <div className={styles.popMeta}>{stats.rete} in rete · profondità {stats.depth}</div>
-          <div className={styles.popRow}><span>Scansioni proprie</span><b>{fmt(stats.scans)}</b></div>
-          <div className={styles.popRow}><span>Volume rete</span><b>{fmt(subtreeScans(tree, hover.id))}</b></div>
+          <div className={styles.popNm}>{tree[hover.id]?.name}</div>
+          <div className={styles.popMeta}>{stats.rete} sotto-campagne · {stats.depth} livelli</div>
+          <div className={styles.popRow}><span>Scansioni dirette</span><b>{fmt(stats.scans)}</b></div>
+          <div className={styles.popRow}><span>Scansioni totali</span><b>{fmt(subtreeScans(tree, hover.id))}</b></div>
           {stats.legs.length > 0 && <div className={styles.popDiv} />}
           {stats.legs.slice(0, 3).map((l) => (
             <div key={l.id} className={styles.popLeg}>

@@ -93,6 +93,46 @@ for f in apps/qr/middleware.ts apps/qr/middleware.js apps/qr/src/middleware.ts a
   fi
 done
 
+# ── 8 · Frontmatter dei dossier ────────────────────────────────────────────
+# MODELLO.md fissa 5 chiavi obbligatorie (tier, aree, stato, riporti, sessioni).
+# L'ambiguita' con «livello» (lavoro.md §2-bis parla di livello, MODELLO fissa
+# `tier`) ha prodotto 2 dossier non conformi (T-011, T-012) e rompe il grep-by-
+# `aree` su cui si fonda il distillatore. L-005.
+for f in $STAGED; do
+  case "$f" in
+    dossier/MODELLO.md|dossier/PATTERN.md) continue ;;
+    dossier/*.md|dossier/archivio/*.md)
+      [ -f "$f" ] || continue
+      if grep -qE '^livello:' "$f"; then
+        echo "⛔ $f usa 'livello:' — MODELLO.md vuole 'tier:'."
+        BLOCCO=1
+      fi
+      for k in tier aree stato riporti sessioni; do
+        if ! grep -qE "^$k:" "$f"; then
+          echo "⛔ $f: manca la chiave frontmatter '$k:' (dossier/MODELLO.md)."
+          BLOCCO=1
+        fi
+      done
+      ;;
+  esac
+done
+
+# ── 9 · Type-check di apps/qr ──────────────────────────────────────────────
+# Un type-error Recharts e' arrivato fino al deploy Vercel (rosso) perche' nessun
+# controllo locale girava `tsc` prima del commit (attrito reale di T-011). Se il
+# commit tocca il TypeScript di apps/qr, si type-checka qui. Si ignorano gli
+# errori nei tipi generati (.next/) e nelle dipendenze. L-004.
+if echo "$STAGED" | grep -qE '^apps/qr/.*\.(ts|tsx)$'; then
+  if command -v npx >/dev/null 2>&1; then
+    TSCOUT=$( cd apps/qr && npx --no-install tsc --noEmit 2>&1 | grep -vE '^\.next/|node_modules/' )
+    if echo "$TSCOUT" | grep -qE 'error TS'; then
+      echo "⛔ apps/qr: type-check fallito (tsc --noEmit):"
+      echo "$TSCOUT" | grep -E 'error TS' | head -10
+      BLOCCO=1
+    fi
+  fi
+fi
+
 if [ "$BLOCCO" -ne 0 ]; then
   echo ""
   echo "Commit fermato. Per forzare in emergenza: git commit --no-verify"
