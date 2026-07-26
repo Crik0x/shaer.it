@@ -1,6 +1,6 @@
 # TODO
 
-**Saldo: 2 aperti — T-008 (`↻2`, bloccato su config Supabase di Nick), T-012 (nuovo, analisi pronta + refocus fatto)**  ·  10 chiusi (T-001…T-005 il 2026-07-24; T-006, T-007, T-009, T-010 il 2026-07-25; T-011 il 2026-07-26)
+**Saldo: 2 aperti — T-008 (`↻2`, bloccato su config Supabase di Nick), T-012 (`↻1`, migrazione albero scritta [~], da applicare)**  ·  11 chiusi (T-001…T-005 il 2026-07-24; T-006, T-007, T-009, T-010 il 2026-07-25; T-011 e T-013 il 2026-07-26)
 
 Stati: `[ ]` da fare · `[~]` scritto ma non provato · `[A]` provato e accettato ·
 `[x]` fatto con prova · `[>]` riportato (con `↻` e il suo dossier)
@@ -20,14 +20,15 @@ Solo la sezione «Per Nick» si sostituisce.
       **azione di Nick** — riportato di nuovo perché Nick non l'ha ancora fatta, non
       per re-analisi. A `↻3` va escalato. *Contesto: `dossier/T-004-auth-dashboard.md`.*
 
-- [~] T-012 **Analizzatore campagne + dashboard analisi pubblicitaria** `slice 1 fatto` —
-      l'albero landing rifocalizzato da rete-referral a **gerarchia di campagne**
-      (Progetto → A/B/C/D → sotto-campagne), demo simulata, provato in locale (11/11)
-      ma non ancora in prod. Il **reale** (schema `campaigns`+`campaign_id`,
-      arricchimento scan geo/os/lang/hash, RPC aggregazione, dashboard KPI/heatmap/
-      geo/export/consigli) è **bloccato sulle decisioni D-A/B/C di Nick**. Analisi
-      completa, sequenza e **precedenti** (T-002/003/006/007) in
-      **`dossier/T-012-campaign-analytics.md`**.
+- [~] T-012 **Analizzatore albero di QR + dashboard analisi** `↻1` — decisioni
+      **SBLOCCATE** (D-006/007/008). Reframe D-008: non `campaigns` separata ma
+      **albero di QR** (`qr_codes.parent_id`+owner per-nodo+purpose). Scritti e `[~]`
+      (non applicati su DB): migrazione `20260726000001` (albero+trigger anti-ciclo+
+      arricchimento scan+RPC `qr_tree_rollup`) e `apps/qr/lib/tree.test.ts`. Revisore
+      **approvato**. **Prossimo** (piano a freddo nel dossier): Nick applica la
+      migrazione + lancia `tree.test.ts` → poi redirect enrichment → RPC breakdown/geo/
+      uniques → dashboard reale. Analisi, piano e **precedenti** (T-002/003/**006**
+      RPC definer/**007** whitelist anon) in **`dossier/T-012-campaign-analytics.md`**.
 
 ## Riportati
 
@@ -47,25 +48,27 @@ budget contesto §10.)*
 - [x] T-009 **Fixture dev seed provata** (3 QR + 6 scansioni) · 2026-07-25 · `archivio/T-009-seed-dev-fixture.md`
 - [x] T-010 **Deploy produzione** (qr.shaer.it online) · 2026-07-25 · `archivio/T-010-deploy-produzione.md`
 - [x] T-011 **Landing luxury + albero rete** (qr.shaer.it verde, commit `0781ed7`) · 2026-07-26 · `archivio/T-011-landing-simulatore.md`
+- [x] T-013 **Corpus documentale fondativo** (5 doc in `MD/`: MDD, PRD, SAD, Design System, Roadmap) · 2026-07-26 · `archivio/T-013-corpus-documentale.md`
 
 ## Per Nick — comandi e azioni
 
 *(questa sezione si **sostituisce** a ogni avanzamento, non si accumula)*
 
-1. **Scan reale ✅ fatto** (verificato da te: l'apertura si registra) e **landing
-   luxury live e verde** su `qr.shaer.it`. T-011 chiuso.
-2. **Le 3 decisioni di T-012** — servono **prima** di costruire la dashboard reale
-   (dettaglio in `dossier/T-012-campaign-analytics.md`):
-   - **D-A · Profondità dati**: solo aggregati geo/os/lingua · **+** hash unici ·
-     **+** conversione con pixel (ROI vero ma tocca il sito dell'esercente).
-   - **D-B · Primo bersaglio**: demo simulata (fatta) → poi **dashboard reale
-     autenticata** su dati veri (serve schema + RPC).
-   - **D-C · Gerarchia**: `campaign_id` sul QR + `parent_id` sulle campagne
-     (semplice, raccomandato) vs molti-a-molti.
-3. **T-008 (`↻2`, tua azione)** — Supabase `alrguvxspssjwfmtuhdw` → Auth: Confirm
-   email **ON** + `https://qr.shaer.it/auth/callback` nei **Redirect URLs**. Codice
-   già pronto. A `↻3` lo escalo.
+1. **5 documenti fondativi ✅** in `MD/` (MDD, PRD, SAD, Design System, Roadmap) +
+   3 decisioni locked (D-006/007/008). T-013 chiuso. Leggili: sono la spina dorsale.
+2. **APPLICA la migrazione albero** (sblocca la dashboard reale) — Supabase
+   `alrguvxspssjwfmtuhdw` → SQL editor: incolla ed esegui
+   `supabase/migrations/20260726000001_qr_tree_and_scan_enrichment.sql`. Poi da
+   `D:\Desktop\Shaer.it\apps\qr`:
+   ```
+   node --test --env-file=.env.local lib/tree.test.ts
+   ```
+   Deve diventare **verde** (ora salta per env mancante). Migrazione già **approvata
+   dal revisore**; quando è applicata+verde, T-012 passa da `[~]` a `[x]` su questo slice.
+3. **T-008 (`↻2`, tua azione, invariata)** — Supabase → Auth: Confirm email **ON** +
+   `https://qr.shaer.it/auth/callback` nei **Redirect URLs**. Codice pronto. A `↻3` lo escalo.
 4. **Prompt prossima sessione** (da `D:\Desktop\Shaer.it`):
-   > /apertura. Coda: decidere **D-A/B/C** di T-012, poi schema `campaigns` +
-   > refocus reale della dashboard. Chiudere **T-008** se hai fatto la config
-   > Supabase. Chiudi con /chiusura.
+   > /apertura. Se hai applicato la migrazione albero, chiudi lo slice T-012 (verifica
+   > `tree.test.ts` verde) e prosegui: arricchimento redirect (geo/os/lang/hash) → RPC
+   > breakdown/geo/uniques → **dashboard reale** (PRD E6). Chiudi **T-008** se hai fatto
+   > la config Supabase. Chiudi con /chiusura.

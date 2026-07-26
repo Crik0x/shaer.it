@@ -4,8 +4,8 @@ tier: C
 titolo: Analizzatore ramificato di campagne + dashboard di analisi pubblicitaria
 aree: [campagne, analytics, dashboard, dati-personali, schema-supabase, marketing]
 stato: aperto
-riporti: 0
-sessioni: [2026-07-26]
+riporti: 1
+sessioni: [2026-07-26, 2026-07-26b]
 ---
 
 # T-012 · Campaign analytics — l'oro per gli esercenti
@@ -129,12 +129,51 @@ reale:**
   oggi non raccogliamo (nessun `campaign_id`, geo `null`) → NON costruita alla cieca:
   fermato al gate, prodotta l'analisi e le decisioni D-A/B/C, implementata solo la
   demo simulata sicura → **no**: gate di ampiezza applicato correttamente (§4).
+- **(2026-07-26b) Migrazione respinta dal revisore al 1° giro** → trigger anti-ciclo
+  senza lock atomico (race TOCTOU su UPDATE concorrenti che si scambiano `parent_id`)
+  + CTE ricorsiva `descendants` senza guardia `CYCLE` → loop infinito possibile sul
+  rollup; inoltre trigger/rollup senza test e commento delega disallineato → corretto
+  nella stessa sessione (advisory xact lock + `cycle … set is_cycle` + `tree.test.ts`
+  + commento allineato al SAD §3.1), ri-approvato → **sì, prevenibile**: è la 2ª volta
+  (T-011) che una funzione/trigger nuovo arriva al revisore senza test → PATTERN.md,
+  candidato hook. La race concorrente resta provata **solo a lettura** (`[~]`): il
+  test copre il ciclo sequenziale, non il `Promise.all` A↔B.
 
-## Stato e piano
-Aperto. Fatto: analisi completa (questo dossier) + refocus albero demo. **Bloccato**
-sulle decisioni D-A/B/C di Nick (sezione §5). Piano pronto ed eseguibile a freddo:
-1. Nick decide D-A/B/C. 2. Migrazione `campaigns` (owner_id, parent_id, RLS) +
-`qr_codes.campaign_id` (precedente: `archivio/T-002`). 3. Arricchimento scan
-additivo su `route.ts` (precedente: `archivio/T-003`, regola 7). 4. RPC rollup
-owner-scoped definer (precedente: `archivio/T-006`) + aggiungerla alla whitelist
-`grants.test.ts` (precedente: `archivio/T-007`). 5. Dashboard reale.
+## Sessione 2026-07-26b (↻1) — reframe D-3 + schema scritto
+
+**Le decisioni sono SBLOCCATE** (D-A/B/C → D-1/2/3, vedi `MD/MDD.md §2`,
+`dossier/T-013`). La più impattante cambia lo SCHEMA:
+- **D-3: NON `campaigns` separata + `campaign_id`.** Ogni nodo È un QR →
+  `qr_codes.parent_id` self-ref + `owner_id` per-nodo (delega intermediario via
+  `granted_by`) + `purpose`. §5 di questo dossier (punto 1) è **superato** su questo.
+- **D-2: PII+CRM** ma con cancello GDPR (SAD §7): il default operativo resta
+  aggregati pseudonimi + `visitor_hash`, la PII arriva solo con consenso (Fase 4).
+- **D-1: ibrido** — il funnel/eventi reali (§2, §3.10) restano Fase 2 (landing ospitate).
+
+**Fatto e provato in questa sessione:**
+- Migrazione `supabase/migrations/20260726000001_qr_tree_and_scan_enrichment.sql`
+  `[~]` — albero (parent_id+purpose+granted_by+trigger anti-ciclo con advisory lock),
+  arricchimento scan (os/lang/referer/visitor_hash), RPC `qr_tree_rollup` (definer
+  owner-scoped, CTE ricorsiva con guardia CYCLE). **Scritta, NON applicata su DB.**
+- Test `apps/qr/lib/tree.test.ts` `[~]` — anti-ciclo, rollup 2/3/5→A=10/B=8/C=5,
+  isolamento owner. Carica e salta pulito senza env (3 skipped); verde attende il DB.
+- Revisore 2026-07-26 (`memoria/review/2026-07-26.json`): respinto → 3 rilievi
+  sistemati (advisory lock+CYCLE, test scritto, commento scope delega allineato) →
+  ri-verifica in corso. Precedenti riusati: T-002/006/007.
+
+**Piano pronto per la prossima sessione (a freddo):**
+1. **Nick applica** la migrazione nel SQL editor Supabase + lancia `tree.test.ts`
+   con `--env-file=.env.local` → prova verde, la migrazione passa da `[~]` a `[x]`.
+2. Update redirect `app/r/[short_code]/route.ts`: popola geo (header Vercel
+   `x-vercel-ip-*`), os, lang, visitor_hash (salato IP-anon+UA+salt/giorno). Additivo.
+3. RPC restanti: `qr_breakdown`, `qr_geo`, `qr_uniques` (definer authenticated) +
+   estendere `tree.test.ts`. Whitelist anon `grants.test.ts` INVARIATA (L-001).
+4. Dashboard reale (PRD E6): KPI, albero reale (rimpiazza la demo), serie+confronto,
+   breakdown, geo, heatmap, tabella rami, export. Server Components + Suspense.
+
+## Stato e piano (corrente)
+Aperto, `↻1`. Lo stato e il piano eseguibile sono nella sezione **«Sessione
+2026-07-26b»** qui sopra (4 punti pronti a freddo). Le sezioni §1–§5 restano valide
+come analisi TRANNE la forma dello schema (superata dal reframe D-3: albero di QR,
+non `campaigns`). Debito `[~]` aperto: migrazione non applicata su DB, `tree.test.ts`
+non ancora verde (attende l'apply + env), race concorrente provata solo a lettura.

@@ -53,3 +53,30 @@ motore+consumatore, un solo `packages/` come verità.
 Alternativa scartata: (a) tutto in una repo incluso Damascati — accoppia due SaaS con
 DB diversi; (b) polyrepo QR/Shaer separati — sync cross-repo e pacchetto da pubblicare
 per ogni modifica trasversale, puro attrito per un dev solo.
+
+## D-006 · 2026-07-26 · Post-scan ibrido: redirect + landing ospitate — [LOCKED]
+Contesto: MDD vuole Session/Event/CRM, ma il QR oggi fa redirect a un URL esterno
+(T-003) → dopo lo scan non vediamo più nulla, non possiamo iniettare tracking sul sito
+altrui. Decisione: ibrido — il redirect resta il default (regola 7), le landing
+ospitate col beacon si aggiungono dove servono; Session/Event/CRM raggiungibili solo lì.
+Perché: MDD si costruisce per gradi senza rompere il modello redirect esistente.
+Alternativa scartata: solo landing ospitate (build enorme, rompe i QR redirect); solo
+redirect (MDD Moduli 2–11 restano visione irraggiungibile).
+
+## D-007 · 2026-07-26 · Dati: PII+CRM col cancello GDPR — [LOCKED]
+Contesto: profondità dei dati sul visitatore (D-2 dell'apertura). Decisione: PII
+completo + CRM, ma **vincolato** — PII solo con base giuridica piena (consenso, DPA,
+diritto all'oblio, SAD §7); default operativo degradato ad **aggregati pseudonimi** +
+`visitor_hash` finché il consenso non c'è. Perché: massimo valore analitico scelto da
+Nick, ma la PII è un traguardo con cancello legale, non l'impostazione di partenza.
+Alternativa scartata: aggregati-only (zero rischio, niente CRM); PII senza cancello
+(rischio legale alto prima della validazione).
+
+## D-008 · 2026-07-26 · Gerarchia = albero di QR, non tabella campagne — [LOCKED]
+Contesto: forma della gerarchia (D-3 dell'apertura; T-012 l'aveva ipotizzata come
+`campaigns`+`campaign_id`). Decisione: **ogni nodo È un QR** — `qr_codes.parent_id`
+self-ref + `owner_id` per-nodo (delega intermediario via `granted_by`) + `purpose`;
+single-parent in v1. Perché: modella la rivendita per-nodo e ogni livello monitora il
+suo sottoalbero — ponte diretto verso SHAER_MASTER (referral/anti-frode/crediti).
+Alternativa scartata: `campaigns` separata + `campaign_id` (non modella la delega
+per-nodo); molti-a-molti (over-engineering per v1).

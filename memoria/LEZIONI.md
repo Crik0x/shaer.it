@@ -18,12 +18,13 @@ Gerarchia della forza: nota < lezione < regola < controllo meccanico < hook.
 | L-001 · Con anon key pubblica il confine è il **DB**: un grant «solo authenticated» non è reale finché non è introspezionato (Supabase concede EXECUTE ad `anon` di default; `revoke … from public` non lo toglie, si revoca da `anon`) | `→ test` — `apps/qr/lib/grants.test.ts` (T-007): fallisce se una funzione/tabella esce dalla whitelist anon `{resolve_qr, anonymize_ip}` |
 | L-004 · Type-error TS (es. callback Recharts annotato a mano) fino al deploy rosso: in locale nessuno girava `tsc` (T-011) | `→ hook` — `pre-commit §9`: `tsc --noEmit` su commit che toccano TS di `apps/qr` |
 | L-005 · Frontmatter dossier non conforme a MODELLO (`livello:` vs `tier:`, chiavi assenti): rompe il grep del distillatore (T-011/012) | `→ hook` — `pre-commit §8`: 5 chiavi obbligatorie sui `dossier/*.md` |
+| L-006 · CTE ricorsiva su albero self-ref (`parent_id`) senza clausola `CYCLE` + trigger anti-ciclo senza lock atomico → UPDATE concorrenti che si scambiano il genitore chiudono un ciclo → loop infinito sul rollup ricorsivo owner-scoped (T-012, colto dal revisore) | `→ test` — `apps/qr/lib/tree.test.ts` (anti-ciclo sequenziale + concorrente A↔B; la prova verde attende l'apply della migrazione su DB) |
 
 ## In vigore — testo, a scadenza
 
 | id | nata | lezione | conversione | sessioni |
 |---|---|---|---|---|
-| L-003 | 2026-07-25 | Client Supabase browser creato **nel corpo** di un `'use client'` gira nel **prerender di build**: se manca l'env `NEXT_PUBLIC_*`, una pagina statica (`/login`) fa fallire `next build`. Crearlo **negli handler/effetti** | `→ regola` — provata (build senza env → verde) | 1 |
+| L-003 | 2026-07-25 | Client Supabase browser creato **nel corpo** di un `'use client'` gira nel **prerender di build**: se manca l'env `NEXT_PUBLIC_*`, una pagina statica (`/login`) fa fallire `next build`. Crearlo **negli handler/effetti** | `→ regola` — provata (build senza env → verde) | 2 |
 
 ## Ritirate
 

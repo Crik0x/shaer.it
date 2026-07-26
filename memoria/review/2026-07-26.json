@@ -1,16 +1,27 @@
 {
+  "esito": "respinto",
+  "file_rivisto": "supabase/migrations/20260726000001_qr_tree_and_scan_enrichment.sql",
   "data": "2026-07-26",
-  "sessione": "T-011 reskin luxury + albero rete; T-012 refocus campagne",
-  "revisioni": [
+  "rilievi": [
     {
-      "ambito": "T-011 — reskin luxury Arkés + albero rete (network-tree, lib/rete, restyle landing)",
-      "esito": "approvato",
-      "note": "Prima passata respinta (nodeRadius/nodeColor/initials senza test + colori duplicati fuori dai token + --border-strong fantasma); rilievi risolti e verificati: 11/11 test, tsc/eslint puliti, grep letterali brand vuoto, --border-strong definito in globals.css."
+      "gravita": 4,
+      "riga": 41,
+      "problema": "trigger anti-ciclo in READ COMMITTED senza lock: UPDATE concorrenti possono creare un ciclo a 2 nodi; la CTE ricorsiva descendants di qr_tree_rollup non ha guardia CYCLE -> loop infinito sul rollup (DEFINER, dashboard).",
+      "rimedio": "advisory xact lock nel trigger + clausola CYCLE sulla CTE"
     },
     {
-      "ambito": "T-012 — refocus albero landing da rete-referral a gerarchia di campagne (network-tree.tsx seed+etichette, page.tsx copy)",
-      "esito": "approvato",
-      "note": "Rifocalizzazione dati+copy coerente, nessun riferimento orfano al vecchio dominio, motore puro lib/rete.ts invariato, tsc --noEmit 0 e node --test 11/11 verificati direttamente."
+      "gravita": 4,
+      "riga": 25,
+      "problema": "trigger anti-ciclo e rollup ricorsivo senza test (logica calcolabile, regola 5).",
+      "rimedio": "apps/qr/lib/tree.test.ts su modello grants.test.ts"
+    },
+    {
+      "gravita": 2,
+      "riga": 75,
+      "problema": "commento promette 'intero sottoalbero' ma mine/own filtrano owner_id=auth.uid(): nodi delegati escono silenziosamente.",
+      "rimedio": "allineare il commento allo scope v1 owner-scoped (SAD 3.1, cross-owner differito)"
     }
-  ]
+  ],
+  "esito_dopo_fix": "approvato",
+  "nota_residua": "grav.1 non bloccante: advisory lock a chiave costante serializza le mutazioni albero cross-tenant; restringere la chiave (radice albero) se il volume cresce"
 }
