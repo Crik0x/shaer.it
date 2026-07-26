@@ -133,6 +133,27 @@ if echo "$STAGED" | grep -qE '^apps/qr/.*\.(ts|tsx)$'; then
   fi
 fi
 
+# ── 10 · Funzione nuova senza test (avviso) ────────────────────────────────
+# Trappola distillata 3 volte (T-011, T-012 ×2): una funzione/RPC nuova committata
+# senza test la ferma solo il revisore — un giro intero. Qui è AVVISO, non blocco:
+# i trigger si provano per comportamento, non per nome, e un blocco crudo li
+# falserebbe. Cerca il NOME della funzione nuova in un *.test.ts qualsiasi.
+NAMES=""
+for f in $STAGED; do
+  [ -f "$f" ] || continue
+  case "$f" in
+    *.test.ts) continue ;;
+    *.sql)        NAMES="$NAMES $(grep -oiE 'create (or replace )?function [a-z0-9_.]+' "$f" 2>/dev/null | sed -E 's/.* //; s/^public\.//')" ;;
+    apps/qr/*.ts) NAMES="$NAMES $(grep -oE 'export function [A-Za-z0-9_]+' "$f" 2>/dev/null | sed -E 's/.* //')" ;;
+  esac
+done
+for name in $NAMES; do
+  [ -z "$name" ] && continue
+  if ! grep -rqIE --include='*.test.ts' --exclude-dir=node_modules --exclude-dir=.next "\b$name\b" . 2>/dev/null; then
+    echo "⚠️  funzione '$name' nuova: nessun *.test.ts la menziona. Coprila (anche per comportamento) o rimandala al task che la usa."
+  fi
+done
+
 if [ "$BLOCCO" -ne 0 ]; then
   echo ""
   echo "Commit fermato. Per forzare in emergenza: git commit --no-verify"

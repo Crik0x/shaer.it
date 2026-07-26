@@ -1,0 +1,10 @@
+{
+  "sessione": "2026-07-26c",
+  "esito": "approvato",
+  "file_rivisti": ["apps/qr/app/dashboard/page.tsx","apps/qr/app/r/[short_code]/route.ts","apps/qr/lib/scan.ts","apps/qr/lib/dashboard.ts","supabase/migrations/20260726000002_resolve_qr_enrichment.sql"],
+  "giro": "respinto->approvato",
+  "rilievi_risolti": [
+    {"gravita":5,"problema":"qr_breakdown/qr_uniques (migr 0003) committate senza test né consumatore (3a occorrenza trappola PATTERN)","fix":"migrazione 0003 rimossa, rimandata a T-014 che le scrivera' col widget e il test"},
+    {"gravita":2,"problema":"VISITOR_SALT fallback pubblico prevedibile indebolisce la pseudonimizzazione se l'env manca in prod","fix":"salt da env only; senza env visitor_hash=null (mai hash con salt noto) + riga Per Nick"}
+  ]
+}

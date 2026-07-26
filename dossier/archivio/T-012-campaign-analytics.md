@@ -3,9 +3,9 @@ task: T-012
 tier: C
 titolo: Analizzatore ramificato di campagne + dashboard di analisi pubblicitaria
 aree: [campagne, analytics, dashboard, dati-personali, schema-supabase, marketing]
-stato: aperto
+stato: chiuso
 riporti: 1
-sessioni: [2026-07-26, 2026-07-26b]
+sessioni: [2026-07-26, 2026-07-26b, 2026-07-26c]
 ---
 
 # T-012 · Campaign analytics — l'oro per gli esercenti
@@ -138,6 +138,12 @@ reale:**
   (T-011) che una funzione/trigger nuovo arriva al revisore senza test → PATTERN.md,
   candidato hook. La race concorrente resta provata **solo a lettura** (`[~]`): il
   test copre il ciclo sequenziale, non il `Promise.all` A↔B.
+- **(2026-07-26c) Revisore respinto: RPC `qr_breakdown`/`qr_uniques` committate senza
+  test né consumatore** → SQL nuovo aggiunto "per il futuro" ma inerte (il dashboard
+  usa RLS diretta) e non testato → **3ª occorrenza** della trappola PATTERN.md
+  (T-011, T-012×2); rimossa la migrazione 0003 e rimandata a T-014 col suo test →
+  **sì, prevenibile**: lo hook resta "candidato" da 2 sessioni → promosso a controllo
+  meccanico (`pre-commit §10`, avviso) in questa chiusura.
 
 ## Sessione 2026-07-26b (↻1) — reframe D-3 + schema scritto
 
@@ -171,9 +177,33 @@ reale:**
 4. Dashboard reale (PRD E6): KPI, albero reale (rimpiazza la demo), serie+confronto,
    breakdown, geo, heatmap, tabella rami, export. Server Components + Suspense.
 
-## Stato e piano (corrente)
-Aperto, `↻1`. Lo stato e il piano eseguibile sono nella sezione **«Sessione
-2026-07-26b»** qui sopra (4 punti pronti a freddo). Le sezioni §1–§5 restano valide
-come analisi TRANNE la forma dello schema (superata dal reframe D-3: albero di QR,
-non `campaigns`). Debito `[~]` aperto: migrazione non applicata su DB, `tree.test.ts`
-non ancora verde (attende l'apply + env), race concorrente provata solo a lettura.
+## Chiusura 2026-07-26c — nucleo consegnato e provato
+
+Nick ha **applicato** la migrazione albero (0001). Verificato e chiuso il nucleo:
+
+**Fatto e PROVATO (regola 6):**
+- `tree.test.ts` **4/4 verde sul DB reale** (anti-ciclo sequenziale+concorrente,
+  rollup, isolamento owner) → lo slice albero+rollup passa da `[~]` a `[x]`.
+- **Dashboard reale** (`app/dashboard/page.tsx`, Server Component, owner-scoped RLS
+  + RPC `qr_tree_rollup`): KPI (totali, QR attivi, 7g, top ramo), timeline 30g,
+  breakdown device/browser, **tabella rami dal rollup reale**. Verificato end-to-end
+  in locale: creato QR, generate **7 scansioni**, dashboard popolato (timeline
+  2026-07-26:7, desktop/Chrome 100%, ramo «Campagna Estate»). Suite **41/41 verde**,
+  `grants.test.ts` conferma whitelist anon invariata (L-001).
+- **Enrichment plumbing** (groundwork per T-014): `lib/scan.ts` +os/primaryLang/
+  visitorHash/dayStampUtc (puri, testati), route arricchita con **fallback regola 7**
+  (se 0002 non applicata ripiega ai 6 arg → il redirect non si rompe), migrazione
+  `20260726000002_resolve_qr_enrichment` **scritta `[~]`** (non applicata).
+- `lib/dashboard.ts` (groupCount/topBranch/dailyBuckets/pct, testati 5/5).
+
+**Revisore** `2026-07-26c.json`: respinto (0003 inerte senza test — 3ª occorrenza
+trappola; salt pubblico) → 0003 rimossa e rimandata a T-014, salt degradato a null →
+**approvato**.
+
+**Il resto è T-014** (arricchimento applicato + geo/os/lang/uniques + heatmap +
+export + funnel + consigli). T-012 chiuso: l'analizzatore albero e il dashboard
+scan-side reale sono in produzione-ready.
+
+## Stato e piano (storico, pre-chiusura)
+Le sezioni §1–§5 restano valide come analisi TRANNE la forma dello schema (reframe
+D-3: albero di QR, non `campaigns`).
