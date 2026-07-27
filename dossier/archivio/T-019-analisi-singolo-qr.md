@@ -3,7 +3,7 @@ task: T-019
 tier: M
 titolo: Pagina analisi del singolo QR
 aree: [analytics, dashboard, qr-detail, dati-personali, ux]
-stato: aperto
+stato: chiuso
 riporti: 0
 sessioni: [2026-07-27, 2026-07-27b]
 ---

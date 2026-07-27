@@ -147,6 +147,17 @@ task che si **consegna**. Vive in TODO con lo stato `[N]` e la regola è secca:
 
 Aggiungi `[N]` alla legenda degli stati in testa a `TODO.md`.
 
+## 8-quater · Il prompt da lanciare — sempre, dopo ogni chiusura
+
+Ogni `/chiusura` **deve** lasciare in `TODO.md` una sezione **«Prossima sessione —
+prompt da lanciare»** con il prompt pronto da incollare: la sequenza consigliata dei
+task, con le decisioni già prese richiamate per numero. Non è un di più: è ciò che
+permette a una sessione a freddo di partire senza ri-derivare la sequenza.
+
+- Sta in un blocco codice, pronto da copiare.
+- Si **sostituisce** a ogni chiusura (come «Per Nick»): è una fotografia, non un saldo.
+- Se manca, la chiusura non è finita.
+
 ## 9 · Le lezioni: o diventano codice, o muoiono
 
 Quando un errore si ripete o una correzione insegna qualcosa, si scrive in

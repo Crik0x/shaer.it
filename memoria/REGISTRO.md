@@ -24,3 +24,4 @@ comparire in `TODO.md`**. Un task non può sparire da entrambi.
 
 - T-014 · 2026-07-27 · Dashboard arricchita (geo/os/lingua/unici/heatmap/CSV/consigli) · fatto · suite 52/52 verde, revisore approvato (review/2026-07-27.json), CSV-injection risolta con test; RPC in-JS non costruita (scelta di scala)
 - T-015 · 2026-07-27 · Selettore periodo analitiche (7/30/60/120/360g + orario 7g, query param) · fatto · `hourlyBuckets` testata, 52/52 verde, tsc pulito; rendering [~] confermato da Nick loggato (screenshot)
+- T-019 · 2026-07-27 · Analisi singolo QR (pagina `dashboard/qr/[short_code]` ricomposta in derivazione-in-JS scoped a `qr_id`, riuso di `lib/dashboard.ts` + rollup own/sottoalbero) · fatto · `dashboard.test` 16/16 + tsc pulito + route 307→/login; revisore approvato (`review/2026-07-27b.json`); **eyeball di Nick** conferma rendering e navigazione (2026-07-27b); rimossi analytics-panel/analytics-chart · `archivio/T-019`

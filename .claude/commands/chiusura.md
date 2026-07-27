@@ -68,6 +68,9 @@ di 5, se ne converte una prima di aggiungerne un'altra.
   Aggiorna la riga di saldo in testa. A **`↻3` fermati** e portami il task con la
   diagnosi e due o tre vie d'uscita, ciascuna con la sua conseguenza.
   Solo la sezione «Per Nick» si sostituisce.
+- **«Prossima sessione — prompt da lanciare»** (`lavoro.md` §8-quater): riscrivi il
+  blocco-prompt col piano pronto per la sessione dopo. **Sempre**, dopo ogni chiusura.
+  Se manca, la chiusura non è finita.
 - `REGISTRO.md` in append: `T-NNN · data · task · esito · prova`
 - esegui `node scripts/costo.mjs`: i tetti si **misurano**, non si stimano a occhio
 - esegui `node scripts/resa.mjs --registra P D C R` coi quattro numeri di questa

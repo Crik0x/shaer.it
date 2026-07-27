@@ -101,3 +101,31 @@ cancella accetta perdita dati e liberazione dello slug. Il routing del @tag uten
 da decidere (T-020, nodo aperto). Alternativa scartata: slug modificabile in vita (rompe
 la regola 7, un QR stampato punterebbe a un indirizzo morto); slug mai riassegnabile
 (spreca lo spazio dei nomi corti, il più conteso).
+
+## D-011 · 2026-07-27 · Provider pagamento = Stripe (T-016)
+Contesto: scelta del provider per il piano free/pro (N-c, feedback Nick 2026-07-27b).
+Decisione: **Stripe**. Perché: webhook maturi, SCA/EU ok, standard di mercato. La
+publishable key (`pk_live_…`, fornita da Nick) è sicura lato client e va in env Vercel
+come `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`; la secret key (`sk_live_…`) **mai in repo né
+in chat** → solo nei secret Vercel (ambiente Production). Alternativa scartata:
+Lemon Squeezy / Paddle (merchant-of-record, IVA UE gestita, ma fee più alta e meno
+controllo); rimandare (scartato: Nick ha scelto di sbloccare la costruzione ora).
+
+## D-012 · 2026-07-27 · Riferimento estetico T-017 = arkes_dashboard_v3
+Contesto: il restyling dashboard (T-017) va fatto su un riferimento, non a mano libera
+(N-d; T-011 respinto per estetica). Decisione: seguire una **struttura simile** a
+`D:\Desktop\Arkés\arkes_dashboard_v3.html` (fuori dal repo; da leggere all'apertura di
+T-017). I colori restano i token del progetto (regola 8): si prende la **struttura**
+—griglia, densità, gerarchia dei widget— non la palette. Alternativa scartata: mano
+libera stile Stripe (Nick ha fornito un riferimento concreto).
+
+## D-013 · 2026-07-27 · Fuso orario: UTC nel dato, fuso del cliente nel display
+Contesto: le analitiche mostrano "UTC" ovunque (timeline, heatmap); risposta di Nick su
+T-006. Decisione: **storage e calcolo restano in UTC** (append-only, deterministico,
+testabile); il **display converte nel fuso del cliente**. Granularità timeline:
+**Giorno di default + toggle Ora**. Nota implementativa (per il task): un Server
+Component non conosce il fuso del browser → la formattazione delle label va su una foglia
+`'use client'` (Intl con la TZ del browser) o via un cookie di TZ; le funzioni pure di
+`lib/dashboard.ts` continuano a bucketizzare in UTC, la conversione è solo di
+presentazione. Alternativa scartata: mostrare UTC al cliente (confonde chi legge orari
+locali); salvare in fuso locale (rompe determinismo e confronti cross-fuso).
