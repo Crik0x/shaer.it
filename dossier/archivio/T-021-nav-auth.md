@@ -3,7 +3,7 @@ task: T-021
 tier: M
 titolo: Nav della landing consapevole del login (Dashboard + logout)
 aree: [auth, landing, nav, server-components]
-stato: aperto
+stato: chiuso
 riporti: 0
 sessioni: [2026-07-27c]
 ---
@@ -36,5 +36,5 @@ raggiungibile invece di Accedi/Registrati. Da anonimo resta com'era.
   stato `[~]`. Promuove a `[x]`/`[A]` l'occhio di Nick (ha una sessione sul :3000).
 
 ## Prova / stato di chiusura
-Codice completo, tsc verde, revisore approvato. `[~]` in attesa dell'eyeball di Nick
-sul ramo loggato (Dashboard + Esci). Nessun lavoro residuo di codice.
+Codice completo, tsc verde, revisore approvato. **Chiuso `[A]` il 2026-07-27c**:
+eyeball di Nick conferma che da loggato la homepage mostra **Dashboard + Esci** → REGISTRO.

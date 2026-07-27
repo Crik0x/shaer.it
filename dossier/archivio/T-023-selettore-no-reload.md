@@ -3,7 +3,7 @@ task: T-023
 tier: M
 titolo: Selettore periodo senza scroll-to-top
 aree: [dashboard, navigazione, ux, next]
-stato: aperto
+stato: chiuso
 riporti: 0
 sessioni: [2026-07-27c]
 ---
@@ -38,3 +38,7 @@ Server Component per il dato restano.
 ## Propagazione
 `grep scroll=` sulle due pagine dashboard: entrambi i selettori coperti. Nessun
 altro selettore `?d=` nel repo.
+
+## Chiusura
+**Chiuso `[A]` il 2026-07-27c**: eyeball di Nick conferma che cambiando Periodo la
+vista non salta più in cima → REGISTRO.

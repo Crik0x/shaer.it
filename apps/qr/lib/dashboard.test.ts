@@ -96,6 +96,50 @@ test("hourDayMatrix: scarta le date invalide senza contarle", () => {
   assert.equal(h.total, 1);
 });
 
+// ── Fuso del cliente (T-022/B · D-013/D-014) ────────────────────────────────
+
+test("dailyBuckets: il fuso sposta il giorno al confine (Europe/Rome vs UTC)", () => {
+  const scans = ["2026-07-27T23:30:00Z"]; // Rome +2 → 2026-07-28T01:30
+  const now = new Date("2026-07-28T12:00:00Z");
+  const rome = dailyBuckets(scans, 3, now, "Europe/Rome");
+  assert.deepEqual(rome.map((x) => x.label), ["2026-07-26", "2026-07-27", "2026-07-28"]);
+  assert.deepEqual(rome.map((x) => x.hits), [0, 0, 1], "la scansione cade nel 28 locale");
+  const utc = dailyBuckets(scans, 3, now, "UTC");
+  assert.deepEqual(utc.map((x) => x.hits), [0, 1, 0], "in UTC resta nel 27");
+});
+
+test("hourDayMatrix: il fuso sposta ora e giorno-settimana (Rome, e +5:30 non rompe)", () => {
+  const rome = hourDayMatrix(["2026-07-27T23:30:00Z"], "Europe/Rome");
+  assert.equal(rome.matrix[1][1], 1, "lun 23:30 UTC → mar 01 locale (Rome +2)");
+  assert.equal(rome.total, 1);
+  const utc = hourDayMatrix(["2026-07-27T23:30:00Z"], "UTC");
+  assert.equal(utc.matrix[0][23], 1, "in UTC resta lun 23");
+  const kolkata = hourDayMatrix(["2026-07-27T20:00:00Z"], "Asia/Kolkata");
+  assert.equal(kolkata.matrix[1][1], 1, "+5:30: 20:00Z → mar 01:30 locale, bucket mar/01");
+});
+
+test("hourlyBuckets: la label oraria è nel fuso del cliente", () => {
+  const h = hourlyBuckets(["2026-07-27T12:00:00Z"], 1, new Date("2026-07-27T12:00:00Z"), "Europe/Rome");
+  assert.deepEqual(h.map((x) => x.label), ["2026-07-27 14:00"], "12:00Z → 14:00 a Roma");
+  assert.deepEqual(h.map((x) => x.hits), [1]);
+});
+
+test("dailyBuckets: scarta le date invalide senza contarle", () => {
+  const now = new Date("2026-07-27T12:00:00Z");
+  const s = dailyBuckets(["non-una-data", "2026-07-27T10:00:00Z"], 1, now);
+  assert.deepEqual(s.map((x) => x.hits), [1]);
+});
+
+test("fuso invalido → fallback UTC (profiles.timezone corrotto non crasha)", () => {
+  const scans = ["2026-07-27T23:30:00Z"];
+  const now = new Date("2026-07-28T12:00:00Z");
+  const bad = dailyBuckets(scans, 3, now, "Mars/Phobos");
+  const utc = dailyBuckets(scans, 3, now, "UTC");
+  assert.deepEqual(bad.map((x) => x.hits), utc.map((x) => x.hits), "come UTC");
+  const badH = hourDayMatrix(scans, "Not/AZone");
+  assert.equal(badH.matrix[0][23], 1, "fallback UTC: lun 23");
+});
+
 test("toCsv: header + righe, escaping RFC 4180 (virgole, virgolette, newline)", () => {
   const csv = toCsv(
     [

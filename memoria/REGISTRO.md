@@ -29,3 +29,6 @@ comparire in `TODO.md`**. Un task non può sparire da entrambi.
 T-022/A · 2026-07-27 · Fondazione profiles (blocco A di T-022) · fatto+provato · migrazione 20260727000001 applicata al DB dev; `profiles.test.ts` + `grants.test.ts` verdi (signup→profilo UTC, RLS isola, superficie anon intatta); revisore approvato → D-014
 T-021 · 2026-07-27 · Nav landing consapevole del login · [~] scritto non provato · codice completo (site-header async, getUser→Dashboard+logout), tsc+revisore ok, logged-out eyeballed; ramo loggato in attesa eyeball di Nick
 T-023 · 2026-07-27 · Selettore periodo senza scroll-to-top · [~] scritto non provato · scroll={false} sui Link periodo (2 pagine), prova documentale (Next link.md §scroll)+tsc+revisore; comportamento dietro auth in attesa eyeball di Nick
+T-021 · 2026-07-27c · Nav landing consapevole del login · [A] chiuso · eyeball di Nick conferma: da loggato la homepage mostra Dashboard + Esci
+T-023 · 2026-07-27c · Selettore periodo senza scroll-to-top · [A] chiuso · eyeball di Nick conferma: cambiando Periodo la vista non salta più in cima
+T-022/B · 2026-07-27c · Funzioni analitiche TZ-aware (blocco B di T-022) · fatto+provato · dailyBuckets/hourlyBuckets/hourDayMatrix con param timeZone (default UTC) via Intl + safeTimeZone fallback; dashboard.test 21/21 verde; revisore approvato (2 rilievi chiusi in giro)

@@ -44,44 +44,107 @@ export function topBranch(rows: RollupRow[]): RollupRow | null {
  * Serie giornaliera degli ultimi `days` giorni (UTC), riempita di zeri: ogni
  * giorno esiste anche senza scansioni, così il grafico non ha buchi.
  */
+// ── Fuso del cliente (D-013/D-014) ──────────────────────────────────────────
+// Il dato resta UTC; il display bucketizza nel fuso del cliente. Le tre serie
+// sotto derivano giorno/ora/giorno-settimana LOCALI via Intl (nome IANA), così
+// DST e offset a mezz'ora (es. Asia/Kolkata +5:30) sono corretti — cosa che una
+// conversione delle sole label non può fare per heatmap e serie giornaliera.
+// `timeZone` default 'UTC' → comportamento storico invariato (i test lo fissano).
+
+const WD_INDEX: Record<string, number> = {
+  Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4, Sat: 5, Sun: 6,
+};
+
+/** Giorno ('YYYY-MM-DD'), ora (0-23) e giorno-settimana lun-based (0=lun) di una
+ *  data nel fuso IANA dato. */
+function zonedFields(d: Date, timeZone: string): { day: string; hour: number; wd: number } {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    hour12: false,
+    weekday: "short",
+  }).formatToParts(d);
+  const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
+  let hour = parseInt(get("hour"), 10);
+  if (hour === 24) hour = 0; // alcuni runtime rendono la mezzanotte come '24'
+  return {
+    day: `${get("year")}-${get("month")}-${get("day")}`,
+    hour,
+    wd: WD_INDEX[get("weekday")] ?? 0,
+  };
+}
+
+const zonedDay = (d: Date, timeZone: string) => zonedFields(d, timeZone).day;
+
+/** timeZone se è un nome IANA valido, altrimenti 'UTC'. L'input arriva da
+ *  `profiles.timezone` (editabile): un valore corrotto non deve far crashare la
+ *  dashboard con il RangeError di Intl. Validato una volta per chiamata, non per riga. */
+function safeTimeZone(timeZone: string): string {
+  try {
+    new Intl.DateTimeFormat("en-CA", { timeZone });
+    return timeZone;
+  } catch {
+    return "UTC";
+  }
+}
+
 export function dailyBuckets(
   isoDates: string[],
   days: number,
   now: Date = new Date(),
+  timeZone: string = "UTC",
 ): Slice[] {
+  const tz = safeTimeZone(timeZone);
   const counts = new Map<string, number>();
   for (const iso of isoDates) {
-    const day = new Date(iso).toISOString().slice(0, 10);
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) continue;
+    const day = zonedDay(d, tz);
     counts.set(day, (counts.get(day) ?? 0) + 1);
   }
+  // Asse = ultimi `days` giorni di CALENDARIO nel fuso, fino a oggi. L'ancora a
+  // mezzogiorno del giorno locale evita che una transizione DST salti/ripeta una data.
+  const [ty, tm, td] = zonedDay(now, tz).split("-").map(Number);
+  const anchor = Date.UTC(ty, tm - 1, td, 12);
   const out: Slice[] = [];
   for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(now.getTime() - i * 86400000).toISOString().slice(0, 10);
-    out.push({ label: d, hits: counts.get(d) ?? 0 });
+    const label = new Date(anchor - i * 86400000).toISOString().slice(0, 10);
+    out.push({ label, hits: counts.get(label) ?? 0 });
   }
   return out;
 }
 
 /**
- * Serie ORARIA delle ultime `hours` ore (UTC), riempita di zeri. È la controparte
- * di dailyBuckets per la vista ad alta risoluzione (es. "ultimi 7 giorni · orario"
- * = 168 ore). Label "YYYY-MM-DD HH:00".
+ * Serie ORARIA delle ultime `hours` ore, riempita di zeri, con giorno/ora nel fuso
+ * dato (default UTC). È la controparte di dailyBuckets per la vista ad alta
+ * risoluzione (es. "ultimi 7 giorni · orario" = 168 ore). Label "YYYY-MM-DD HH:00".
+ * Ogni barra è un'ora assoluta: rietichettarla nel fuso locale è fedele.
  */
 export function hourlyBuckets(
   isoDates: string[],
   hours: number,
   now: Date = new Date(),
+  timeZone: string = "UTC",
 ): Slice[] {
+  const tz = safeTimeZone(timeZone);
+  const keyOf = (d: Date) => {
+    const f = zonedFields(d, tz);
+    return `${f.day} ${String(f.hour).padStart(2, "0")}`;
+  };
   const counts = new Map<string, number>();
   for (const iso of isoDates) {
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) continue;
-    counts.set(d.toISOString().slice(0, 13), (counts.get(d.toISOString().slice(0, 13)) ?? 0) + 1);
+    const key = keyOf(d);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
   }
   const out: Slice[] = [];
   for (let i = hours - 1; i >= 0; i--) {
-    const key = new Date(now.getTime() - i * 3600000).toISOString().slice(0, 13);
-    out.push({ label: `${key.replace("T", " ")}:00`, hits: counts.get(key) ?? 0 });
+    const key = keyOf(new Date(now.getTime() - i * 3600000));
+    out.push({ label: `${key}:00`, hits: counts.get(key) ?? 0 });
   }
   return out;
 }
@@ -105,27 +168,28 @@ export function uniqueCount(hashes: (string | null | undefined)[]): number {
 }
 
 export interface Heatmap {
-  /** matrix[giorno][ora] — giorno 0=lun … 6=dom, ora 0…23 in UTC. */
+  /** matrix[giorno][ora] — giorno 0=lun … 6=dom, ora 0…23 nel fuso dato (default UTC). */
   matrix: number[][];
   max: number;
   total: number;
 }
 
 /**
- * Heatmap giorno-della-settimana × ora (UTC), da timestamp ISO. Rivela il ritmo
- * settimanale delle scansioni (E6.6). Giorno 0 = lunedì (settimana all'italiana),
- * non domenica come `Date.getUTCDay()`.
+ * Heatmap giorno-della-settimana × ora nel fuso dato (default UTC), da timestamp
+ * ISO. Rivela il ritmo settimanale delle scansioni (E6.6). Giorno 0 = lunedì
+ * (settimana all'italiana). Il fuso conta: un picco "alle 14 UTC" è "alle 16"
+ * per un cliente a UTC+2 — la sola rietichetta dell'asse sbaglierebbe ai confini.
  */
-export function hourDayMatrix(isoDates: string[]): Heatmap {
+export function hourDayMatrix(isoDates: string[], timeZone: string = "UTC"): Heatmap {
+  const tz = safeTimeZone(timeZone);
   const matrix = Array.from({ length: 7 }, () => new Array(24).fill(0));
   let max = 0;
   let total = 0;
   for (const iso of isoDates) {
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) continue;
-    const day = (d.getUTCDay() + 6) % 7; // 0=dom→6, 1=lun→0 … settimana lun-based
-    const hour = d.getUTCHours();
-    const n = ++matrix[day][hour];
+    const { wd, hour } = zonedFields(d, tz);
+    const n = ++matrix[wd][hour];
     if (n > max) max = n;
     total++;
   }

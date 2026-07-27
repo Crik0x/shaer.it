@@ -76,17 +76,19 @@ Giorno default + toggle Ora. Tocca dashboard aggregata **e** singolo QR.
   una micro-migrazione col touch-trigger). La migrazione A **non si riscrive**:
   è già applicata (immutabilità).
 
-### Blocco B — DA FARE · funzioni pure TZ-aware (`lib/dashboard.ts`)
-- `dailyBuckets/hourlyBuckets/hourDayMatrix` ricevono un parametro
-  `timeZone: string` (IANA), **default `'UTC'`** → i test esistenti passano senza
-  modifiche. Il bucketing usa `Intl.DateTimeFormat('en-CA', { timeZone, year,
-  month, day, hour, weekday, hour12:false })` (o `formatToParts`) per estrarre
-  giorno/ora **locali** invece di `toISOString()/getUTC*`.
-  - Attenzione: `en-CA` dà `YYYY-MM-DD` ordinabile; per la heatmap serve il
-    weekday locale (lun=0) e l'ora locale 0-23.
-- Nuovi casi in `dashboard.test.ts`: una scansione `…T23:30:00Z` del giorno D cade
-  in **D+1** per `Europe/Rome`; l'ora della heatmap è spostata di +2 (o +1 con
-  ora solare) rispetto a UTC; un fuso a mezz'ora (`Asia/Kolkata`, +5:30) non rompe.
+### Blocco B — FATTO E PROVATO (`[x]`) — sessione 2026-07-27c
+- `dailyBuckets/hourlyBuckets/hourDayMatrix` (`lib/dashboard.ts`) ricevono
+  `timeZone: string = "UTC"` → i 16 test esistenti (senza arg) restano verdi.
+  Helper `zonedFields(d, tz)` via `Intl.DateTimeFormat('en-CA', …).formatToParts`
+  estrae giorno/ora/weekday **locali** (guard su `hour===24`); l'asse giornaliero
+  usa un'**ancora a mezzogiorno** del giorno locale per non slittare col DST.
+- `safeTimeZone(tz)`: un nome non-IANA (da `profiles.timezone` editabile) → fallback
+  `'UTC'` invece del `RangeError` di Intl (rilievo revisore, gravità 1). Validato
+  una volta per chiamata.
+- **Prova: `dashboard.test.ts` 21/21 verde** — casi TZ: shift giornaliero
+  (`23:30Z`→giorno dopo a Roma), heatmap ora+giorno spostati, `Asia/Kolkata` +5:30,
+  label oraria localizzata, data invalida scartata, fuso invalido→UTC. tsc pulito,
+  revisore approvato.
 
 ### Blocco C — DA FARE · wiring + preferenza
 - `dashboard/page.tsx` e `dashboard/qr/[short_code]/page.tsx`: query del proprio

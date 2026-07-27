@@ -40,5 +40,27 @@
       }
     ],
     "sintesi": "Migrazione profiles coerente con RLS/owner_id/L-001 e stile esistente; T-021/T-023 chirurgici, tsc pulito, nessuna regressione sulle regole d'oro."
+  },
+  {
+    "data": "2026-07-27",
+    "sessione": "2026-07-27c (T-022 blocco B)",
+    "ancora": "e5ac993",
+    "esito": "approvato",
+    "task": ["T-022/B"],
+    "rilievi": [
+      {
+        "gravita": 2,
+        "file": "apps/qr/lib/dashboard.ts",
+        "problema": "dailyBuckets guadagna lo scarto silenzioso delle date invalide senza test dedicato (golden rule 5)",
+        "stato": "RISOLTO in giro: test 'dailyBuckets: scarta le date invalide'"
+      },
+      {
+        "gravita": 1,
+        "file": "apps/qr/lib/dashboard.ts",
+        "problema": "zonedFields non valida timeZone: un valore non-IANA da profiles.timezone fa lanciare RangeError e crasherebbe la dashboard",
+        "stato": "RISOLTO in giro: safeTimeZone(tz) con fallback UTC + test 'fuso invalido → fallback UTC'"
+      }
+    ],
+    "sintesi": "Bucketing TZ-aware corretto (DST/Kolkata/hour=24 verificati) e back-compat UTC intatta; 21/21 verde dopo i due rilievi chiusi."
   }
 ]
