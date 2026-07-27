@@ -1,0 +1,12 @@
+{
+  "sessione": "2026-07-27b",
+  "ancora": "d09a46c",
+  "task": "T-019",
+  "ambito": [
+    "apps/qr/app/dashboard/qr/[short_code]/page.tsx",
+    "rimossi: analytics-panel.tsx, analytics-chart.tsx"
+  ],
+  "esito": "approvato",
+  "rilievi": [],
+  "sintesi": "T-019: composizione corretta delle funzioni pure di lib/dashboard.ts, owner-scoping via RLS invariato, RPC qr_tree_rollup preesistente (nessuna nuova), coercizioni Number() coerenti con la dashboard aggregata, nessun import pendente verso i componenti rimossi, tsc pulito e test motore 16/16 verdi."
+}

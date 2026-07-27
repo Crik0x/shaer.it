@@ -129,6 +129,24 @@ conseguenza.
 
 Solo la sezione «Per Nick» si sostituisce. Tutto il resto si conserva.
 
+## 8-ter · Le azioni di Nick — stato `[N]`
+
+Ciò che **solo Nick può fare** (infrastruttura, segreti, pagamenti, decisioni di
+dominio, prove che esigono un IP/dispositivo reale) non è un task che si «fa»: è un
+task che si **consegna**. Vive in TODO con lo stato `[N]` e la regola è secca:
+
+- **Ogni `[N]` porta il come-fare**, passo per passo, pronto da eseguire senza
+  altro contesto. Un `[N]` che dice solo *cosa* e non *come* è incompleto.
+- **Quando Nick conferma «fatto», la riga `[N]` si rimuove** — non si archivia, non
+  lascia saldo: la prova del suo effetto vive già nel task che la consumava (o nel
+  REGISTRO se era un task a sé). È la sola eccezione alla legge di conservazione
+  §8-bis, e vale **solo** per le `[N]`.
+- Claude **non blocca** sulle `[N]`: sviluppa tutto il lavoro che non le consuma,
+  le scrive, e riprende da dove servono appena Nick le ha eseguite.
+- Chiudendo, Claude **avvisa sempre** prima di andare in `/chiusura`.
+
+Aggiungi `[N]` alla legenda degli stati in testa a `TODO.md`.
+
 ## 9 · Le lezioni: o diventano codice, o muoiono
 
 Quando un errore si ripete o una correzione insegna qualcosa, si scrive in

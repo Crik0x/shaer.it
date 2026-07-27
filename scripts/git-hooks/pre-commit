@@ -113,6 +113,13 @@ for f in $STAGED; do
           BLOCCO=1
         fi
       done
+      # Il dominio, non solo la presenza: 'stato' fuori enum (es. 'in-corso')
+      # supera il check-presenza ma rompe i filtri per stato. L-009 (T-019).
+      st=$(grep -E '^stato:' "$f" | head -1 | sed -E 's/^stato:[[:space:]]*//; s/[[:space:]]*$//')
+      if [ -n "$st" ] && [ "$st" != "aperto" ] && [ "$st" != "chiuso" ]; then
+        echo "⛔ $f: stato '$st' fuori enum (dossier/MODELLO.md: aperto|chiuso)."
+        BLOCCO=1
+      fi
       ;;
   esac
 done

@@ -3,53 +3,49 @@
 Fotografia: si **riscrive**, non si accumula. È il solo file di memoria che si
 riscrive. Tetto 3 KB.
 
-**Apertura:** `e384b63`
+**Apertura:** `d09a46c`
 
 ## Dove siamo
 
-Sessione 2026-07-27: **T-014 e T-015 chiusi**, entrambi provati. La dashboard
-analitica è **completa lato aggregato**: geo (paese/città), OS, lingua, **unici
-stimati**, **heatmap** giorno×ora, **export CSV** owner-scoped, **consigli
-automatici** deterministici, e un **selettore periodo** (7/30/60/120/360g + orario
-7g) che governa tutti i widget. Tutte le aggregazioni sono **funzioni pure** in
-`lib/dashboard.ts`, suite **52/52 verde**, tsc pulito. Revisore **approvato**;
-rilievo CSV/formula-injection **risolto** in chiusura (apostrofo guida in `csvField`
-+ test). Nick ha applicato la migrazione **0002** e impostato **VISITOR_SALT** su
-Vercel. Il feedback di Nick ha aperto **cinque task nuovi** (T-016…T-020).
+Sessione 2026-07-27b (autonoma): implementato **T-019** (analisi singolo QR) come
+**pura composizione** del motore di T-014 — `app/dashboard/qr/[short_code]/page.tsx`
+riscritta in derivazione-in-JS con KPI, consigli, selettore periodo, timeline,
+breakdown device/browser/OS/lingua, geo, heatmap e **rollup own/sottoalbero**,
+filtrando le scansioni su `qr_id`. Prova: `dashboard.test` 16/16, tsc pulito, route
+`307→/login` (compila sotto Next); rimossi i 2 componenti superati
+(`analytics-panel`/`analytics-chart`). **T-019 resta `[~]`**: manca il solo eyeball
+loggato (magic-link non automatizzabile). Metodo: potato l'indice «Fatto» in TODO
+(opzione A, −1446 byte); nuova regola **§8-ter** = stato `[N]` per le azioni di Nick
+(col come-fare, si rimuovono a conferma), con la sezione «Da te» in `TODO.md`.
 
 ## Cosa esiste
 
-- **Dashboard arricchita (T-014)**: widget geo/os/lingua/unici/heatmap/consigli +
-  export CSV. Motore puro in `lib/dashboard.ts` (`uniqueCount`, `hourDayMatrix`,
-  `toCsv` anti-injection, `insights` con soglie `INSIGHT`), test in `dashboard.test.ts`.
-  Route export `app/dashboard/export.csv/route.ts` (owner-scoped RLS + `auth.getUser`,
-  `visitor_hash` escluso). **RPC `qr_breakdown`/`qr_uniques` NON costruita**: derivazione
-  in-JS come per device/browser (owner-scoped da RLS), RPC rimandata a scala.
-- **Selettore periodo (T-015)**: `PERIODS` + query param `?d=`, Server Component, zero
-  JS. `hourlyBuckets` (168 barre) per la vista oraria. Trend 7g disaccoppiato con 2 count query.
+- **Dashboard aggregata (T-014/T-015)**: motore puro in `lib/dashboard.ts` (`groupCount`,
+  `uniqueCount`, `hourDayMatrix`, `toCsv` anti-injection, `insights`), test `dashboard.test.ts`
+  16/16. Widget geo/os/lingua/unici/heatmap/consigli + **export CSV** owner-scoped
+  (`app/dashboard/export.csv/route.ts`, `visitor_hash` escluso) + **selettore periodo** `?d=`
+  (7/30/60/120/360g + orario 7g a 168 barre), Server Component zero-JS.
+- **Analisi singolo QR (T-019, `[~]`)**: `app/dashboard/qr/[short_code]/page.tsx` ricomposta
+  come l'aggregata ma scoped a `qr_id` (riuso di `lib/dashboard.ts`, zero logica nuova). Manca
+  solo l'eyeball loggato → `dossier/T-019-analisi-singolo-qr.md` ha il come-chiudere.
 - **Albero di QR + rollup (T-012)**, **landing luxury (T-011)**, **corpus MD/ (T-013)**.
 - DB Supabase `alrguvxspssjwfmtuhdw` (dev). 0001 **e 0002** applicate. VISITOR_SALT su Vercel.
-- Pre-commit: §7–§11 (nuovo **§11**: avviso decisione [LOCKED] senza D-NNN in DECISIONI).
+- Pre-commit §7–§11 attivo (§11: avviso [LOCKED] senza D-NNN).
 
 ## Cosa NON esiste ancora
 
-- **Verifica unici in produzione** `[~]`: in locale `visitor_hash` è sempre null (nessun
-  IP reale) — provare su `qr.shaer.it` dopo il redeploy scansionando un QR.
-- **T-016** piano free/pro (≤100 scans/mese; blocca analisi/export/nuovi QR, mai il redirect
-  — D-009). Include **export PDF** (feature pro). Provider pagamento/metering da decidere.
-- **T-017** restyling densità dashboard · **T-018** editor QR avanzato · **T-019** analisi
-  singolo QR (riusa `lib/dashboard.ts`) · **T-020** slug custom + @tag (D-010; consuma T-016).
-- **T-008 (`↻3`, deciso)**: progetto Supabase prod separato con Confirm email ON (azione Nick).
+- **T-016** piano free/pro (≤100 scans/mese; blocca analisi/export/nuovi QR, mai il redirect —
+  D-009; export PDF pro). Provider/metering = decisione Nick (N-c).
+- **T-017** restyling densità dashboard · **T-018** editor QR avanzato · **T-020** slug custom
+  + @tag (D-010; consuma T-016).
+- **Azioni di Nick `[N]`** in `TODO.md` § «Da te»: **N-a** config auth Supabase · **N-b** verifica
+  unici in prod · **N-c** provider T-016 · **N-d** riferimento estetico T-017 · **T-008** Supabase
+  prod separato (Confirm email ON).
 
 ## Note operative
 
-- **Migrazioni**: applicate da Nick nel SQL editor. 0001+0002 applicate.
-- **visitor_hash**: salt SOLO da `process.env.VISITOR_SALT`; senza → null. In locale null (no IP).
-- **Dashboard = derivazione in-JS** da una query owner-scoped (RLS): breakdown/geo/unici NON
-  via RPC. L'RPC è l'ottimizzazione a scala, da fare quando il fetch-all pesa (vedi T-014 chiuso).
-- **Export CSV**: `csvField` neutralizza `=+-@` (anti formula-injection); `visitor_hash` mai esportato.
-- **Colori**: solo token (`bg-[var(--flow)]`/`var(--gold)`), mai hex brand (regola 8).
-- **Recharts**: dashboard server-only (niente Recharts qui, L-004); grafici futuri `dynamic`.
-- Anon key pubblica → confine = **DB**; whitelist anon `{resolve_qr, anonymize_ip}` testata (L-001).
-- La cwd della tool Bash non persiste: path assoluti. Test: `node --test [--env-file=.env.local] lib/*.test.ts`.
-- Decisioni nuove: **D-009** (soglia piano), **D-010** (slug/regola-7) in `DECISIONI.md`.
+- **Dashboard = derivazione in-JS** da query owner-scoped (RLS): breakdown/geo/unici NON via RPC;
+  l'RPC è l'ottimizzazione a scala (T-014). La pagina singolo-QR (T-019) segue lo stesso schema.
+- **visitor_hash**: salt SOLO da `process.env.VISITOR_SALT`; senza → null (in locale sempre null, no IP).
+- DB dev `alrguvxspssjwfmtuhdw`, 0001+0002 applicate. Decisioni nuove **D-009/D-010** in `DECISIONI.md`.
+- cwd della tool Bash non persiste: **path assoluti**. Test: `node --test [--env-file=.env.local] lib/*.test.ts`.
