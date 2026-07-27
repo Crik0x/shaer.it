@@ -2,6 +2,8 @@
 // (append-only), zero I/O, zero UI. Testabile a costo zero (lib/dashboard.test.ts).
 // La dashboard consuma queste funzioni; non duplica il calcolo nella pagina.
 
+import { safeTimeZone } from "./timezone.ts";
+
 /** Riga di qr_tree_rollup (bigint può arrivare come stringa da PostgREST). */
 export interface RollupRow {
   id: string;
@@ -78,18 +80,6 @@ function zonedFields(d: Date, timeZone: string): { day: string; hour: number; wd
 }
 
 const zonedDay = (d: Date, timeZone: string) => zonedFields(d, timeZone).day;
-
-/** timeZone se è un nome IANA valido, altrimenti 'UTC'. L'input arriva da
- *  `profiles.timezone` (editabile): un valore corrotto non deve far crashare la
- *  dashboard con il RangeError di Intl. Validato una volta per chiamata, non per riga. */
-function safeTimeZone(timeZone: string): string {
-  try {
-    new Intl.DateTimeFormat("en-CA", { timeZone });
-    return timeZone;
-  } catch {
-    return "UTC";
-  }
-}
 
 export function dailyBuckets(
   isoDates: string[],

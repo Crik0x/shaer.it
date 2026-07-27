@@ -77,6 +77,7 @@ export default async function DashboardPage({
     { data: scans },
     { data: rollupRaw },
     { data: qrs },
+    { data: profile },
   ] = await Promise.all([
     supabase.from("qr_codes").select("*", { count: "exact", head: true }),
     supabase.from("qr_scans").select("*", { count: "exact", head: true }),
@@ -96,21 +97,26 @@ export default async function DashboardPage({
       .select("name, target_url, short_code, created_at")
       .order("created_at", { ascending: false })
       .limit(50),
+    supabase.from("profiles").select("timezone").maybeSingle(),
   ]);
+
+  // Fuso del cliente (D-013/D-014): il dato è UTC, il display bucketizza qui. Le
+  // funzioni pure hanno safeTimeZone → un valore corrotto non rompe il render.
+  const tz = profile?.timezone ?? "UTC";
 
   const total = scanCount ?? 0;
   const rows = (scans ?? []) as ScanRow[];
   const windowTotal = rows.length;
   const series = period.hourly
-    ? hourlyBuckets(rows.map((r) => r.created_at), period.days * 24)
-    : dailyBuckets(rows.map((r) => r.created_at), period.days);
+    ? hourlyBuckets(rows.map((r) => r.created_at), period.days * 24, new Date(nowMs), tz)
+    : dailyBuckets(rows.map((r) => r.created_at), period.days, new Date(nowMs), tz);
   const devices = groupCount(rows.map((r) => r.device));
   const browsers = groupCount(rows.map((r) => r.browser));
   const oses = groupCount(rows.map((r) => r.os));
   const langs = groupCount(rows.map((r) => r.lang));
   const countries = groupCount(rows.map((r) => r.country));
   const uniques = uniqueCount(rows.map((r) => r.visitor_hash));
-  const heat = hourDayMatrix(rows.map((r) => r.created_at));
+  const heat = hourDayMatrix(rows.map((r) => r.created_at), tz);
 
   const scan7 = last7 ?? 0;
   const tips = insights({ total, last7: last7 ?? 0, prev7: prev7 ?? 0, devices, countries, uniques, windowTotal });

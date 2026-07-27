@@ -62,3 +62,53 @@ test("profiles: il signup crea il profilo (UTC) e la RLS lo isola per owner", as
   const { data: aStill } = await a.from("profiles").select("timezone");
   assert.equal(aStill?.[0].timezone, "UTC", "il fuso di A resta intatto");
 });
+
+test("profiles: la preferenza di fuso si salva solo se ancora 'UTC' e tocca updated_at (blocco C)", async (t) => {
+  if (!url || !anon) {
+    t.skip("env mancante: lancia con --env-file=.env.local");
+    return;
+  }
+
+  const c = createClient(url, anon, { auth: { persistSession: false } });
+  const { data: sign, error } = await c.auth.signUp({
+    email: `t022c.${Date.now()}@shaer.it`,
+    password: "test-Password-123",
+  });
+  assert.equal(error, null, error?.message);
+  assert.ok(sign.session, "signup dà sessione");
+
+  const { data: before } = await c
+    .from("profiles")
+    .select("timezone, updated_at")
+    .single();
+  assert.equal(before?.timezone, "UTC", "parte dal default");
+
+  // Replica l'operazione DB di saveTimezone: aggiorna solo se ancora 'UTC',
+  // settando updated_at (il debito del blocco A).
+  const { error: upErr } = await c
+    .from("profiles")
+    .update({ timezone: "Europe/Rome", updated_at: new Date().toISOString() })
+    .eq("owner_id", sign.user!.id)
+    .eq("timezone", "UTC");
+  assert.equal(upErr, null, upErr?.message);
+
+  const { data: after } = await c
+    .from("profiles")
+    .select("timezone, updated_at")
+    .single();
+  assert.equal(after?.timezone, "Europe/Rome", "il fuso è stato salvato");
+  assert.ok(
+    new Date(after!.updated_at).getTime() > new Date(before!.updated_at).getTime(),
+    "updated_at è avanzato → debito del blocco A chiuso su questo percorso",
+  );
+
+  // La guardia 'solo se UTC': un secondo salvataggio NON sovrascrive una scelta già fatta.
+  const { error: up2 } = await c
+    .from("profiles")
+    .update({ timezone: "Asia/Kolkata", updated_at: new Date().toISOString() })
+    .eq("owner_id", sign.user!.id)
+    .eq("timezone", "UTC");
+  assert.equal(up2, null, up2?.message);
+  const { data: final } = await c.from("profiles").select("timezone").single();
+  assert.equal(final?.timezone, "Europe/Rome", "la guardia rispetta la scelta già fatta");
+});

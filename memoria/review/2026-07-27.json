@@ -62,5 +62,27 @@
       }
     ],
     "sintesi": "Bucketing TZ-aware corretto (DST/Kolkata/hour=24 verificati) e back-compat UTC intatta; 21/21 verde dopo i due rilievi chiusi."
+  },
+  {
+    "data": "2026-07-27",
+    "sessione": "2026-07-27c (T-022 blocco C)",
+    "ancora": "2ebfcca",
+    "esito": "approvato",
+    "task": ["T-022/C"],
+    "rilievi": [
+      {
+        "gravita": 4,
+        "file": "apps/qr/app/dashboard/actions.ts",
+        "problema": "isValidTimeZone (guard su input non fidato che entra nel DB) senza test diretto; il test replicava la query invece di esercitare il codice reale (regola 5)",
+        "stato": "RISOLTO (respinto→richiuso): estratta in lib/timezone.ts, importata dalla action, testata in lib/timezone.test.ts (23/23)"
+      },
+      {
+        "gravita": 2,
+        "file": "apps/qr/lib/dashboard.ts",
+        "problema": "duplicazione di safeTimeZone tra dashboard.ts e lib/timezone.ts (non bloccante)",
+        "stato": "RISOLTO: dashboard.ts importa da ./timezone.ts (allowImportingTsExtensions); verificato tsc + node --test + next build verde"
+      }
+    ],
+    "sintesi": "Wiring e sicurezza della server action corretti (auth interna, owner_id da sessione, RLS + guardia doppia). Rilievo bloccante chiuso; duplicazione eliminata e provata col build. Rendering end-to-end resta [~] (dietro auth)."
   }
 ]

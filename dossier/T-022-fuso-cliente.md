@@ -90,13 +90,29 @@ Giorno default + toggle Ora. Tocca dashboard aggregata **e** singolo QR.
   label oraria localizzata, data invalida scartata, fuso invalido→UTC. tsc pulito,
   revisore approvato.
 
-### Blocco C — DA FARE · wiring + preferenza
+### Blocco C — FATTO (data layer provato, rendering `[~]`) — sessione 2026-07-27c
 - `dashboard/page.tsx` e `dashboard/qr/[short_code]/page.tsx`: query del proprio
-  `profiles.timezone` (owner-scoped, RLS) e passaggio alle funzioni B.
-- Foglia `'use client'` minima che al primo login legge il fuso del browser e, se
-  `profiles.timezone` è ancora `'UTC'` di default, lo salva via **server action**
-  (che setta anche `updated_at = now()` → chiude il debito del blocco A).
-- Editor TZ nel profilo (select IANA) — può essere un micro-task a sé.
+  `profiles.timezone` (owner-scoped, RLS) in `Promise.all` → passata a
+  `dailyBuckets/hourlyBuckets/hourDayMatrix`.
+- Foglia `'use client'` `dashboard/timezone-sync.tsx` (montata nel `layout.tsx`): al
+  primo caricamento, se `profiles.timezone` è ancora `'UTC'`, cattura
+  `Intl…resolvedOptions().timeZone` e lo salva via server action `dashboard/actions.ts`.
+- **Server action `saveTimezone`**: auth interna (`getUser`), `owner_id` dalla sessione,
+  valida il fuso (`isValidTimeZone`), aggiorna **solo se ancora `'UTC'`** (`.eq('timezone','UTC')`
+  + RLS = doppia guardia), setta `updated_at` → **chiude il debito del blocco A** su questo
+  percorso.
+- **`lib/timezone.ts`** (`isValidTimeZone`/`safeTimeZone`): validazione IANA pura e
+  condivisa. `dashboard.ts` la importa via `./timezone.ts` (import relativo con estensione:
+  `allowImportingTsExtensions` in tsconfig; funziona per tsc, node --test **e** turbopack —
+  `next build` verde). `actions.ts` la importa via `@/lib/timezone`.
+- **Prove**: `timezone.test.ts` (validazione, casi validi/invalidi/vuoti) + `dashboard.test.ts`
+  = **23/23**; `profiles.test.ts` blocco C (persistenza + guardia 'solo se UTC' + `updated_at`
+  avanza) verde sul DB; **`next build` verde**; revisore approvato (1 rilievo bloccante chiuso,
+  1 non bloccante — la duplicazione — risolto con `lib/timezone.ts`).
+- **`[~]` residuo**: il rendering end-to-end nel fuso locale è dietro auth → eyeball di Nick
+  o T-024. Il data layer e la composizione sono provati.
+- **Rimandato**: editor TZ nel profilo (select IANA) — micro-task a sé, non necessario per il
+  funzionamento (il fuso si auto-popola dal browser).
 
 ### Blocco D — DA FARE · granularità Giorno/Ora
 - Toggle sulla timeline: **Giorno default + toggle Ora**. Il periodo esistente

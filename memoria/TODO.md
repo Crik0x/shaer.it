@@ -60,13 +60,14 @@ Solo la sezione «Per Nick» si sostituisce.
 
 ## Riportati
 
-- [>] T-022 **Fuso orario del cliente + granularità Giorno/Ora** `↻1` `C` — **blocchi A+B fatti e
-      provati** (2026-07-27c): **A** tabella `profiles` (migrazione applicata, `profiles.test` verde,
-      → **D-014**); **B** funzioni pure TZ-aware in `lib/dashboard.ts` (`timeZone` default UTC,
-      `safeTimeZone` fallback, `dashboard.test` 21/21, revisore ok). Restano **C** (wiring: le pagine
-      leggono `profiles.timezone` + foglia client che salva il fuso del browser via server action,
-      chiude il debito `updated_at`) e **D** (toggle Giorno/Ora, "7h" resta). **Piano completo** in
-      `dossier/T-022-fuso-cliente.md`. Condivide la fondazione con T-016.
+- [>] T-022 **Fuso orario del cliente + granularità Giorno/Ora** `↻1` `C` — **blocchi A+B+C fatti e
+      provati** (2026-07-27c): **A** tabella `profiles` (→ **D-014**); **B** funzioni TZ-aware
+      (`dashboard.test`); **C** wiring — le pagine leggono `profiles.timezone` e lo passano, foglia
+      client `timezone-sync` + server action `saveTimezone` (auth interna, guardia 'solo se UTC',
+      chiude il debito `updated_at`), validazione in `lib/timezone.ts`. Prove: **23/23** unit +
+      `profiles.test` C + **`next build` verde** + revisore approvato. Il **rendering nel fuso locale
+      è `[~]`** (dietro auth → eyeball di Nick o T-024). Resta solo **D** (toggle Giorno/Ora, "7h"
+      resta). Piano in `dossier/T-022-fuso-cliente.md`. Condivide la fondazione con T-016.
 
 ## Fatto
 
@@ -83,21 +84,22 @@ contesto a ogni sessione per informazione che REGISTRO già conserva. — potato
 
 *(questa sezione si **sostituisce** a ogni avanzamento, non si accumula)*
 
-**Sessione 2026-07-27c — chiusa.** Eyeball confermati → **T-021 e T-023 chiusi `[A]`** (→REGISTRO,
-dossier archiviati). **T-022 blocco B fatto e provato** (funzioni TZ-aware, `dashboard.test` 21/21):
-restano **C** (wiring, dietro auth) e **D** (toggle Giorno/Ora). Prossima sessione riparte dal blocco C.
-`[N]` residue: **N-f** (Stripe in Vercel) · **T-008** (Supabase prod, `↻3`).
+**Sessione 2026-07-27c — chiusa.** **T-021 e T-023 chiusi `[A]`** (tuo eyeball). **T-022 blocchi
+A+B+C fatti e provati** (23/23 unit + `profiles.test` + `next build` verde, revisore ok): il fuso del
+cliente si auto-popola dal browser e le analitiche lo usano. **Manca il tuo eyeball** del rendering
+locale (dietro auth): entra in dashboard da una macchina non-UTC → timeline/heatmap devono mostrare
+**l'ora locale**, non UTC. Resta solo il blocco **D** (toggle Giorno/Ora). `[N]` residue: **N-f**
+(Stripe in Vercel) · **T-008** (Supabase prod, `↻3`).
 
 ## Prossima sessione — prompt da lanciare
 
 *(standing: dopo ogni `/chiusura` questa sezione porta il prompt pronto — `lavoro.md` §8-quater)*
 
 ```
-/apertura. T-021 e T-023 chiusi; T-022 blocchi A+B fatti e provati (D-014, dashboard.test 21/21).
-Prosegui T-022 blocco C — le due pagine dashboard leggono profiles.timezone (owner-scoped) e lo
-passano a dailyBuckets/hourlyBuckets/hourDayMatrix; foglia 'use client' che al primo login salva il
-fuso del browser (Intl…resolvedOptions().timeZone) via server action, settando anche updated_at
-(chiude il debito revisore del blocco A). Poi blocco D (toggle Giorno/Ora, "7h" resta). Il wiring è
-dietro auth: valuta di costruire prima T-024 (harness SSR-cookie) per provarlo senza eyeball, altrimenti
-resta l'eyeball di Nick. Piano completo nel dossier T-022. Chiudi con /chiusura.
+/apertura. T-021, T-023 chiusi; T-022 blocchi A+B+C fatti e provati (D-014, 23/23 unit, next build verde;
+rendering [~] dietro auth). Restano: T-022 blocco D — toggle Giorno/Ora sulla timeline (Giorno default),
+il periodo "7h" resta; è un altro pezzo interattivo dietro auth. Valuta prima T-024 (harness SSR-cookie
+→ route Next) per chiudere in un colpo il [~] del rendering C e provare D senza eyeball — eviti il ripetersi
+del muro auth. Se Nick ha già eyeballato il rendering locale di C, promuovilo. Piano completo nel dossier
+T-022. Chiudi con /chiusura.
 ```

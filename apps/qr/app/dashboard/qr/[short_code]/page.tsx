@@ -91,6 +91,7 @@ export default async function QrDetailPage({
     { count: prev7 },
     { data: scans },
     { data: rollupRaw },
+    { data: profile },
   ] = await Promise.all([
     supabase
       .from("qr_scans")
@@ -113,14 +114,18 @@ export default async function QrDetailPage({
       .eq("qr_id", qr.id)
       .gte("created_at", since),
     supabase.rpc("qr_tree_rollup"),
+    supabase.from("profiles").select("timezone").maybeSingle(),
   ]);
+
+  // Fuso del cliente (D-013/D-014): il dato è UTC, il display bucketizza qui.
+  const tz = profile?.timezone ?? "UTC";
 
   const total = scanCount ?? 0;
   const rows = (scans ?? []) as ScanRow[];
   const windowTotal = rows.length;
   const series = period.hourly
-    ? hourlyBuckets(rows.map((r) => r.created_at), period.days * 24)
-    : dailyBuckets(rows.map((r) => r.created_at), period.days);
+    ? hourlyBuckets(rows.map((r) => r.created_at), period.days * 24, new Date(nowMs), tz)
+    : dailyBuckets(rows.map((r) => r.created_at), period.days, new Date(nowMs), tz);
   const devices = groupCount(rows.map((r) => r.device));
   const browsers = groupCount(rows.map((r) => r.browser));
   const oses = groupCount(rows.map((r) => r.os));
@@ -128,7 +133,7 @@ export default async function QrDetailPage({
   const countries = groupCount(rows.map((r) => r.country));
   const cities = groupCount(rows.map((r) => r.city));
   const uniques = uniqueCount(rows.map((r) => r.visitor_hash));
-  const heat = hourDayMatrix(rows.map((r) => r.created_at));
+  const heat = hourDayMatrix(rows.map((r) => r.created_at), tz);
 
   const tips = insights({
     total,
