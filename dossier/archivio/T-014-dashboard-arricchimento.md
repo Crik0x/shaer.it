@@ -3,10 +3,37 @@ task: T-014
 tier: C
 titolo: Dashboard analisi — arricchimento applicato, geo/uniques, report
 aree: [analytics, dashboard, dati-personali, geo, marketing, schema-supabase]
-stato: aperto
+stato: chiuso
 riporti: 0
-sessioni: [2026-07-26c]
+sessioni: [2026-07-26c, 2026-07-27]
 ---
+
+## Chiusura (2026-07-27)
+
+**Consegnato e provato** (suite 51→ poi 52/52 verde, tsc pulito): widget geo (paese/
+città), sistema operativo, lingua, **unici stimati** (KPI), **heatmap** giorno×ora,
+**export CSV** owner-scoped, **consigli automatici** deterministici. Tutte le
+aggregazioni sono **funzioni pure** in `lib/dashboard.ts` (`uniqueCount`,
+`hourDayMatrix`, `toCsv`, `insights`) con test in `lib/dashboard.test.ts`. Nick ha
+applicato la migrazione 0002 e impostato `VISITOR_SALT` su Vercel.
+
+**Deviazione dal piano (decisa in sessione):** l'RPC `qr_breakdown`/`qr_uniques` del
+piano §3 **NON è stata costruita**. La dashboard già derivava device/browser in-JS
+da una singola query owner-scoped (RLS); geo/os/lingua/unici sono lo stesso pattern
+→ allargato il `select`, aggiunte funzioni pure. Zero migrazione, zero intervento di
+Nick, niente SQL dinamico da difendere, niente rischio "RPC inerte" (L-007). L'RPC
+resta un'**ottimizzazione a scala**, da fare quando il fetch-all pesa davvero.
+
+**Rilievo revisore risolto:** CSV/formula injection — `csvField` ora neutralizza le
+celle che iniziano con `=+-@` (apostrofo guida, OWASP), con test dedicato.
+
+**Resta fuori (→ nuovi task):**
+- **Export PDF** (report brandizzato): richiede una libreria nuova (regola 10) → è
+  una feature **pro**, confluisce in **T-016** (gate export dietro pagamento).
+- **Verifica unici in produzione** `[~]`: in locale il visitor_hash è sempre null
+  (nessun IP reale). Prova solo su `qr.shaer.it` dopo il redeploy → **azione Nick**.
+- Mappa MapLibre: **scartata** da Nick (geo a barre basta).
+- **T-015** (selettore periodo) è stato scorporato e chiuso in pari data.
 
 # T-014 · Il resto della dashboard analitica
 
@@ -67,4 +94,10 @@ Il default resta **aggregati pseudonimi**; la PII nominale è Fase 4 (cancello c
 - `archivio/T-007-hardening-grant-anon.md` — introspezione whitelist anon, no segreti nel seed.
 
 ## Attriti
-Nessuno ancora: task appena aperto (scorporo pulito da T-012).
+- **Export CSV senza neutralizzazione celle → formula injection.** `toCsv` era
+  RFC 4180 corretto ma non difendeva dalle celle che iniziano con `=+-@` (Excel/
+  Sheets le eseguono come formule); `country`/`city` arrivano da header edge
+  spoofabili. Colto dal **revisore** (gravità 2). Risolto: apostrofo guida in
+  `csvField` (OWASP) + test dedicato. **Prevenibile → test** (ora esiste).
+- **Decisione «in-JS invece di RPC» non promossa a D-NNN nello stesso giro.** Vedi
+  D-009/D-010: pattern colto dal distillatore (3ª occorrenza dopo T-008) → hook §11.

@@ -1,6 +1,6 @@
 # TODO
 
-**Saldo: 2 aperti — T-014 (nuovo, resto dashboard), T-008 (`↻3` → deciso: progetto prod separato)**  ·  12 chiusi (T-001…T-005 il 2026-07-24; T-006, T-007, T-009, T-010 il 2026-07-25; T-011, T-013, T-012 il 2026-07-26)
+**Saldo: 6 aperti — 5 nuovi (T-016…T-020), 1 riportato (T-008 `↻3`)**  ·  14 chiusi (T-001…T-005 il 2026-07-24; T-006, T-007, T-009, T-010 il 2026-07-25; T-011, T-013, T-012 il 2026-07-26; T-014, T-015 il 2026-07-27)
 
 Stati: `[ ]` da fare · `[~]` scritto ma non provato · `[A]` provato e accettato ·
 `[x]` fatto con prova · `[>]` riportato (con `↻` e il suo dossier)
@@ -20,13 +20,27 @@ Solo la sezione «Per Nick» si sostituisce.
       **progetto prod dedicato** con Confirm email ON, lasciando questo come dev.
       **Azione di Nick**. Origine del debito e passi dashboard in `dossier/archivio/T-004-auth-dashboard.md`.
 
-- [ ] T-014 **Dashboard: arricchimento applicato, geo/uniques, report** (nuovo, scorporo
-      di T-012) — groundwork già in casa (migrazione `0002` `[~]`, route arricchita con
-      fallback regola 7, funzioni pure testate). **Prossimo**: Nick applica `0002` +
-      `VISITOR_SALT` su Vercel → RPC `qr_breakdown`/`qr_uniques` **con test** (rimosse in
-      T-012 perché inerti) → widget geo/os/lang/unici, heatmap, export CSV/PDF, consigli.
-      Piano completo, precedenti (**T-006** RPC definer, **T-007** whitelist anon,
-      **T-003** fallback redirect) e Composizione in **`dossier/T-014-dashboard-arricchimento.md`**.
+- [ ] T-016 **Piano free/pro + metering** (nuovo) `C` 💰 — ≤100 scansioni/mese gratis, oltre
+      si bloccano **analisi+export+nuovi QR**, **mai il redirect** (D-009, regola 7). Include
+      export **PDF** (feature pro). **Prima di costruire**: provider pagamento (Stripe?),
+      metering derivato vs materializzato, fuso del mese, comportamento a quota. Piano e nodi
+      in **`dossier/T-016-piano-free-pro.md`**. Precede T-020. Precedente: **T-007** (whitelist anon).
+
+- [ ] T-017 **Restyling densità dashboard** (nuovo) `M` — spazi/gerarchia/griglia dei widget,
+      solo token (regola 8), Server Components. Chiedere a Nick wireframe o mano libera **prima**
+      (precedente: **T-011** respinto per estetica). Piano in **`dossier/T-017-restyling-dashboard.md`**.
+
+- [ ] T-018 **Editor QR avanzato** (nuovo) `M` — più tipi/opzioni + branding + `purpose`/`parent_id`;
+      punto d'aggancio dello slug (T-020). Verificare Roadmap M2–M5 prima. Precedente: **T-005**.
+      Piano in **`dossier/T-018-editor-qr-avanzato.md`**.
+
+- [ ] T-019 **Analisi singolo QR** (nuovo) `M` — riusa `lib/dashboard.ts` (T-014) + rollup (T-012)
+      + selettore (T-015) filtrando su `qr_id`: è **composizione**, non logica nuova. Piano in
+      **`dossier/T-019-analisi-singolo-qr.md`**.
+
+- [ ] T-020 **Slug custom + @tag utente** (nuovo) `C` ⚠️ — pro, 2€/mese/link, immutabile in vita,
+      riassegnabile se cancellato (D-010, eccezione regola 7). **Consuma T-016** (va dopo). Routing
+      @tag e delete/scansioni orfane = nodi aperti. Piano in **`dossier/T-020-slug-custom-tag.md`**.
 
 ## Riportati
 
@@ -48,27 +62,27 @@ budget contesto §10.)*
 - [x] T-011 **Landing luxury + albero rete** (qr.shaer.it verde, commit `0781ed7`) · 2026-07-26 · `archivio/T-011-landing-simulatore.md`
 - [x] T-013 **Corpus documentale fondativo** (5 doc in `MD/`: MDD, PRD, SAD, Design System, Roadmap) · 2026-07-26 · `archivio/T-013-corpus-documentale.md`
 - [x] T-012 **Analizzatore albero di QR + dashboard reale** (rollup applicato+provato 4/4, dashboard scan-side verificato end-to-end) · 2026-07-26 · `archivio/T-012-campaign-analytics.md`
+- [x] T-014 **Dashboard arricchita** (geo/os/lingua/unici/heatmap/export CSV/consigli, funzioni pure 52/52, revisore approvato, CSV-injection risolta; RPC in-JS non costruita) · 2026-07-27 · `archivio/T-014-dashboard-arricchimento.md`
+- [x] T-015 **Selettore periodo analitiche** (7/30/60/120/360g + orario 7g, query param, `hourlyBuckets` testata) · 2026-07-27 · `archivio/T-015-selettore-periodo.md`
 
 ## Per Nick — comandi e azioni
 
 *(questa sezione si **sostituisce** a ogni avanzamento, non si accumula)*
 
-1. **T-012 chiuso ✅**: dashboard reale (albero+rollup+KPI+timeline+breakdown) provato
-   end-to-end. La migrazione albero (0001) l'hai già applicata. Il redirect **non si
-   rompe** anche senza le migrazioni nuove (fallback regola 7).
-2. **Per T-014, applica la migrazione arricchimento** — Supabase `alrguvxspssjwfmtuhdw`
-   → SQL editor: esegui `supabase/migrations/20260726000002_resolve_qr_enrichment.sql`.
-   Da lì il redirect scrive os/lang/geo (in prod, dagli header Vercel).
-3. **Imposta `VISITOR_SALT`** (una stringa segreta lunga) nelle env di **Vercel** →
-   abilita la stima degli unici. Senza, il visitor_hash resta null (mai un salt pubblico).
-4. **Sistema la config auth** (come discusso): Redirect URL da `https://*shaer.it/*` a
-   **`https://qr.shaer.it/**`** (il `*shaer.it` matcha domini-sosia); Site URL da
-   `.../auth/callback` a **`https://qr.shaer.it`**.
-5. **T-008 (`↻3`, deciso)** — crea un **progetto Supabase prod separato** con Confirm
-   email **ON** (questo resta dev; accenderlo qui romperebbe i test).
-6. **Decisione L-003** (cricchetto a 3 sessioni): la ritiro (0 ricorrenze da T-010,
-   il build fallisce già rumorosamente) o la converto in hook? Proposta: **ritiro**.
-7. **Prompt prossima sessione** (da `D:\Desktop\Shaer.it`):
-   > /apertura. Prosegui **T-014**: se hai applicato la 0002, scrivi `qr_breakdown`/
-   > `qr_uniques` **col test**, poi i widget geo/os/lang/unici + heatmap + export sul
-   > dashboard (PRD E6). Chiudi con /chiusura.
+1. **T-014 + T-015 chiusi ✅**: dashboard arricchita completa (geo/os/lingua/unici/heatmap/
+   CSV/consigli) + selettore periodo. 52/52 verde, revisore approvato. Ricarica la dashboard
+   loggato e prova il selettore **Periodo** e la vista **Orario 7g**.
+2. **Verifica gli unici in produzione** — in locale il `visitor_hash` è **sempre null** (nessun
+   IP reale): non si può provare qui. Su `qr.shaer.it`, dopo il redeploy, **scansiona un QR** e
+   guarda il KPI "Visitatori unici" salire + il consiglio VISITOR_SALT sparire. È l'ultimo `[~]`.
+3. **Config auth Supabase** (ancora da fare, come discusso): Redirect URL `https://qr.shaer.it/**`
+   (non `*shaer.it`, matcha domini-sosia); Site URL `https://qr.shaer.it`.
+4. **T-008 (`↻3`, deciso)** — progetto Supabase prod separato con Confirm email ON (azione tua).
+5. **Cinque task nuovi aperti** dal tuo feedback: T-016 (piano free/pro, tocca soldi → decisioni
+   provider/metering prima), T-017 (restyling), T-018 (editor QR), T-019 (analisi singolo QR),
+   T-020 (slug+@tag). Decisioni incise in **D-009/D-010** (`DECISIONI.md`). **T-016 va prima di T-020.**
+6. **Prompt prossima sessione** (da `D:\Desktop\Shaer.it`):
+   > /apertura. Il candidato più economico è **T-019** (analisi singolo QR): è pura composizione
+   > di `lib/dashboard.ts`+rollup+selettore, zero logica nuova. In alternativa **T-017** (restyling,
+   > ma chiedimi prima un riferimento) o **T-016** (soldi: prima le decisioni provider/metering).
+   > Chiudi con /chiusura.

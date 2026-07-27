@@ -80,3 +80,24 @@ single-parent in v1. Perché: modella la rivendita per-nodo e ogni livello monit
 suo sottoalbero — ponte diretto verso SHAER_MASTER (referral/anti-frode/crediti).
 Alternativa scartata: `campaigns` separata + `campaign_id` (non modella la delega
 per-nodo); molti-a-molti (over-engineering per v1).
+
+## D-009 · 2026-07-27 · Piano free/pro: soglia 100 scansioni/mese — [LOCKED]
+Contesto: monetizzazione (feedback Nick 2026-07-27, T-016). Decisione: le analisi
+sono gratuite fino a **100 scansioni/mese**; oltre, si bloccano **analisi + export +
+creazione di nuovi QR**, ma **mai il redirect** di un QR già pubblicato (regola d'oro
+7: un QR stampato resta risolvibile a qualunque volume). La soglia limita il servizio
+a valore, non il diritto del QR a esistere. Perché: valore analitico gratuito come
+amo, gate sul servizio pro senza tradire la promessa di permanenza del redirect.
+Alternativa scartata: bloccare anche il redirect oltre soglia (rompe un QR stampato —
+viola la regola 7); free illimitato (nessuna leva di conversione).
+
+## D-010 · 2026-07-27 · Slug personalizzato: eccezione controllata alla regola 7 — [LOCKED]
+Contesto: URL personalizzati (feedback Nick 2026-07-27, T-020). Decisione: lo slug è
+scelto **alla creazione**, solo utenti **pro**, add-on **2€/mese per link**; immutabile
+finché il link vive (regola 7). **Se il QR viene cancellato**, i suoi dati si cancellano
+e lo slug **torna disponibile** ad altri utenti. Perché: un QR *cancellato* non è più
+pubblicato → il suo indirizzo può essere riassegnato senza rompere nulla di vivo; chi
+cancella accetta perdita dati e liberazione dello slug. Il routing del @tag utente resta
+da decidere (T-020, nodo aperto). Alternativa scartata: slug modificabile in vita (rompe
+la regola 7, un QR stampato punterebbe a un indirizzo morto); slug mai riassegnabile
+(spreca lo spazio dei nomi corti, il più conteso).

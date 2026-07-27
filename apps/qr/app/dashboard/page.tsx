@@ -6,7 +6,11 @@ import {
   groupCount,
   topBranch,
   dailyBuckets,
+  hourlyBuckets,
   pct,
+  uniqueCount,
+  hourDayMatrix,
+  insights,
   type RollupRow,
 } from "@/lib/dashboard";
 
@@ -15,17 +19,59 @@ import {
 // mai da un saldo memorizzato (regola d'oro 9). Server Component: zero JS al client.
 export const dynamic = "force-dynamic";
 
-const DAYS = 30;
+// Periodi dell'analisi, scelti via query param ?d=. Il periodo guida la finestra
+// delle scansioni (timeline, breakdown, geo, heatmap, unici). La vista "orario"
+// tiene 7 giorni ma a risoluzione oraria (168 barre). Server Component: cambiare
+// periodo è una normale navigazione, zero JS al client (regola 9).
+const PERIODS = [
+  { key: "7", label: "7 giorni", days: 7, hourly: false },
+  { key: "30", label: "30 giorni", days: 30, hourly: false },
+  { key: "60", label: "60 giorni", days: 60, hourly: false },
+  { key: "120", label: "120 giorni", days: 120, hourly: false },
+  { key: "360", label: "360 giorni", days: 360, hourly: false },
+  { key: "7h", label: "Orario · 7g", days: 7, hourly: true },
+] as const;
+const DEFAULT_PERIOD_KEY = "30";
 
-export default async function DashboardPage() {
+interface ScanRow {
+  created_at: string;
+  device: string | null;
+  browser: string | null;
+  os: string | null;
+  lang: string | null;
+  country: string | null;
+  city: string | null;
+  visitor_hash: string | null;
+}
+
+const WEEKDAYS = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
+const TONE_DOT: Record<string, string> = {
+  good: "bg-[var(--flow)]",
+  warn: "bg-[var(--gold)]",
+  info: "bg-muted-foreground",
+};
+
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ d?: string }>;
+}) {
   const supabase = await serverSupabase();
-  const since = new Date(Date.now() - DAYS * 86400000).toISOString();
-  const since7 = new Date(Date.now() - 7 * 86400000).toISOString();
+  const nowMs = Date.now();
+  const { d: periodKey } = await searchParams;
+  const period = PERIODS.find((p) => p.key === periodKey) ??
+    PERIODS.find((p) => p.key === DEFAULT_PERIOD_KEY)!;
+  const since = new Date(nowMs - period.days * 86400000).toISOString();
+  // Trend 7g vs 7g precedenti: fisso, indipendente dal periodo scelto (con periodo
+  // 7g la finestra non conterrebbe i 7 giorni prima). Due count query dedicate.
+  const since7 = new Date(nowMs - 7 * 86400000).toISOString();
+  const since14 = new Date(nowMs - 14 * 86400000).toISOString();
 
   const [
     { count: qrCount },
     { count: scanCount },
-    { count: scan7 },
+    { count: last7 },
+    { count: prev7 },
     { data: scans },
     { data: rollupRaw },
     { data: qrs },
@@ -33,7 +79,15 @@ export default async function DashboardPage() {
     supabase.from("qr_codes").select("*", { count: "exact", head: true }),
     supabase.from("qr_scans").select("*", { count: "exact", head: true }),
     supabase.from("qr_scans").select("*", { count: "exact", head: true }).gte("created_at", since7),
-    supabase.from("qr_scans").select("created_at, device, browser").gte("created_at", since),
+    supabase
+      .from("qr_scans")
+      .select("*", { count: "exact", head: true })
+      .gte("created_at", since14)
+      .lt("created_at", since7),
+    supabase
+      .from("qr_scans")
+      .select("created_at, device, browser, os, lang, country, city, visitor_hash")
+      .gte("created_at", since),
     supabase.rpc("qr_tree_rollup"),
     supabase
       .from("qr_codes")
@@ -43,10 +97,21 @@ export default async function DashboardPage() {
   ]);
 
   const total = scanCount ?? 0;
-  const rows = (scans ?? []) as { created_at: string; device: string | null; browser: string | null }[];
-  const series = dailyBuckets(rows.map((r) => r.created_at), DAYS);
+  const rows = (scans ?? []) as ScanRow[];
+  const windowTotal = rows.length;
+  const series = period.hourly
+    ? hourlyBuckets(rows.map((r) => r.created_at), period.days * 24)
+    : dailyBuckets(rows.map((r) => r.created_at), period.days);
   const devices = groupCount(rows.map((r) => r.device));
   const browsers = groupCount(rows.map((r) => r.browser));
+  const oses = groupCount(rows.map((r) => r.os));
+  const langs = groupCount(rows.map((r) => r.lang));
+  const countries = groupCount(rows.map((r) => r.country));
+  const uniques = uniqueCount(rows.map((r) => r.visitor_hash));
+  const heat = hourDayMatrix(rows.map((r) => r.created_at));
+
+  const scan7 = last7 ?? 0;
+  const tips = insights({ total, last7: last7 ?? 0, prev7: prev7 ?? 0, devices, countries, uniques, windowTotal });
 
   const rollup = (rollupRaw ?? []) as RollupRow[];
   const top = topBranch(rollup);
@@ -70,7 +135,8 @@ export default async function DashboardPage() {
   const kpis = [
     { label: "Scansioni totali", value: total },
     { label: "QR attivi", value: qrCount ?? 0 },
-    { label: "Ultimi 7 giorni", value: scan7 ?? 0 },
+    { label: "Ultimi 7 giorni", value: scan7 },
+    { label: "Visitatori unici", value: uniques, sub: "stima giornaliera" },
     { label: "Top ramo", value: top ? Number(top.subtree_scans) : 0, sub: top?.name },
   ];
 
@@ -85,13 +151,36 @@ export default async function DashboardPage() {
             L&apos;analisi delle tue scansioni, derivata in tempo reale.
           </p>
         </div>
-        <Button render={<Link href="/dashboard/qr/new" />} size="lg">
-          Crea QR
-        </Button>
+        <div className="flex shrink-0 items-center gap-2">
+          <a
+            href="/dashboard/export.csv"
+            className="inline-flex h-11 items-center rounded-md border border-border px-4 text-sm font-medium text-foreground hover:bg-muted"
+          >
+            Esporta CSV
+          </a>
+          <Button render={<Link href="/dashboard/qr/new" />} size="lg">
+            Crea QR
+          </Button>
+        </div>
       </div>
 
+      {/* Consigli automatici */}
+      {tips.length > 0 ? (
+        <div className="space-y-2 rounded-xl border border-border bg-card p-5">
+          <h2 className="font-heading text-base font-semibold text-card-foreground">Consigli</h2>
+          <ul className="space-y-2">
+            {tips.map((t, i) => (
+              <li key={i} className="flex items-start gap-2.5 text-sm text-foreground">
+                <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${TONE_DOT[t.tone]}`} />
+                <span>{t.text}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
       {/* KPI */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
         {kpis.map((k) => (
           <div key={k.label} className="rounded-xl border border-border bg-card p-5">
             <p className="text-sm text-muted-foreground">{k.label}</p>
@@ -105,11 +194,32 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {/* Timeline ultimi 30 giorni */}
+      {/* Selettore periodo — governa timeline, breakdown, geo, heatmap, unici */}
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span className="mr-1 text-sm text-muted-foreground">Periodo</span>
+        {PERIODS.map((p) => {
+          const active = p.key === period.key;
+          return (
+            <Link
+              key={p.key}
+              href={`/dashboard?d=${p.key}`}
+              className={`rounded-md border px-3 py-1.5 text-sm ${
+                active
+                  ? "border-transparent bg-foreground text-background"
+                  : "border-border text-foreground hover:bg-muted"
+              }`}
+            >
+              {p.label}
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Timeline nel periodo scelto */}
       <div className="rounded-xl border border-border bg-card p-5">
         <div className="flex items-baseline justify-between">
           <h2 className="font-heading text-base font-semibold text-card-foreground">
-            Scansioni · ultimi {DAYS} giorni
+            Scansioni · {period.hourly ? "ultimi 7 giorni · orario" : `ultimi ${period.days} giorni`}
           </h2>
           <span className="text-xs text-muted-foreground">UTC</span>
         </div>
@@ -131,8 +241,60 @@ export default async function DashboardPage() {
 
       {/* Breakdown device + browser */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Breakdown title="Dispositivo" slices={devices} total={rows.length} />
-        <Breakdown title="Browser" slices={browsers} total={rows.length} />
+        <Breakdown title="Dispositivo" slices={devices} total={windowTotal} />
+        <Breakdown title="Browser" slices={browsers} total={windowTotal} />
+      </div>
+
+      {/* Breakdown sistema operativo + lingua */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <Breakdown title="Sistema operativo" slices={oses} total={windowTotal} />
+        <Breakdown title="Lingua" slices={langs} total={windowTotal} />
+      </div>
+
+      {/* Geografia (dagli header edge di Vercel; in locale resta ignoto) */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <Breakdown title="Paese" slices={countries} total={windowTotal} />
+        <Breakdown title="Città" slices={groupCount(rows.map((r) => r.city))} total={windowTotal} />
+      </div>
+
+      {/* Heatmap giorno × ora (UTC) */}
+      <div className="rounded-xl border border-border bg-card p-5">
+        <div className="flex items-baseline justify-between">
+          <h2 className="font-heading text-base font-semibold text-card-foreground">
+            Ritmo settimanale · giorno × ora
+          </h2>
+          <span className="text-xs text-muted-foreground">UTC</span>
+        </div>
+        {heat.total > 0 ? (
+          <div className="mt-4 overflow-x-auto">
+            <div className="min-w-[560px]">
+              <div className="flex gap-[3px] pl-9 text-[10px] text-muted-foreground">
+                {Array.from({ length: 24 }, (_, h) => (
+                  <span key={h} className="flex-1 text-center">
+                    {h % 6 === 0 ? h : ""}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-1 space-y-[3px]">
+                {heat.matrix.map((hoursRow, d) => (
+                  <div key={d} className="flex items-center gap-[3px]">
+                    <span className="w-9 shrink-0 text-[10px] text-muted-foreground">{WEEKDAYS[d]}</span>
+                    {hoursRow.map((n, h) => (
+                      <div
+                        key={h}
+                        title={`${WEEKDAYS[d]} ${String(h).padStart(2, "0")}:00 — ${n} scansioni`}
+                        className="aspect-square flex-1 rounded-[2px] bg-[var(--gold)]"
+                        style={{ opacity: n === 0 ? 0.06 : 0.2 + 0.8 * (n / heat.max) }}
+                      />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <p className="mt-4 text-sm text-muted-foreground">Nessuna scansione nel periodo.</p>
+        )}
       </div>
 
       {/* Rami e campagne (albero di QR, rollup reale) */}

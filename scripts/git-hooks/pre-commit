@@ -154,6 +154,24 @@ for name in $NAMES; do
   fi
 done
 
+# ── 11 · Decisione [LOCKED] senza D-NNN in DECISIONI.md (avviso) ───────────
+# Pattern distillato 3 volte (T-008, T-016, T-020): una decisione marcata [LOCKED]/
+# «deciso» in un dossier o in TODO ma mai promossa a memoria/DECISIONI.md — resta
+# prosa, si scopre mancante solo cercandola là. Avviso, non blocco: a volte la
+# decisione vive legittimamente solo nel dossier. Guarda le righe AGGIUNTE. L-008.
+DECISION_HIT=""
+for f in $STAGED; do
+  case "$f" in
+    dossier/*.md|memoria/TODO.md)
+      if git diff --cached -- "$f" | grep -qE '^\+.*(\[LOCKED|deciso \(202)'; then
+        DECISION_HIT="$DECISION_HIT $f"
+      fi ;;
+  esac
+done
+if [ -n "$DECISION_HIT" ] && ! echo "$STAGED" | grep -qxF 'memoria/DECISIONI.md'; then
+  echo "⚠️  decisione strutturale in:$DECISION_HIT — ma memoria/DECISIONI.md non è nel commit. Manca un D-NNN?"
+fi
+
 if [ "$BLOCCO" -ne 0 ]; then
   echo ""
   echo "Commit fermato. Per forzare in emergenza: git commit --no-verify"
