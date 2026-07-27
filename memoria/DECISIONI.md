@@ -129,3 +129,18 @@ Component non conosce il fuso del browser → la formattazione delle label va su
 `lib/dashboard.ts` continuano a bucketizzare in UTC, la conversione è solo di
 presentazione. Alternativa scartata: mostrare UTC al cliente (confonde chi legge orari
 locali); salvare in fuso locale (rompe determinismo e confronti cross-fuso).
+
+## D-014 · 2026-07-27 · Tabella profiles come fondazione per-utente
+Contesto: T-022 (fuso del cliente) richiede una casa per-utente dove salvare il fuso;
+non esisteva alcuna tabella profilo (solo `qr_codes`, `qr_scans`). Anche T-016 (piano
+free/pro + metering) richiederà una riga per-utente. Decisione: creare
+**`public.profiles`** (1:1 con `auth.users`, PK `owner_id`) come **fondazione
+condivisa** — `timezone` (IANA, default `'UTC'`), `country`, `city` — con RLS
+owner-scoped, trigger `on_auth_user_created` (`handle_new_user` definer, revoca L-001)
++ backfill. È **irreversibile** (migrazione `20260727000001` applicata al DB dev il
+2026-07-27c) e precede i suoi consumatori (§4): T-016 la **estende**, non la ricrea.
+**Aggiorna D-013**: le funzioni pure di `lib/dashboard.ts` NON restano "invariate" —
+guadagnano un parametro `timeZone` (default UTC) per bucketizzare nel fuso del cliente,
+perché label-only sbaglia heatmap e timeline giornaliera (corretto solo per l'oraria).
+Alternative scartate: cookie di TZ (flash al primo load); bucketing client-side coi
+timestamp spediti al client (esce da Server Components di default, dati pesanti a 360g).

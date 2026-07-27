@@ -1,6 +1,6 @@
 # TODO
 
-**Saldo: 8 aperti — 7 nuovi (T-016, T-017, T-018, T-020, T-021, T-022, T-023), 1 riportato (T-008 `↻3`)**  ·  15 chiusi (T-001…T-005 il 2026-07-24; T-006, T-007, T-009, T-010 il 2026-07-25; T-011, T-013, T-012 il 2026-07-26; T-014, T-015, T-019 il 2026-07-27)
+**Saldo: 9 aperti — 7 nuovi (T-016, T-017, T-018, T-020, T-021, T-023, T-024), 2 riportati (T-022 `↻1`, T-008 `↻3`)**  ·  15 chiusi (T-001…T-005 il 2026-07-24; T-006, T-007, T-009, T-010 il 2026-07-25; T-011, T-013, T-012 il 2026-07-26; T-014, T-015, T-019 il 2026-07-27)
 
 Stati: `[ ]` da fare · `[~]` scritto ma non provato · `[A]` provato e accettato ·
 `[x]` fatto con prova · `[>]` riportato (con `↻` e il suo dossier) ·
@@ -51,24 +51,33 @@ Solo la sezione «Per Nick» si sostituisce.
       riassegnabile se cancellato (D-010, eccezione regola 7). **Consuma T-016** (va dopo). Routing
       @tag e delete/scansioni orfane = nodi aperti. Piano in **`dossier/T-020-slug-custom-tag.md`**.
 
-- [ ] T-021 **Nav consapevole del login (landing + logout)** (nuovo) `M` — bug segnalato da Nick
-      (2026-07-27b): da **loggato** la homepage mostra ancora **Login/Registrati**; deve mostrare
-      **«Dashboard»** e un **Logout** raggiungibile. Rendere la nav della landing consapevole della
-      sessione (`serverSupabase().auth.getUser()`), Server Component; il logout riusa
-      `app/auth/signout`. Precedente: **T-004** (auth), **T-011** (landing). Aprire `dossier/T-021-nav-auth.md`.
+- [~] T-021 **Nav consapevole del login (landing + logout)** (nuovo) `M` — **codice fatto**
+      (2026-07-27c): `site-header.tsx` reso async + consapevole della sessione (Dashboard + form
+      logout `/auth/signout` da loggato; Accedi/Registrati da anonimo). tsc verde, revisore
+      approvato, logged-out eyeballed. `[~]`: manca solo l'**eyeball del ramo loggato** (dietro auth,
+      Claude non autentica → § Per Nick). Dossier `dossier/T-021-nav-auth.md`.
 
-- [ ] T-022 **Fuso orario del cliente + granularità Giorno/Ora** (nuovo) `M` — bug/decisione
-      (D-013, risposta di Nick su T-006): oggi le analitiche mostrano **UTC**; il cliente deve vedere
-      il **suo fuso**. Il dato resta UTC (funzioni pure invariate), la **conversione è solo di
-      presentazione** → foglia `'use client'` con Intl (TZ del browser) o cookie di TZ. Timeline:
-      **Giorno default + toggle Ora**. Tocca dashboard aggregata **e** singolo QR. Aprire `dossier/T-022-fuso-cliente.md`.
+- [~] T-023 **Selettore periodo senza ricaricare/saltare in cima** (nuovo) `M` — **codice fatto**
+      (2026-07-27c): `scroll={false}` sui Link del periodo (dashboard aggregata + singolo QR).
+      Causa reale = scroll-to-top di Next su nav soft (doc `link.md §scroll`), non un full-reload.
+      Prova **documentale** + tsc + revisore. `[~]`: eyeball di Nick per promuovere. Dossier
+      `dossier/T-023-selettore-no-reload.md`.
 
-- [ ] T-023 **Selettore periodo senza ricaricare/saltare in cima** (nuovo) `M` — bug (Nick 2026-07-27b):
-      cambiare **Periodo** fa un full-reload che riporta la vista in cima. Passare a navigazione
-      client-side (o scroll-restoration) mantenendo il param `?d=` e i Server Component per il dato.
-      Tocca dashboard aggregata **e** `dashboard/qr/[short_code]`. Aprire `dossier/T-023-selettore-no-reload.md`.
+- [ ] T-024 **Harness di verifica auth (SSR cookie → route Next)** (nuovo) `M` — dal distillatore,
+      **4ª recidiva** del muro «comportamento dietro auth non testabile in-browser» (T-015, T-019,
+      T-021, T-023). Test d'integrazione: `signInWithPassword` → inietta i cookie Supabase-SSR in un
+      `fetch` verso `/dashboard`, `/dashboard/qr/[short_code]` e la landing → asserisce le stringhe
+      chiave (KPI, «Dashboard»/«Esci», titoli widget). Chiude il → test del pattern; il browser resta
+      solo per il pixel. Precedente: `apps/qr/lib/auth.test.ts`, `dossier/PATTERN.md` (riga muro-auth).
 
 ## Riportati
+
+- [>] T-022 **Fuso orario del cliente + granularità Giorno/Ora** `↻1` `C` — **blocco A fatto e
+      provato** (2026-07-27c): tabella `profiles` (migrazione `20260727000001`, applicata al DB dev)
+      + `profiles.test.ts` verde, RLS/L-001 ok, revisore approvato → **D-014**. Restano **B** (funzioni
+      pure TZ-aware, default UTC), **C** (wiring + preferenza dal browser + chiude il debito
+      `updated_at`), **D** (toggle Giorno/Ora). **Piano completo e pronto** in
+      `dossier/T-022-fuso-cliente.md`. Precede/condivide la fondazione con T-016.
 
 ## Fatto
 
@@ -85,21 +94,22 @@ contesto a ogni sessione per informazione che REGISTRO già conserva. — potato
 
 *(questa sezione si **sostituisce** a ogni avanzamento, non si accumula)*
 
-**Sessione 2026-07-27b — chiusa.** Confermate **N-a** e **N-b** (rimosse); **T-019 chiuso**
-(il tuo eyeball conferma rendering e navigazione → REGISTRO). Decisioni incise: **D-011**
-Stripe, **D-012** riferimento estetico Arkés, **D-013** fuso cliente + granularità Giorno/Ora.
-I tuoi problemi sono diventati task: **T-021** (nav login/logout landing), **T-022** (fuso
-cliente), **T-023** (selettore senza reload). `[N]` aperte residue: **N-f** (chiavi Stripe in
-Vercel) · **T-008** (Supabase prod).
+**Sessione 2026-07-27c — chiusa.** **Serve il tuo eyeball su :3000** per chiudere T-021 e T-023
+(codice fatto + revisore ok, ma dietro auth Claude non verifica): (1) da **loggato** la homepage
+mostra **Dashboard + Esci**? (2) cambiando **Periodo** la vista **non salta in cima**? Rispondi e li
+chiudo a `[A]`. **T-022 blocco A provato** (tabella `profiles` applicata da te → `profiles.test`
+verde) → **D-014**; B/C/D nel dossier. Nato **T-024** (harness auth: 4ª recidiva).
+`[N]` residue: **N-f** (Stripe in Vercel) · **T-008** (Supabase prod, `↻3`).
 
 ## Prossima sessione — prompt da lanciare
 
 *(standing: dopo ogni `/chiusura` questa sezione porta il prompt pronto — `lavoro.md` §8-quater)*
 
 ```
-/apertura. Sequenza consigliata: prima i tre bug rapidi dal feedback di Nick —
-T-021 (nav landing consapevole del login: pulsante Dashboard + logout quando loggato),
-T-023 (selettore Periodo senza full-reload/scroll-jump), T-022 (fuso del cliente in
-display, dato resta UTC; timeline Giorno + toggle Ora, D-013). Poi, se resta budget,
-T-016 (piano free/pro, provider Stripe D-011: chiavi via N-f) prima di T-020. Chiudi con /chiusura.
+/apertura. Se Nick ha confermato gli eyeball (Dashboard+Esci da loggato; Periodo senza salto),
+chiudi T-021 e T-023 a [A]→REGISTRO. Poi prosegui T-022 (fondazione profiles già applicata, D-014):
+blocchi B (funzioni pure TZ-aware con param timeZone, default UTC; +casi in dashboard.test.ts),
+C (wiring + preferenza dal browser; chiude il debito updated_at) e D (toggle Giorno/Ora, "7h" resta)
+— piano completo nel dossier T-022. Valuta T-024 (harness auth) prima di altri task scoped-utente,
+evita il 5° [~]. Chiudi con /chiusura.
 ```

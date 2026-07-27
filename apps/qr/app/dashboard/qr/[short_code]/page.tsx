@@ -231,6 +231,7 @@ export default async function QrDetailPage({
             <Link
               key={p.key}
               href={`/dashboard/qr/${qr.short_code}?d=${p.key}`}
+              scroll={false}
               className={`rounded-md border px-3 py-1.5 text-sm ${
                 active
                   ? "border-transparent bg-foreground text-background"

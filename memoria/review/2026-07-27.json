@@ -1,23 +1,44 @@
-{
-  "data": "2026-07-27",
-  "ancora": "e384b63",
-  "ambito": "T-014 fette 2-3 (dashboard arricchita) + T-015 (selettore periodo)",
-  "esito": "approvato",
-  "rilievi": [
-    {
-      "gravita": 2,
-      "file": "apps/qr/lib/dashboard.ts",
-      "problema": "csvField non neutralizza celle che iniziano con = + - @: CSV/formula injection all'apertura in Excel/Sheets (country/city da header edge spoofabili).",
-      "rimedio": "prefissare con apostrofo i campi che iniziano con =+-@ (o tab/CR) prima dell'escaping RFC 4180.",
-      "stato": "RISOLTO in questa chiusura (guardia in csvField + test toCsv anti-injection)."
-    },
-    {
-      "gravita": 2,
-      "file": "apps/qr/app/dashboard/export.csv/route.ts",
-      "problema": "Route handler e Server Component non hanno prova end-to-end del contenuto prodotto: solo toCsv e' unit-testata.",
-      "rimedio": "verificare manualmente un export scaricato (contenuto) e il selettore periodo a video.",
-      "stato": "PENDENTE — non verificabile in sessione (dashboard esige login, preview non autenticato). Annotato [~] per Nick in STATO/dossier."
-    }
-  ],
-  "sintesi": "Nucleo pure-function solido e testato (15 nuovi test). Owner-scoping, regola 7/9 rispettate, nessun segreto esposto. Rilievo 1 risolto in chiusura; rilievo 2 e' il confine visivo [~] rimandato a Nick."
-}
+[
+  {
+    "data": "2026-07-27",
+    "sessione": "2026-07-27 (T-014/T-015)",
+    "ancora": "e384b63",
+    "ambito": "T-014 fette 2-3 (dashboard arricchita) + T-015 (selettore periodo)",
+    "esito": "approvato",
+    "rilievi": [
+      {
+        "gravita": 2,
+        "file": "apps/qr/lib/dashboard.ts",
+        "problema": "csvField non neutralizza celle che iniziano con = + - @: CSV/formula injection all'apertura in Excel/Sheets (country/city da header edge spoofabili).",
+        "rimedio": "prefissare con apostrofo i campi che iniziano con =+-@ (o tab/CR) prima dell'escaping RFC 4180.",
+        "stato": "RISOLTO in questa chiusura (guardia in csvField + test toCsv anti-injection)."
+      },
+      {
+        "gravita": 2,
+        "file": "apps/qr/app/dashboard/export.csv/route.ts",
+        "problema": "Route handler e Server Component non hanno prova end-to-end del contenuto prodotto: solo toCsv e' unit-testata.",
+        "rimedio": "verificare manualmente un export scaricato (contenuto) e il selettore periodo a video.",
+        "stato": "PENDENTE — non verificabile in sessione (dashboard esige login, preview non autenticato). Annotato [~] per Nick in STATO/dossier."
+      }
+    ],
+    "sintesi": "Nucleo pure-function solido e testato (15 nuovi test). Owner-scoping, regola 7/9 rispettate, nessun segreto esposto. Rilievo 1 risolto in chiusura; rilievo 2 e' il confine visivo [~] rimandato a Nick."
+  },
+  {
+    "data": "2026-07-27",
+    "sessione": "2026-07-27c (T-021/T-023/T-022-A)",
+    "ancora": "95aa0f8",
+    "esito": "approvato",
+    "task": ["T-021", "T-023", "T-022/A"],
+    "rilievi": [
+      {
+        "gravita": 1,
+        "file": "supabase/migrations/20260727000001_profiles.sql",
+        "riga": 19,
+        "problema": "updated_at senza trigger di aggiornamento: resta congelata alla creazione",
+        "rimedio": "trigger BEFORE UPDATE o set esplicito nella server action del blocco C",
+        "stato": "accettato come debito → blocco C di T-022 (migrazione già applicata, non si riscrive)"
+      }
+    ],
+    "sintesi": "Migrazione profiles coerente con RLS/owner_id/L-001 e stile esistente; T-021/T-023 chirurgici, tsc pulito, nessuna regressione sulle regole d'oro."
+  }
+]

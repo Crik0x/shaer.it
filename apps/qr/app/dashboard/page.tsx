@@ -22,7 +22,9 @@ export const dynamic = "force-dynamic";
 // Periodi dell'analisi, scelti via query param ?d=. Il periodo guida la finestra
 // delle scansioni (timeline, breakdown, geo, heatmap, unici). La vista "orario"
 // tiene 7 giorni ma a risoluzione oraria (168 barre). Server Component: cambiare
-// periodo è una normale navigazione, zero JS al client (regola 9).
+// periodo è una normale navigazione soft (RSC), zero JS al client (regola 9). I
+// Link portano scroll={false}: il selettore è a metà pagina, altrimenti Next
+// scrolla in cima a ogni cambio (link.md §scroll) — il "salto" segnalato (T-023).
 const PERIODS = [
   { key: "7", label: "7 giorni", days: 7, hourly: false },
   { key: "30", label: "30 giorni", days: 30, hourly: false },
@@ -203,6 +205,7 @@ export default async function DashboardPage({
             <Link
               key={p.key}
               href={`/dashboard?d=${p.key}`}
+              scroll={false}
               className={`rounded-md border px-3 py-1.5 text-sm ${
                 active
                   ? "border-transparent bg-foreground text-background"
