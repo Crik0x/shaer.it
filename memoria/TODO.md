@@ -14,7 +14,7 @@ A **`↻3`** ci si ferma e si porta il task a Nick con due o tre vie d'uscita.
 Solo la sezione «Per Nick» si sostituisce.
 
 ## Da te — azioni `[N]` (col come-fare, si rimuovono a conferma)
-
+ 
 - [N] **N-a · Config auth Supabase** (sblocca l'auth in prod, 2 min) — Dashboard Supabase
       progetto `alrguvxspssjwfmtuhdw` → **Authentication › URL Configuration**:
       1. **Site URL** = `https://qr.shaer.it`
