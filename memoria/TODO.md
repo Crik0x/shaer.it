@@ -91,7 +91,7 @@ locale (dietro auth): entra in dashboard da una macchina non-UTC → timeline/he
 **l'ora locale**, non UTC. Resta solo il blocco **D** (toggle Giorno/Ora). `[N]` residue: **N-f**
 (Stripe in Vercel) · **T-008** (Supabase prod, `↻3`).
 
-## Prossima sessione — prompt da lanciare
+## Prossima sessione — prompt da lanciare 
 
 *(standing: dopo ogni `/chiusura` questa sezione porta il prompt pronto — `lavoro.md` §8-quater)*
 

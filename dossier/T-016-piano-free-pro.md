@@ -35,7 +35,7 @@ il diritto di esistere del QR.
    derivato (count su finestra mese). A scala → tabella di rollup.
 3. **Fuso del "mese"**: UTC o timezone dell'owner? (coerenza con dayStampUtc).
 4. **Grazia**: cosa vede l'owner a quota superata — banner + CTA upgrade, dati
-   congelati all'ultimo valore o oscurati del tutto.
+   oscurati del tutto, dicendo che il tuo periodo di prova è terminato, non perdere le nuove registrazioni, fai upgrade e scarica il report quando vuoi, esporta i dati dei tuoi clienti e aumenta le vendite con la fidelity card.
 
 ## Precedenti da riusare
 - `dossier/archivio/T-006-analytics-timeline.md` — RPC definer owner-scoped per
