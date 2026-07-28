@@ -1,6 +1,6 @@
 # Shaer.it — Master Design Document (MDD) · Ecosistema
 
-Versione: 1.3 · Stato: **Bozza di visione — da confermare** · 2026-07-28
+Versione: 1.4 · Stato: **Visione approvata da Nick (2026-07-28)** — decisioni promosse in [DECISIONI](../../memoria/DECISIONI.md) (E-D-01…E-D-16). Restano i nodi impl. §13.
 Autore: Nicolaj D'Ortona · Assistente: Claude (Anthropic)
 Fonti-seme: [SHAER_MASTER](../SHAER_MASTER.md) (dominio economico) ·
 [SAAS_BUILD_PLAN_V1](../SAAS_BUILD_PLAN_V1.md) (ampiezza moduli, tecnica) ·
@@ -448,9 +448,10 @@ completa** (task T-028) e del SAD di ecosistema. Legenda: ✅ fatto · ◐ in co
 - **Non si costruisce tutto insieme:** una fase additiva e **provata** prima della
   successiva (regola 5: test prima della carta).
 
-## 12 · Decisioni fondative (da promuovere in `DECISIONI.md`)
+## 12 · Decisioni fondative (promosse in `DECISIONI.md`)
 
-Confermate/chiarite con Nick il 2026-07-28; da formalizzare come `E-D-NNN` (L-008).
+**Approvate da Nick il 2026-07-28** e formalizzate come `E-D-01…E-D-16` in
+[`memoria/DECISIONI.md`](../../memoria/DECISIONI.md) (L-008). Qui il riassunto; là la sentenza col perché.
 
 - **E-D-01** — Rete a **due livelli**: (A) economia referral propria = mono-livello,
   programmi parametrici a tempo; (B) **MLM-as-a-service** = modulo business parametrico
@@ -487,7 +488,7 @@ Confermate/chiarite con Nick il 2026-07-28; da formalizzare come `E-D-NNN` (L-00
   commissione** dal pannello admin, a tutti o a singoli; i reward MLM sono **crediti
   Shaer** dal budget (§4.2). Verità funzionale nel simulatore v5.
 - **E-D-12** — **damascati** è il progetto gemello di riferimento (stesso stack,
-  stesso metodo) da cui attingere per dashboard e funzionamento (§8).
+  stesso metodo) da cui attingere per admin dashboard e funzionamento (§8).
 - **E-D-13** — **Pannello unico + RBAC granulare + maker-checker**: un solo pannello
   filtrato per ruolo; i dipendenti richiedono **verifica/approvazione** prima di ogni
   modifica **permanente** (§8.1). **Ambito v1: admin-first** (permessi assegnati

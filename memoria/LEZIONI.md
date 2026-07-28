@@ -22,6 +22,7 @@ Gerarchia della forza: nota < lezione < regola < controllo meccanico < hook.
 | L-007 · Funzione/RPC nuova (TS o SQL) committata senza test: la ferma solo il revisore, un round-trip. 3 occorrenze (T-011, T-012 ×2, la 3ª una RPC SQL inerte pure senza consumatore) | `→ hook` — `pre-commit §10` (avviso): il nome di una `export function`/`create function` nuova che non compare in nessun `*.test.ts` viene segnalato prima del commit |
 | L-008 · Decisione strutturale marcata `[LOCKED]`/«deciso» in un dossier o in TODO ma non promossa a `DECISIONI.md` come `D-NNN` nello stesso giro. 3 occorrenze (T-008, T-016, T-020) | `→ hook` — `pre-commit §11` (avviso): righe aggiunte con `[LOCKED`/`deciso (202…` in `dossier/*.md` o `TODO.md` senza `DECISIONI.md` nel commit vengono segnalate |
 | L-009 · `stato:` nel frontmatter di un dossier fuori dall'enum `aperto\|chiuso` (T-019 scrisse `in-corso`): superava il check-presenza chiavi di §8 ma rompe i filtri per stato. Colto solo dal distillatore | `→ hook` — `pre-commit §8`: valida il **dominio** di `stato`, non solo la presenza della chiave (blocca se ∉ `{aperto,chiuso}`) |
+| L-010 · Sessione senza `/apertura`: ancora `Apertura:` di STATO stantia → la `/chiusura` diffa la baseline sbagliata (2026-07-28) | `→ hook` — `pre-commit §12`: l'ancora dev'essere un commit reale e antenato di HEAD (la freschezza resta a `/apertura`) |
 
 ## In vigore — testo, a scadenza
 

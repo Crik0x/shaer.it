@@ -179,6 +179,27 @@ if [ -n "$DECISION_HIT" ] && ! echo "$STAGED" | grep -qxF 'memoria/DECISIONI.md'
   echo "⚠️  decisione strutturale in:$DECISION_HIT — ma memoria/DECISIONI.md non è nel commit. Manca un D-NNN?"
 fi
 
+# ── 12 · Ancora di STATO valida per la chiusura ────────────────────────────
+# Attrito reale (2026-07-28): una sessione partita SENZA /apertura ha lasciato in
+# STATO un'ancora `Apertura:` non aggiornata (puntava a un commit vecchio); la
+# /chiusura diffa TODO contro `git show <ancora>:...`, quindi un'ancora assente,
+# inesistente o non antenata di HEAD fa diffare la baseline SBAGLIATA. Se STATO è
+# nel commit, l'ancora dev'essere un commit reale e antenato di HEAD. Il resto —
+# che sia HEAD a inizio sessione — spetta a /apertura, ma questo taglia la corruzione.
+if echo "$STAGED" | grep -qxF 'memoria/STATO.md'; then
+  ANCORA=$(grep -m1 'Apertura:' memoria/STATO.md | grep -oiE '[0-9a-f]{7,40}' | head -1)
+  if [ -z "$ANCORA" ]; then
+    echo "⛔ memoria/STATO.md: manca l'ancora 'Apertura: <commit>' (serve alla /chiusura)."
+    BLOCCO=1
+  elif ! git rev-parse --verify --quiet "${ANCORA}^{commit}" >/dev/null 2>&1; then
+    echo "⛔ ancora di STATO ($ANCORA) non è un commit reale — /apertura deve fissarla a HEAD."
+    BLOCCO=1
+  elif git rev-parse --verify --quiet HEAD >/dev/null 2>&1 && ! git merge-base --is-ancestor "$ANCORA" HEAD 2>/dev/null; then
+    echo "⛔ ancora di STATO ($ANCORA) non è antenata di HEAD — la /chiusura diffa una baseline sbagliata."
+    BLOCCO=1
+  fi
+fi
+
 if [ "$BLOCCO" -ne 0 ]; then
   echo ""
   echo "Commit fermato. Per forzare in emergenza: git commit --no-verify"

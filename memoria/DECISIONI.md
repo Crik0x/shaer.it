@@ -144,3 +144,104 @@ guadagnano un parametro `timeZone` (default UTC) per bucketizzare nel fuso del c
 perché label-only sbaglia heatmap e timeline giornaliera (corretto solo per l'oraria).
 Alternative scartate: cookie di TZ (flash al primo load); bucketing client-side coi
 timestamp spediti al client (esce da Server Components di default, dati pesanti a 360g).
+
+## E-D-01 · 2026-07-28 · La "rete" è a due livelli — [LOCKED]
+Contesto: MLM sì o no? (visione ecosistema, MDD §4.1). Decisione: (A) l'economia referral
+**propria** di Shaer è sempre **mono-livello** (solo diretto), via programmi promozionali
+parametrici e a tempo; (B) l'**MLM multi-livello** esiste solo come **servizio venduto** al
+business (motore parametrico, profondità/larghezza configurabili). Perché: il principio n°6
+di SHAER_MASTER vieta la piramide *di Shaer*, non lo strumento *venduto ai business*.
+Alternativa scartata: "solo mono-livello, niente MLM" (scarta il NETWORK del build plan e un servizio a valore).
+
+## E-D-02 · 2026-07-28 · Shaer.it = super-piattaforma unica — [LOCKED]
+Decisione: build plan (ampiezza moduli) + SHAER_MASTER (motore economico a crediti) + QR
+(verifica) = **un solo prodotto**, non tre. Il QR è il Modulo 0. Perché: l'interoperabilità
+cross-merchant col wallet unico è il valore che nessun concorrente ha (MDD §1-2).
+Alternativa scartata: tenere QR/Shaer/moduli come prodotti separati (silos, la cosa che Shaer combatte).
+
+## E-D-03 · 2026-07-28 · Fidelity universale, non per-tenant — [LOCKED]
+Decisione: punti/cashback vivono sul **wallet unico di rete**, spendibili cross-merchant nel
+mondo; non fidelity per-negozio. Perché: è il meccanismo di ritenzione del cliente (MDD §2).
+Alternativa scartata: fidelity per-tenant come nel build plan (ricrea i silos).
+
+## E-D-04 · 2026-07-28 · Business pay-per-activation, cliente gratuito e premiante — [LOCKED]
+Decisione: ogni modulo si attiva a pagamento lato business (subscription + % transato + take
+sul margine + fee B2B); il cliente è gratuito e guadagna cashback/commissioni. Perché: nessuno
+paga per moduli che non usa; il cliente è beneficiario, non prodotto (MDD §7).
+Alternativa scartata: tutto incluso a prezzo unico (barriera d'ingresso, spreco lato business).
+
+## E-D-05 · 2026-07-28 · Il Modulo 0 (QR) è la fondazione anti-frode — [LOCKED]
+Decisione: l'albero di QR (`owner_id`/`granted_by`, scan verificate) è la base su cui si
+innestano ledger/TXN/recensioni; non si riprogetta. Perché: è già in produzione e provato;
+il principio n°1 (integrità solo da TXN verificate via QR) lo richiede (MDD §9). Estende D-008.
+Alternativa scartata: riscrivere il modello dati per l'economia (butta 17 task chiusi).
+
+## E-D-06 · 2026-07-28 · Attore TRANSPORTER + Tracciabilità supply-chain — [LOCKED, nodo impl aperto]
+Decisione: nuovo attore **TRANSPORTER** (distinto dal rivenditore) + modulo tracciabilità:
+hand-off del lotto via scansione QR, dati real-time operatore+dispositivo, condivisione
+**chirurgica**, esposizione al consumatore di distanza/costo trasporto. Perché: chiude la
+catena internazionale verificata e tutela il consumatore (MDD §3, §5.2). Nodo impl aperto:
+privacy/consenso del tracking dipendenti e base giuridica della posizione (MDD §13).
+Alternativa scartata: logistica come dato non verificato dichiarato dal seller (niente anti-frode).
+
+## E-D-07 · 2026-07-28 · Wishlist/Compleanni/Crowdfunding — priorità da subito — [LOCKED]
+Decisione: modulo wishlist + regali collettivi + gruppi/obiettivi, **da sviluppare presto**.
+Perché: è un motore di **segnale d'interesse** più preciso dei cookie (interesse reale,
+acquistato sì/no e quando → ri-suggestione temporizzata); ancora a SHAER_MASTER §1.6 (MDD §5.1).
+Alternativa scartata: rimandarlo a fase tarda (si perde il segnale che alimenta tutto il resto).
+
+## E-D-08 · 2026-07-28 · Due dashboard + riferimenti verificati — [LOCKED]
+Decisione: dashboard **business** (ricca, ≈ arkes_dashboard_v3) e **cliente** (ridotta, da
+definire); base funzionale comune = simulatore MVP v5. Perché: due esperienze, una rete
+(MDD §8). Nodo aperto: struttura definitiva della dashboard cliente (MDD §13).
+Alternativa scartata: una sola dashboard per entrambi (bisogni e permessi troppo diversi).
+
+## E-D-09 · 2026-07-28 · Compartimentazione (decentralizzazione controllata) — [LOCKED, nodo impl aperto]
+Decisione: config e segreti in **compartimenti separati**, least-privilege, controllo master al
+fondatore; nessun punto (file/tabella/servizio/persona) espone l'intera logica. Perché: sicurezza
+interna e protezione del know-how ("nessuno sa e ruba tutto", MDD §11). Nodo impl aperto:
+architettura dei parametri — opzione **③ ibrido** (motore unico + dati compartimentati) consigliata,
+da confermare nel SAD (MDD §13). Alternativa scartata: motore/config centralizzati ("una sola bottiglia").
+
+## E-D-10 · 2026-07-28 · Ecosistema componibile del commerciante — [LOCKED]
+Decisione: ogni business attiva solo i servizi che gli servono e ne compone un ecosistema che
+**coopera** con gli altri; nascono i moduli operativi magazzino/riordino/presenze/export
+commercialista. Perché: la cooperazione tra ecosistemi è ciò che rende la piattaforma unica (MDD §5.3).
+Alternativa scartata: pacchetti verticali rigidi per settore (meno flessibili, più da mantenere).
+
+## E-D-11 · 2026-07-28 · Finanziamento campagne = budget + split + commissione admin — [LOCKED]
+Decisione: chi crea la campagna dedica un **budget** e decide lo split (passaparola/MLM, cashback,
+altro); Shaer applica la propria commissione dal pannello admin, a tutti o a singoli; i reward
+sono **crediti Shaer** dal budget. Perché: è il minipool di SHAER_MASTER §1.4; scioglie "crediti
+vs valore business" (MDD §4.2). Verità funzionale nel simulatore v5.
+Alternativa scartata: reward in valore proprietario del business (esce dal ledger, non verificabile).
+
+## E-D-12 · 2026-07-28 · damascati = progetto gemello di riferimento — [LOCKED]
+Decisione: dashboard e funzionamento si modellano su `D:\Desktop\I Damascati\Code\Sito\damascati`
+(stesso stack Next 16 + Supabase, stesso metodo). Perché: condivide le fondamenta → si attinge
+struttura e pattern di componenti invece di re-inventarli (MDD §8). Coerente con D-005 (repo separate).
+Alternativa scartata: progettare le dashboard da zero (spreco, il gemello esiste già).
+
+## E-D-13 · 2026-07-28 · Pannello unico + RBAC admin-first + maker-checker — [LOCKED]
+Decisione: un solo pannello filtrato per ruolo; i dipendenti richiedono **verifica/approvazione**
+prima di ogni modifica **permanente**. Ambito v1: **admin-first** (l'admin Shaer assegna permessi
+scelti uno a uno; il commerciante in seguito). Perché: sicurezza + compartimentazione (MDD §8.1).
+Alternativa scartata: permessi full-business subito (superficie di rischio e complessità premature).
+
+## E-D-14 · 2026-07-28 · Catalogo sempre visibile (PRESTO) + trial — [LOCKED]
+Decisione: le voci inattive si mostrano (stile `PRESTO` di damascati) per spingere al FULL;
+l'ADMIN attiva prove a tutti/categoria/singolo. Perché: lato UX del pay-per-activation, incuriosisce
+e converte (MDD §8.2). Alternativa scartata: nascondere le funzioni non acquistate (zero curiosità, zero upsell).
+
+## E-D-15 · 2026-07-28 · QR operativo + motore incentivi — [LOCKED]
+Decisione: QR per postazione/tavolo/dipendente (QR personale abbinato al profilo utente, nomi
+modificabili), con attribuzione vendite e **motore incentivi** team (% fatturato su prodotti scelti)
+e singolo (bonus fisso o % con min/max). Perché: trasforma il QR in strumento di gestione del
+personale verificato (MDD §5.4). Alternativa scartata: incentivi gestiti fuori piattaforma (non verificabili, frodabili).
+
+## E-D-16 · 2026-07-28 · Bonus in escrow a circuito chiuso + arbitrato — [LOCKED]
+Decisione: il bonus è **bloccato nel pool** in **crediti Shaer**, spendibili solo se il commerciante
+**versa soldi veri** (altrimenti punto contabile); rilasciato solo dopo approvazione del commerciante
++ assenza contestazioni + verifica/arbitrato Shaer. Circuito: utente→QR→commerciante→pool→dipendente.
+Perché: tutela promessa e commerciante, nessuno froda (held balance C43, TXN unica verità; MDD §5.4).
+Alternativa scartata: bonus in € payroll fuori piattaforma (esce dall'anti-frode e dal ledger).

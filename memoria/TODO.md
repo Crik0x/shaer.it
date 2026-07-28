@@ -1,6 +1,6 @@
 # TODO
 
-**Saldo: 11 aperti — 9 nuovi (T-016, T-017, T-018, T-020, T-024, T-025, T-026, T-027, T-028), 2 riportati (T-022 `↻1`, T-008 `↻3`)**  ·  17 chiusi (T-001…T-005 il 2026-07-24; T-006, T-007, T-009, T-010 il 2026-07-25; T-011, T-013, T-012 il 2026-07-26; T-014, T-015, T-019, T-021, T-023 il 2026-07-27)
+**Saldo: 10 aperti — 8 nuovi (T-016, T-017, T-018, T-020, T-024, T-025, T-026, T-028), 2 riportati (T-022 `↻1`, T-008 `↻3`)**  ·  18 chiusi (T-001…T-005 il 2026-07-24; T-006, T-007, T-009, T-010 il 2026-07-25; T-011, T-013, T-012 il 2026-07-26; T-014, T-015, T-019, T-021, T-023 il 2026-07-27; T-027 il 2026-07-28)
 
 Stati: `[ ]` da fare · `[~]` scritto ma non provato · `[A]` provato e accettato ·
 `[x]` fatto con prova · `[>]` riportato (con `↻` e il suo dossier) ·
@@ -67,7 +67,6 @@ decisioni **E-D-01…E-D-16** (§12); roadmap a blocchi §10. Analisi in `dossie
       (EE1…EE14). Riempire con requisiti + criteri **testabili**. Precede il SAD.
 - [ ] T-026 **SAD di ecosistema** `C` — confini: ledger partita doppia + pool/escrow (E-D-16),
       TXN engine, RBAC admin-first (E-D-13), **parametri ③ ibrido** (E-D-09). Consuma T-025.
-- [ ] T-027 **Promuovere E-D-01…E-D-16 in `DECISIONI.md`** `S` — L-008, col perché; alla conferma di Nick.
 - [ ] T-028 **Analisi completa + blocchi eseguibili** `C` — stabilisce→consuma per B1…B12 (§10),
       decompone **F1** in task. Consuma MDD §10 + T-025/026. Prompt sotto.
 
@@ -91,18 +90,18 @@ archiviato in `dossier/archivio/T-NNN-*.md`. Qui non si ripete: era costo di
 contesto a ogni sessione per informazione che REGISTRO già conserva. — potato
 2026-07-27, opzione A.)*
 
-**Chiusi (17):** T-001…T-007, T-009…T-015, T-019, T-021, T-023 → `memoria/REGISTRO.md`
+**Chiusi (18):** T-001…T-007, T-009…T-015, T-019, T-021, T-023, T-027 → `memoria/REGISTRO.md`
 
 ## Per Nick — comandi e azioni
 
 *(questa sezione si **sostituisce** a ogni avanzamento, non si accumula)*
 
-**Sessione 2026-07-28 — pivot d'ecosistema.** Shaer.it = super-piattaforma, il QR è il **Modulo 0**.
-Fatto (solo doc, niente codice): `MD/` ristrutturato (`ecosistema/` + `modulo-qr/`); **MDD** v1.3
-(`MD/ecosistema/MDD.md`, decisioni **E-D-01…E-D-16**, roadmap §10); **PRD** skeleton (`ecosistema/PRD.md`).
-**Tocca a te:** (1) rileggi l'MDD e correggi; (2) conferma per **promuovere** le E-D in `DECISIONI.md`
-(T-027); (3) sciogli i nodi §13 (dashboard cliente, privacy trasporto, architettura parametri **③**).
-`[N]` del Modulo 0 valide: **N-f** (Stripe) · **T-008**.
+**Sessione 2026-07-28 — pivot d'ecosistema, visione approvata.** Shaer.it = super-piattaforma, il QR è
+il **Modulo 0**. Fatto (solo doc, niente codice): `MD/` ristrutturato (`ecosistema/` + `modulo-qr/`);
+**MDD** v1.4 approvato (`MD/ecosistema/MDD.md`); **PRD** skeleton; **16 decisioni E-D-01…E-D-16 promosse
+in `DECISIONI.md`** (T-027 chiuso). Scritto il hook `pre-commit §12` (L-010: ancora di STATO valida).
+**Tocca a te:** i 3 nodi impl. §13 — **architettura parametri ③**, **dashboard cliente**, **privacy tracking
+trasporto** — vanno chiusi prima di costruire F1. `[N]` del Modulo 0 valide: **N-f** (Stripe) · **T-008**.
 
 ## Prossima sessione — prompt da lanciare 
 
