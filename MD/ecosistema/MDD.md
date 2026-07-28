@@ -1,6 +1,6 @@
 # Shaer.it — Master Design Document (MDD) · Ecosistema
 
-Versione: 1.4 · Stato: **Visione approvata da Nick (2026-07-28)** — decisioni promosse in [DECISIONI](../../memoria/DECISIONI.md) (E-D-01…E-D-16). Restano i nodi impl. §13.
+Versione: 1.5 · Stato: **Visione approvata + nodi impl. sciolti (2026-07-29)** — decisioni in [DECISIONI](../../memoria/DECISIONI.md) (E-D-01…E-D-25). Nessun nodo §13 aperto per F1.
 Autore: Nicolaj D'Ortona · Assistente: Claude (Anthropic)
 Fonti-seme: [SHAER_MASTER](../SHAER_MASTER.md) (dominio economico) ·
 [SAAS_BUILD_PLAN_V1](../SAAS_BUILD_PLAN_V1.md) (ampiezza moduli, tecnica) ·
@@ -506,18 +506,21 @@ completa** (task T-028) e del SAD di ecosistema. Legenda: ✅ fatto · ◐ in co
 
 ## 13 · Nodi ancora aperti (da definire con Nick)
 
-*Sciolti:* finanziamento campagne/MLM (E-D-11, §4.2); compartimentazione (E-D-09, §11);
-**valuta bonus** → crediti Shaer a circuito chiuso (E-D-16, §5.4); **permessi** →
-admin-first (E-D-13, §8.1). Restano:
+*Sciolti (round 1, 2026-07-28):* finanziamento campagne/MLM (E-D-11, §4.2); compartimentazione
+(E-D-09, §11); **valuta bonus** → crediti Shaer a circuito chiuso (E-D-16, §5.4); **permessi** →
+admin-first (E-D-13, §8.1).
 
-- **Architettura dei parametri (E-D-09 → SAD)**: *come* concretamente si compartimenta.
-  Opzioni portate a Nick: ① config-as-data compartimentata · ② motore centralizzato ·
-  **③ ibrido (motore unico + dati compartimentati) — consigliata**. La scelta entra nel SAD.
-- **Dashboard cliente**: struttura e menu definitivi (§8) — "da definire bene".
-- **Modulo 11 (Trasporto)**: privacy/consenso del tracking dei dipendenti da
-  dispositivo; base giuridica della posizione condivisa; granularità del "chirurgico".
-- **Programmi referral (5)**: versionamento dei parametri (durata, %, base) **senza
-  rompere gli accordi già maturati**. Dipende dalla scelta ③ sull'architettura parametri.
+*Sciolti (round 2, 2026-07-29 — via `ecosistema/DOMANDE-NICK.md`):*
+- **Architettura dei parametri** → **③ ibrido** (motore unico + dati compartimentati con RLS): **E-D-17**. Entra nel SAD.
+- **Dashboard cliente** → 7 voci + home a 3 segnali (guadagno mese, richieste amici, compleanni): **E-D-18**.
+- **Tracking trasporto** → 2 scansioni (ricevuto/consegnato) + distanza approssimata, niente GPS continuo: **E-D-19**.
+- **Programmi referral** → immutabili una volta pubblicati + scadenza configurabile (ore/giorni/mesi/mai): **E-D-20**.
+- **Relazione di lavoro** → accordo utente↔business; vincolo ruoli per-transazione: **E-D-21**.
+- **Escrow — tempi/arbitro** → customer care, finestra 5gg solo su promessa non onorata, doppia conferma = rilascio subito: **E-D-22**.
+- **Off-ramp/KYC** → F1 closed-loop, solo trasferimenti SHAER interni; prelievo € rimandato: **E-D-23**.
+- **Limiti approvatore** → solo verifica/lettura, mai proprietà; cambio admin manuale: **E-D-24**.
+
+Nessun nodo impl aperto resta per F1. Il prossimo livello di dettaglio è il **SAD** (T-026).
 
 ## 14 · Relazione coi documenti sotto
 

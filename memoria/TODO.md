@@ -60,13 +60,14 @@ Solo la sezione «Per Nick» si sostituisce.
 
 ## Ecosistema — preparazione (nuovo livello)
 
-*Shaer.it = super-piattaforma; il QR è il Modulo 0. Radice `MD/ecosistema/MDD.md` v1.3;
-decisioni **E-D-01…E-D-16** (§12); roadmap a blocchi §10. Analisi in `dossier/T-025-ecosistema-fondazione.md`.*
+*Radice `MD/ecosistema/MDD.md` **v1.5**; decisioni **E-D-01…E-D-25** (§12, §13 senza nodi aperti);
+roadmap §10. Analisi in `dossier/T-025-ecosistema-fondazione.md`.*
 
-- [ ] T-025 **PRD di ecosistema — riempire lo skeleton** `C` — `MD/ecosistema/PRD.md` v0.1
-      (EE1…EE14). Riempire con requisiti + criteri **testabili**. Precede il SAD.
-- [ ] T-026 **SAD di ecosistema** `C` — confini: ledger partita doppia + pool/escrow (E-D-16),
-      TXN engine, RBAC admin-first (E-D-13), **parametri ③ ibrido** (E-D-09). Consuma T-025.
+- [ ] T-025 **PRD di ecosistema** `C` — **avanzato 2026-07-29** (`PRD.md` v0.3): EE1–EE7/EE10/EE12 con
+      requisiti + criteri testabili. Resta la coda EE8/9/11/13/14 + NFR (non fondativa). Piano nel dossier.
+- [ ] T-026 **SAD di ecosistema** `C` — **sbloccato** (nodi §13 decisi): ledger partita doppia + escrow
+      (E-D-16/22), TXN engine, RBAC + limiti approvatore (E-D-13/24), **parametri ③ ibrido** (E-D-17).
+      Consuma T-025. **Prossimo passo netto.**
 - [ ] T-028 **Analisi completa + blocchi eseguibili** `C` — stabilisce→consuma per B1…B12 (§10),
       decompone **F1** in task. Consuma MDD §10 + T-025/026. Prompt sotto.
 
@@ -96,28 +97,27 @@ contesto a ogni sessione per informazione che REGISTRO già conserva. — potato
 
 *(questa sezione si **sostituisce** a ogni avanzamento, non si accumula)*
 
-**Sessione 2026-07-28 — pivot d'ecosistema, visione approvata.** Shaer.it = super-piattaforma, il QR è
-il **Modulo 0**. Fatto (solo doc, niente codice): `MD/` ristrutturato (`ecosistema/` + `modulo-qr/`);
-**MDD** v1.4 approvato (`MD/ecosistema/MDD.md`); **PRD** skeleton; **16 decisioni E-D-01…E-D-16 promosse
-in `DECISIONI.md`** (T-027 chiuso). Scritto il hook `pre-commit §12` (L-010: ancora di STATO valida).
-**Tocca a te:** i 3 nodi impl. §13 — **architettura parametri ③**, **dashboard cliente**, **privacy tracking
-trasporto** — vanno chiusi prima di costruire F1. `[N]` del Modulo 0 valide: **N-f** (Stripe) · **T-008**.
+**Sessione 2026-07-29 — nodi sciolti + PRD fondativo.** Hai risposto a tutte le 8 domande di
+`MD/ecosistema/DOMANDE-NICK.md`: promosse in **E-D-17…E-D-25** (`DECISIONI.md`), riversate nel **PRD
+v0.3** (EE1–EE7/EE10/EE12 con criteri testabili) e nell'**MDD v1.5** (§13 senza nodi aperti). Solo doc,
+`apps/qr/` intatto. **Tocca a te — niente di infrastrutturale ora:** T-008 e N-f (Stripe) restano `[N]`
+**pre-lancio, da NON fare adesso** (te li richiamo io al momento giusto). Il prossimo passo tecnico è
+il **SAD (T-026)**, che sviluppo io. Se vuoi, alla prossima apertura dimmi solo «vai col SAD».
 
 ## Prossima sessione — prompt da lanciare 
 
 *(standing: dopo ogni `/chiusura` questa sezione porta il prompt pronto — `lavoro.md` §8-quater)*
 
 ```
-/apertura. Shaer.it = super-piattaforma, il QR è il Modulo 0. Radice: MD/ecosistema/MDD.md v1.3
-(decisioni E-D-01…E-D-16, roadmap a blocchi §10). PRD skeleton: MD/ecosistema/PRD.md (EE1…EE14).
-Dominio economico: MD/SHAER_MASTER.md. Rif. funzionali: Struttura/Schema/Shaer_it_Simulatore_MVP_v5.html +
-gemello D:\Desktop\I Damascati\Code\Sito\damascati. Analisi calda: dossier/T-025-ecosistema-fondazione.md.
+/apertura. Shaer.it = super-piattaforma, il QR è il Modulo 0. Radice: MD/ecosistema/MDD.md v1.5
+(E-D-01…E-D-25, §13 senza nodi aperti). PRD: MD/ecosistema/PRD.md v0.3 (EE1–EE7/EE10/EE12 con criteri
+testabili; coda EE8/9/11/13/14+NFR da scrivere). Dominio: MD/SHAER_MASTER.md. Rif.: simulatore
+Struttura/Schema/Shaer_it_Simulatore_MVP_v5.html + gemello D:\Desktop\I Damascati\Code\Sito\damascati.
 
-Obiettivo — analisi completa e blocchi (T-028):
-1) Se Nick conferma la visione → promuovi E-D-01…E-D-16 in memoria/DECISIONI.md col perché (T-027).
-2) Per ogni blocco B1…B12 (§10) dichiara STABILISCE/CONSUMA (lavoro.md §4), ordina F1 (irreversibile primo);
-   gate incongruenza su ogni scelta strutturale (stratega: 3 opzioni costate).
-3) Decomponi F1 in task e scrivili in TODO (solo crescita). 4) Riempi il PRD da EE1 (Identità/RBAC) ed EE3 (Ledger/escrow).
-Nodi da chiudere prima: parametri ③ (E-D-09) · dashboard cliente · privacy trasporto (E-D-06).
-Non toccare apps/qr/ (Modulo 0 in produzione). Chiudi con /chiusura.
+Obiettivo — SAD di ecosistema (T-026):
+1) Confini tecnici da PRD+decisioni: ledger partita doppia + escrow (E-D-16/22), TXN engine (stati
+   append-only), RBAC + limiti approvatore (E-D-13/24), parametri ③ ibrido = motore unico + dati
+   compartimentati RLS (E-D-17). Logica dominio in funzioni pure testabili (regola 5); multi-tenant da subito.
+2) Gate incongruenza su ogni scelta strutturale (stratega, 3 opzioni costate).
+3) Poi coda PRD (EE8/9/11+NFR) e T-028 (decomponi F1, solo crescita TODO). Non toccare apps/qr/. /chiusura.
 ```

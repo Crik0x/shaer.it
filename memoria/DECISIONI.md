@@ -245,3 +245,68 @@ Decisione: il bonus è **bloccato nel pool** in **crediti Shaer**, spendibili so
 + assenza contestazioni + verifica/arbitrato Shaer. Circuito: utente→QR→commerciante→pool→dipendente.
 Perché: tutela promessa e commerciante, nessuno froda (held balance C43, TXN unica verità; MDD §5.4).
 Alternativa scartata: bonus in € payroll fuori piattaforma (esce dall'anti-frode e dal ledger).
+
+## E-D-17 · 2026-07-29 · Architettura parametri = ibrido (motore unico + dati compartimentati) — [LOCKED]
+Decisione: scioglie il nodo impl di **E-D-09**. Un **motore di calcolo unico**, puro e testabile,
+applica le regole; i **valori** dei parametri (split, %, durate, soglie) vivono in **compartimenti
+con RLS**, non nel codice. Perché: concilia la compartimentazione (nessun punto unico che espone
+tutto) con la testabilità (regola 5: logica in funzioni pure). Alternativa scartata: ① config-as-data
+pura (logica sparpagliata, difficile da testare) · ② motore centralizzato con dati inclusi (il "sa tutto" che E-D-09 vieta).
+
+## E-D-18 · 2026-07-29 · Dashboard cliente = 7 voci + home a 3 segnali — [LOCKED]
+Decisione: scioglie il nodo §13 "dashboard cliente". Menu del BUYER: 1) Wallet · 2) I miei acquisti/TXN ·
+3) Wishlist & Regali (compleanni amici con 2 prodotti desiderati + stato + pulsante "regala" che fa
+partecipare alla raccolta) · 4) Suggerimenti (SHAERER) · 5) Rete & Referral · 6) Profilo · **7) Diventa/
+switcha a business**. **Home** all'ingresso mostra: A) quanto guadagnato nel mese · B) richieste/
+suggerimenti di amici/liste/gruppi/pubblico · C) compleanni degli amici del mese corrente. Perché:
+il cliente non gestisce un'azienda, la home lo aggancia su guadagno e relazioni (MDD §8.3, E-D-08).
+
+## E-D-19 · 2026-07-29 · Tracking trasporto minimale (2 scansioni, niente GPS continuo) — [LOCKED]
+Decisione: scioglie il nodo §13 privacy trasporto. Per ora si registrano **solo 2 eventi** —
+scansione **ricevuto** e scansione **consegnato** — e si calcola la **distanza approssimata**
+partenza/arrivo; si **derivano** tempo trascorso, distanza, costo trasporto. **Niente scia GPS
+continua, niente posizione live della flotta.** Estensioni future a consenso rafforzato. Perché:
+minimizza il dato personale del lavoratore (GDPR) tenendo la tracciabilità verificata (MDD §5.2, E-D-06).
+
+## E-D-20 · 2026-07-29 · Referral versionati immutabili + scadenza configurabile — [LOCKED]
+Decisione: scioglie il nodo §13 referral. I parametri di un programma sono **immutabili una volta
+pubblicato**; un cambio crea una **nuova versione**, e ogni reward resta legato alla versione sotto
+cui è maturato (gli accordi vecchi restano risolvibili per sempre — stesso principio del QR, regola 7).
+Un programma ha una **scadenza configurabile**: ore / giorni / mesi / **mai**. Perché: nessun accordo
+maturato si rompe cambiando i parametri; dipende da E-D-17 (③). Alternativa scartata: parametri mutabili in loco (rompe gli accordi maturati).
+
+## E-D-21 · 2026-07-29 · Relazione di lavoro utente↔business via accordo; vincolo ruoli per-transazione — [LOCKED]
+Decisione: i 3 ruoli (C35) sono combinabili a livello di account, ma **sulla stessa TXN/lotto** un
+soggetto non può ricoprire due ruoli che si verificano a vicenda (vincolo **per-transazione**, non
+per-account). La **relazione di lavoro** nasce da un **accordo**: a conferma, il business può
+amministrare il personale, assegnare compiti/premi e vedere le statistiche del lavoro assegnato; il
+**personale** timbra **inizio/fine** sessione lavorativa e i ruoli speciali assegnati. Perché: evita
+l'auto-verifica della catena e formalizza il rapporto DIPENDENTE↔business (MDD §3, §5.4).
+
+## E-D-22 · 2026-07-29 · Escrow: arbitro = customer care, finestra 5 giorni solo su promessa non onorata — [LOCKED]
+Decisione: affina **E-D-16**. Percorso normale: il commerciante **approva** la promessa → doppia
+conferma commerciante+lavoratore → **rilascio immediato** (nessuna attesa). La **finestra di
+contestazione (5 giorni)** si apre **solo se** il commerciante **non onora una promessa** fatta in
+anticipo; la apre il lavoratore. L'**arbitro** è il **customer care di Shaer.it**. Se entrambe le
+parti confermano, la finestra si **annulla subito**. Perché: la contestazione è l'eccezione, non la
+regola; tutela il lavoratore senza rallentare il caso onesto.
+
+## E-D-23 · 2026-07-29 · F1 closed-loop: solo trasferimenti SHAER interni, off-ramp/KYC rimandati — [LOCKED]
+Decisione: in F1 i crediti **si trasferiscono solo dentro la piattaforma** (closed-loop). L'**off-ramp**
+€ (prelievo) e il **KYC** relativo **non sono prioritari** e si rimandano a quando serviranno (provider
+da scegliere allora). Il **gate** resta specificato (earned non esce senza `kyc_verified`), ma non si
+costruisce ora. Perché: riduce la superficie legale/antiriciclaggio dell'MVP; il ledger resta pronto.
+
+## E-D-24 · 2026-07-29 · Approvatore maker-checker limitato: mai proprietà, cambio admin manuale — [LOCKED]
+Decisione: affina **E-D-13**. Il profilo con permessi delegati (approvatore) può **solo verificare e
+leggere** i dati assegnati: **non diventa mai** proprietario né admin totale. Il **cambio completo di
+amministratore** richiede un **intervento manuale di Shaer.it**. Perché: nessuna escalation di
+privilegio silenziosa; l'ownership è la linea che la delega non attraversa (compartimentazione E-D-09).
+
+## E-D-25 · 2026-07-29 · Fidelity universale: split cross-merchant 30/30/40 configurabile — [LOCKED]
+Decisione: dettaglia **E-D-03**. I punti fidelity sono legati al **wallet dell'utente** e spendibili
+presso tutti gli aderenti. Riscatto presso l'**emittente** = valore **100%**; riscatto **cross-merchant**
+= ripartizione **configurabile dal pannello Admin**, default **30% emittente · 30% Shaer · 40% esercente
+del riscatto**. Perché: la fidelity universale ha valore di rete solo se spendibile ovunque, ma lo split
+tutela chi ha emesso il punto e chi lo onora. I tre addendi sommano a 1; i movimenti restano a partita
+doppia (E-D-17 ③: lo split è un parametro compartimentato). Alternativa scartata: fidelity per-tenant (zero effetto rete).

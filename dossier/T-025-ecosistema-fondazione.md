@@ -5,7 +5,7 @@ titolo: Fondazione documentale d'ecosistema (MDD + PRD skeleton, restructure MD/
 aree: [documentazione, ecosistema, dominio, decisioni, roadmap, crediti, mlm, trasporto]
 stato: aperto
 riporti: 0
-sessioni: [2026-07-28]
+sessioni: [2026-07-28, 2026-07-29]
 ---
 
 ## Obiettivo
@@ -56,15 +56,40 @@ Scartato: (a) "solo mono-livello, no MLM" (mia E-D-01 v1, errata — corretta co
 - Ancora `Apertura: 95aa0f8` in STATO **stantia** (commit successivi non aggiornati) →
   ricalcolata a mano dallo `git status`/working-tree → prevenibile? sì, `/apertura` deve
   fissare l'ancora; qui la sessione è partita senza `/apertura`.
+- **(sessione 2, 2026-07-29)** Riga di stato `MDD.md:3` rimasta a `E-D-24` dopo aver aggiunto
+  E-D-25 (fidelity) in un secondo momento → colta dal distillatore, corretta a `E-D-25`.
+  Stessa famiglia di L-008 (decisione non propagata all'intestazione). **Prevenibile?** sì:
+  candidato hook se ricorre — grep dell'ultimo `E-D-NNN` di `DECISIONI.md` vs riga di stato del
+  documento madre. Prima occorrenza: si annota, non si meccanizza ancora.
+
+## Avanzamento 2026-07-29 (sessione 2)
+- **8 nodi §13 sciolti** con Nick via `MD/ecosistema/DOMANDE-NICK.md` → promossi
+  **E-D-17…E-D-25** in `DECISIONI.md` (col perché e l'alternativa scartata). MDD §13 non ha
+  più nodi impl aperti per F1; MDD a **v1.5**.
+- **PRD riempito** (v0.3) con requisiti + **criteri di accettazione testabili** su:
+  **EE1** (identità/RBAC, +E-D-21/24), **EE2** (TXN engine), **EE3** (ledger/escrow, +E-D-23
+  closed-loop), **EE4** (recensioni/rank), **EE5** (referral, E-D-20), **EE6** (wishlist/
+  compleanni, priorità), **EE7** (pannello + **dashboard cliente 7 voci**, E-D-18), **EE10**
+  (fidelity split 30/30/40, E-D-25), **EE12** (trasporto 2-scansioni, E-D-19).
+- **Restano da riempire nel PRD**: EE8 (QR operativo+escrow), EE9 (moduli operativi), EE11
+  (MLM/billing), EE13/EE14, e i requisiti non-funzionali. Non bloccano: sono deeper, non fondativi.
 
 ## Stato e piano (task NON chiuso — piano pronto)
-Il **piano eseguibile** è il blocco-prompt in `memoria/TODO.md` (§Prossima sessione) +
-la roadmap a blocchi MDD §10. Sequenza: **T-027** (promuovi decisioni, alla conferma) →
-**T-028** (analisi completa: per ogni B1…B12 dichiara stabilisce/consuma, ordina F1) →
-**T-025** (riempi PRD da EE1 Identità/RBAC ed EE3 Ledger/escrow) → **T-026** (SAD:
-ledger partita doppia, TXN, RBAC admin-first, **architettura parametri ③ ibrido**).
-Nodi da chiudere prima di costruire F1: architettura parametri ③ (E-D-09), dashboard
-cliente (da definire), privacy tracking trasporto (E-D-06).
+La fondazione economica (EE1/EE2/EE3) e le epiche cliente sono specificate e testabili; i nodi
+sono decisi. **Prossimo passo netto: T-026 (SAD)** — ora sbloccato: parametri **③ ibrido**
+(E-D-17), ledger partita doppia + escrow (E-D-16/22), RBAC admin-first + limiti approvatore
+(E-D-13/24). Poi **T-028** (decomporre F1 in task) consumando PRD+SAD. Coda PRD (EE8/9/11/NFR)
+si può chiudere in parallelo o dentro il SAD.
+
+**Precedenti da leggere prima (dal distillatore, 2026-07-29):**
+- **T-026 (SAD)** → `archivio/T-013-corpus-documentale.md` (stesso percorso MDD→PRD→SAD già fatto
+  a livello QR: come il gate-incongruenza fermò il SAD davanti a contraddizioni MDD/produzione —
+  stesso rischio ora fra MDD/PRD ecosistema e Modulo 0 in produzione) · `archivio/T-007-hardening-grant-anon.md`
+  + `PATTERN.md` riga "confine=DB" (le nuove tabelle ledger/wallet/TXN: un grant "solo authenticated"
+  non è reale finché non introspezionato → estendere `grants.test.ts` alla whitelist ledger) ·
+  `archivio/T-002-supabase-schema.md` (pattern `owner_id`+RLS multi-tenant già rodato: riusarlo, non riprogettarlo).
+- **T-028** → questo dossier §Composizione + `MDD §10` (sequenza stabilisce→consuma B1…B12 e ordine
+  T-025/026/028 già dichiarati: non ridiscutere l'incastro in apertura).
 
 ## Composizione
 **Stabilisce** per tutti i task futuri: la struttura documentale (`ecosistema/` sopra,
