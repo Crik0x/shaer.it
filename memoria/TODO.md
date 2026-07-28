@@ -1,6 +1,6 @@
 # TODO
 
-**Saldo: 7 aperti — 5 nuovi (T-016, T-017, T-018, T-020, T-024), 2 riportati (T-022 `↻1`, T-008 `↻3`)**  ·  17 chiusi (T-001…T-005 il 2026-07-24; T-006, T-007, T-009, T-010 il 2026-07-25; T-011, T-013, T-012 il 2026-07-26; T-014, T-015, T-019, T-021, T-023 il 2026-07-27)
+**Saldo: 11 aperti — 9 nuovi (T-016, T-017, T-018, T-020, T-024, T-025, T-026, T-027, T-028), 2 riportati (T-022 `↻1`, T-008 `↻3`)**  ·  17 chiusi (T-001…T-005 il 2026-07-24; T-006, T-007, T-009, T-010 il 2026-07-25; T-011, T-013, T-012 il 2026-07-26; T-014, T-015, T-019, T-021, T-023 il 2026-07-27)
 
 Stati: `[ ]` da fare · `[~]` scritto ma non provato · `[A]` provato e accettato ·
 `[x]` fatto con prova · `[>]` riportato (con `↻` e il suo dossier) ·
@@ -58,6 +58,19 @@ Solo la sezione «Per Nick» si sostituisce.
       chiave (KPI, «Dashboard»/«Esci», titoli widget). Chiude il → test del pattern; il browser resta
       solo per il pixel. Precedente: `apps/qr/lib/auth.test.ts`, `dossier/PATTERN.md` (riga muro-auth).
 
+## Ecosistema — preparazione (nuovo livello)
+
+*Shaer.it = super-piattaforma; il QR è il Modulo 0. Radice `MD/ecosistema/MDD.md` v1.3;
+decisioni **E-D-01…E-D-16** (§12); roadmap a blocchi §10. Analisi in `dossier/T-025-ecosistema-fondazione.md`.*
+
+- [ ] T-025 **PRD di ecosistema — riempire lo skeleton** `C` — `MD/ecosistema/PRD.md` v0.1
+      (EE1…EE14). Riempire con requisiti + criteri **testabili**. Precede il SAD.
+- [ ] T-026 **SAD di ecosistema** `C` — confini: ledger partita doppia + pool/escrow (E-D-16),
+      TXN engine, RBAC admin-first (E-D-13), **parametri ③ ibrido** (E-D-09). Consuma T-025.
+- [ ] T-027 **Promuovere E-D-01…E-D-16 in `DECISIONI.md`** `S` — L-008, col perché; alla conferma di Nick.
+- [ ] T-028 **Analisi completa + blocchi eseguibili** `C` — stabilisce→consuma per B1…B12 (§10),
+      decompone **F1** in task. Consuma MDD §10 + T-025/026. Prompt sotto.
+
 ## Riportati
 
 - [>] T-022 **Fuso orario del cliente + granularità Giorno/Ora** `↻1` `C` — **blocchi A+B+C fatti e
@@ -84,22 +97,28 @@ contesto a ogni sessione per informazione che REGISTRO già conserva. — potato
 
 *(questa sezione si **sostituisce** a ogni avanzamento, non si accumula)*
 
-**Sessione 2026-07-27c — chiusa.** **T-021 e T-023 chiusi `[A]`** (tuo eyeball). **T-022 blocchi
-A+B+C fatti e provati** (23/23 unit + `profiles.test` + `next build` verde, revisore ok): il fuso del
-cliente si auto-popola dal browser e le analitiche lo usano. **Manca il tuo eyeball** del rendering
-locale (dietro auth): entra in dashboard da una macchina non-UTC → timeline/heatmap devono mostrare
-**l'ora locale**, non UTC. Resta solo il blocco **D** (toggle Giorno/Ora). `[N]` residue: **N-f**
-(Stripe in Vercel) · **T-008** (Supabase prod, `↻3`).
+**Sessione 2026-07-28 — pivot d'ecosistema.** Shaer.it = super-piattaforma, il QR è il **Modulo 0**.
+Fatto (solo doc, niente codice): `MD/` ristrutturato (`ecosistema/` + `modulo-qr/`); **MDD** v1.3
+(`MD/ecosistema/MDD.md`, decisioni **E-D-01…E-D-16**, roadmap §10); **PRD** skeleton (`ecosistema/PRD.md`).
+**Tocca a te:** (1) rileggi l'MDD e correggi; (2) conferma per **promuovere** le E-D in `DECISIONI.md`
+(T-027); (3) sciogli i nodi §13 (dashboard cliente, privacy trasporto, architettura parametri **③**).
+`[N]` del Modulo 0 valide: **N-f** (Stripe) · **T-008**.
 
 ## Prossima sessione — prompt da lanciare 
 
 *(standing: dopo ogni `/chiusura` questa sezione porta il prompt pronto — `lavoro.md` §8-quater)*
 
 ```
-/apertura. T-021, T-023 chiusi; T-022 blocchi A+B+C fatti e provati (D-014, 23/23 unit, next build verde;
-rendering [~] dietro auth). Restano: T-022 blocco D — toggle Giorno/Ora sulla timeline (Giorno default),
-il periodo "7h" resta; è un altro pezzo interattivo dietro auth. Valuta prima T-024 (harness SSR-cookie
-→ route Next) per chiudere in un colpo il [~] del rendering C e provare D senza eyeball — eviti il ripetersi
-del muro auth. Se Nick ha già eyeballato il rendering locale di C, promuovilo. Piano completo nel dossier
-T-022. Chiudi con /chiusura.
+/apertura. Shaer.it = super-piattaforma, il QR è il Modulo 0. Radice: MD/ecosistema/MDD.md v1.3
+(decisioni E-D-01…E-D-16, roadmap a blocchi §10). PRD skeleton: MD/ecosistema/PRD.md (EE1…EE14).
+Dominio economico: MD/SHAER_MASTER.md. Rif. funzionali: Struttura/Schema/Shaer_it_Simulatore_MVP_v5.html +
+gemello D:\Desktop\I Damascati\Code\Sito\damascati. Analisi calda: dossier/T-025-ecosistema-fondazione.md.
+
+Obiettivo — analisi completa e blocchi (T-028):
+1) Se Nick conferma la visione → promuovi E-D-01…E-D-16 in memoria/DECISIONI.md col perché (T-027).
+2) Per ogni blocco B1…B12 (§10) dichiara STABILISCE/CONSUMA (lavoro.md §4), ordina F1 (irreversibile primo);
+   gate incongruenza su ogni scelta strutturale (stratega: 3 opzioni costate).
+3) Decomponi F1 in task e scrivili in TODO (solo crescita). 4) Riempi il PRD da EE1 (Identità/RBAC) ed EE3 (Ledger/escrow).
+Nodi da chiudere prima: parametri ③ (E-D-09) · dashboard cliente · privacy trasporto (E-D-06).
+Non toccare apps/qr/ (Modulo 0 in produzione). Chiudi con /chiusura.
 ```

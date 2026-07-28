@@ -3,7 +3,7 @@
 Versione: 1.0 · Stato: In vigore · 2026-07-26
 Padre: [MDD](MDD.md) · Cosa: [PRD](PRD.md) · Quando: [ROADMAP](ROADMAP.md)
 
-Riferimento tecnico di dettaglio: [SAAS_BUILD_PLAN_V1](SAAS_BUILD_PLAN_V1.md).
+Riferimento tecnico di dettaglio: [SAAS_BUILD_PLAN_V1](../SAAS_BUILD_PLAN_V1.md).
 Questo documento fissa **schema, RPC, sicurezza, infra** allineati alla realtà
 verificata (regola 1), non alle intenzioni.
 

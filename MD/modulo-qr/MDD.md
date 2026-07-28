@@ -6,7 +6,7 @@ Autore: Nicolaj D'Ortona · Fonte-seme: `memoria/MDD.md`
 > Questo è il documento-radice. Sotto di lui: [PRD](PRD.md) (cosa),
 > [SAD](SAD.md) (come tecnico), [Design System](DESIGN_SYSTEM.md) (come visivo),
 > [Roadmap](ROADMAP.md) (quando). In caso di conflitto, la catena di verità è
-> MDD → PRD → SAD. Le decisioni `[LOCKED]` di [SHAER_MASTER](SHAER_MASTER.md) restano tali.
+> MDD → PRD → SAD. Le decisioni `[LOCKED]` di [SHAER_MASTER](../SHAER_MASTER.md) restano tali.
 
 ---
 
@@ -52,7 +52,7 @@ promo, **referral**). Ogni scansione apre un **portale** che connette
 scanner ↔ proprietario. Un sottoalbero può essere **delegato a un intermediario**
 (negoziante) che lo rivende: il figlio ha un `owner_id` diverso dall'antenato, e
 **ogni livello monitora il proprio sottoalbero**. È il ponte diretto verso
-[SHAER_MASTER](SHAER_MASTER.md) (referral, anti-frode, crediti).
+[SHAER_MASTER](../SHAER_MASTER.md) (referral, anti-frode, crediti).
 
 *Modello dati (SAD §3):* `qr_codes.parent_id` self-referenziale + `owner_id`
 per-nodo + `purpose`. Single-parent in v1; molti-a-molti come evoluzione.
@@ -117,6 +117,6 @@ Dal seme `memoria/MDD.md`, ricollocati sulla realtà (regola 1) e sul cancello D
 
 L'albero di QR con `owner_id` per-nodo e la connessione verificata scanner↔owner
 **sono già** le fondamenta anti-frode di Shaer: la rete di referral/rivendita, l'
-economia dei crediti e le TXN verificate ([SHAER_MASTER](SHAER_MASTER.md)) si
+economia dei crediti e le TXN verificate ([SHAER_MASTER](../SHAER_MASTER.md)) si
 innestano sull'albero senza riprogettarlo. Questa piattaforma QR è il **primo
 slice** di quella visione, non un prodotto separato.

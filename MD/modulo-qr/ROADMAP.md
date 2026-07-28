@@ -64,7 +64,7 @@ reminder abbandono, consigli automatici azionabili (E6.10). Mappa geo interattiv
 ### M4 · CRM + API `Fase 4` — **apre il cancello D-2 (PII)**
 Prima di raccogliere PII: DPA, consenso esplicito, retention, diritto all'oblio
 (SAD §7). Poi profili cliente (E8), API REST pubblica per-owner (E9.1). Delega
-intermediari cross-owner + aggancio economia crediti Shaer ([SHAER_MASTER](SHAER_MASTER.md)).
+intermediari cross-owner + aggancio economia crediti Shaer ([SHAER_MASTER](../SHAER_MASTER.md)).
 
 ### M5 · Enterprise & AI `Fase 5`
 White-label, workspace, ruoli, marketplace plugin (E9.2). AI Recommendation Engine
