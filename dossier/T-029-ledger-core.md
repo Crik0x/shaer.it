@@ -48,8 +48,10 @@ Quindi il trust boundary va spezzato:
   **≥ 0**. Questo uccide entrambi gli exploit: nessun conto conia (nessuno va negativo), inclusa TREASURY.
   Copre transfer utente→utente, spese, escrow hold/release di crediti già esistenti.
 - **Conio backed** (TREASURY negativo) = **RPC separata callable solo da `service_role`**, dietro un fatto
-  DB verificato (riga `payments` con stato confermato dal webhook Stripe). Si costruisce **col layer
-  pagamenti**, non ora → nuovo task (dipende da N-f). Vedi `Q-MINT` in `DOMANDE-NICK.md`.
+  DB verificato (riga `payments` con stato confermato dal webhook Stripe). → **Q-MINT risposto (E-D-28)**:
+  modello ricarica→spesa→settlement, anti-scoperto confermato; **chiavi Stripe già su Vercel** (conio non più
+  lontano). Resta un **task nuovo** (RPC ricarica dietro webhook), fuori da T-029a. Payout € al commerciante
+  = off-ramp business, modellato JIT col settlement (E-D-28, nota aperta).
 - **Conio promo** (ADV negativo) = stessa logica: privilegiato, dietro budget campagna autorizzato (T-035).
 - `ledger_journal.kind` → aggiungere `CHECK` sull'enum (chiudere il text libero).
 - **Prova** (regola 5, prima di far applicare a Nick): test d'integrazione SQL su DB reale che *tenta gli
@@ -60,6 +62,16 @@ Quindi il trust boundary va spezzato:
 T-029 resta **prima di tutto**, ma si sdoppia: **T-029a** = `ledger_post` transfer-only + anti-scoperto +
 test DB reale (fattibile ora, chiude la fondazione sicura). **Conio backed** = task nuovo legato al layer
 pagamenti (dopo N-f), **non** blocca T-030/031 (che muovono crediti esistenti / non coniano).
+
+## Attriti
+- **RPC che fida un parametro auto-dichiarato come attestazione.** `ledger_post` accettava `p_kind`
+  ('purchase'/'deposit') dal chiamante come prova di un incasso € reale → **causa**: nessuna fonte di
+  verità DB dietro il kind (Stripe non integrato) → **risolto**: split conio/trasferimento, conio dietro
+  RPC `service_role` + fatto verificato (E-D-28) → **prevenibile?** sì: test d'integrazione che *tenta*
+  l'exploit e lo vede rifiutato (T-029a, da scrivere).
+- **Gate d'invariante scoped a un conto esemplare invece che universale.** L'anti-conio guardava solo
+  TREASURY → ogni altro conto poteva andare negativo (conio) → **risolto in piano**: anti-scoperto su
+  **ogni** conto → **prevenibile?** sì, stesso test d'exploit. Colto dal revisore prima del commit.
 
 ## Composizione
 **Stabilisce**: gli invarianti del denaro (somma-zero, anti-scoperto), il pattern definer-unico-writer,

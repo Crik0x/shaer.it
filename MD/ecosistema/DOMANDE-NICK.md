@@ -35,7 +35,7 @@ circolante. Serve prima di scrivere la RPC, perché decide se la solvibilità è
 
 → **Consiglio:** **c** (solvibilità per costruzione — è la più coerente con «un QR non si rompe mai» /
 regola 7 applicata al denaro). Se preferisci poter coniare e riconciliare dopo, allora **a**.
-→ **Risposta:** _(risposto 2026-07-29b, vedi E-D-27)_
+→ **Risposta:** C. da considerare che anche Shaer.it può distribuire e creare SHAER,
 
 ### Q-SOLV.2 — Cosa conta come «circolante da coprire»?
 
@@ -44,7 +44,7 @@ regola 7 applicata al denaro). Se preferisci poter coniare e riconciliare dopo, 
 
 → **Consiglio:** **b** — un bonus in escrow è denaro che la piattaforma dovrà onorare; coprirlo da subito
 è più prudente e coerente con E-D-16 (circuito chiuso: spendibile solo con € versati).
-→ **Risposta:** _(risposto 2026-07-29b, vedi E-D-27)_
+→ **Risposta:** B
 
 ### Q-SOLV.3 — In F1 closed-loop (E-D-23, niente off-ramp) l'invariante è strict da subito?
 
@@ -53,7 +53,7 @@ regola 7 applicata al denaro). Se preferisci poter coniare e riconciliare dopo, 
 
 → **Consiglio:** **a** — costa quasi nulla tenerlo strict ora, ed è l'invariante che dà valore al ledger;
 rilassarlo significherebbe ricostruirlo dopo (e riaprire codice del denaro).
-→ **Risposta:** _(risposto 2026-07-29b, vedi E-D-27)_
+→ **Risposta:** A
 
 ---
 
@@ -76,5 +76,5 @@ client = coniare dal nulla (il bug). Dettaglio in `../../dossier/T-029-ledger-co
 
 → **Consiglio:** **a** — separa conio da trasferimento, chiude gli exploit, e non anticipa il layer
 pagamenti prima del suo momento (N-f è pre-lancio). Il conio diventa un task suo quando configuri Stripe.
-→ **Risposta:** 
+→ **Risposta:** Ho inserito le chiavi di stripe su vercel. Un conto non può andare in negativo, non ora, per ora un utente ricarica il proprio conto inviando i soldi veri a Shaer.it, si registrano e si rilascia il collaterale di SHAER. Questi SHAER sono usati all'interno della piattaforma per comprare prodotti e servizi di SHAER. Se un utente ha inviato 100€ a Shaer.it ha ricevuto 10.000 SHAER, senza considerare eventuali bonus che potranno esserci tipo se ricarichi 200€ oggi ricevi +10% in SHAER = 22000. QUando un utente compra un prodotto, può spendere anche il 100% del valore in SHAER, oppure 20% SHAER e 80% € (in contanti) dipende da come il commerciante imposta la vendita. In ogni caso, il commerciante dovrà dare sempre la percentuale a Shaer.it anche se la transazione è avvenuta in contanti. E il 100% è coperto da € reali perché l'utente ha versato. A questo punto Shaer.it registra che devono uscire € reali ed essere inviati al commerciante ricevendo dal commercianti SHAER. Il commerciante potrà chiedere di essere pagato manualmente, ogni giorno, ogni settimana, ogni mese (simile stripe). 
 

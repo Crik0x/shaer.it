@@ -3,9 +3,9 @@ task: T-025
 tier: C
 titolo: Fondazione documentale d'ecosistema (MDD + PRD skeleton, restructure MD/)
 aree: [documentazione, ecosistema, dominio, decisioni, roadmap, crediti, mlm, trasporto]
-stato: aperto
+stato: chiuso
 riporti: 0
-sessioni: [2026-07-28, 2026-07-29]
+sessioni: [2026-07-28, 2026-07-29, 2026-07-29b]
 ---
 
 ## Obiettivo

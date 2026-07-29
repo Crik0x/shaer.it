@@ -1,0 +1,24 @@
+{
+  "sessione": "2026-07-29b",
+  "revisioni": [
+    {
+      "oggetto": "packages/core-ledger/ledger.ts + ledger.test.ts",
+      "commit": "e91b64e",
+      "esito": "approvato",
+      "note": "Motore puro corretto, 8/8 verdi (2 fuzz da 2000 iter.). Deferral AC-EE3.2 onesto. Unico rilievo g2 (nome funzione isBalanced vs balanceEntries del SAD) risolto: SAD §5 riconciliato al codice."
+    },
+    {
+      "oggetto": "supabase/migrations/20260729000001_ledger_core.sql (RPC ledger_post)",
+      "commit": "non committata come migrazione — spostata in dossier/T-029-ledger-core.draft.sql con header NON APPLICARE",
+      "esito": "respinto",
+      "rilievi_critici": [
+        "g5: p_kind auto-dichiarato dal client, senza CHECK né attestazione € reale → conio backed da TREASURY dal nulla.",
+        "g5: gate anti-conio solo su TREASURY; manca anti-scoperto → conio da qualsiasi conto non-TREASURY. Assert solvibilità = tautologia, non lo scopre.",
+        "g4: nessun test copre l'autorità DB (solo il gemello puro); grants.test da estendere ai grant DML.",
+        "g2: temp table _post on commit drop rompe a 2a chiamata nella stessa txn.",
+        "g1: guard NULL su amount/class valutano NULL non TRUE (salvati a valle dal NOT NULL)."
+      ],
+      "azione": "Non applicato. Piano di correzione in dossier/T-029-ledger-core.md (separare conio da trasferimento; ledger_post transfer-only + anti-scoperto + test DB reale = T-029a). Modello confermato da Q-MINT → E-D-28."
+    }
+  ]
+}

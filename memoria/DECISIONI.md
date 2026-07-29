@@ -333,3 +333,22 @@ coerente con E-D-16); rientra da sé nello specchio. **Q-SOLV.3=a** — strict d
 (E-D-23): il ledger nasce pronto per l'off-ramp; rilassarlo = ricostruire codice-denaro dopo.
 Perché: anti-frode strutturale (lo stato scoperto non esiste proprio), regola 7 applicata al denaro.
 Alternative scartate: riserva fuori dal ledger (invariante debole, contro L-001) · riserva rilassata in F1.
+Nota (Nick): anche Shaer.it può **creare** SHAER (bonus/incentivi) — ma quelli sono classe **`promo`**
+(non coperti da €), non toccano la riserva; il coperto nasce solo da € versati (E-D-28).
+
+## E-D-28 · 2026-07-29b · Ledger F1: ricarica → spesa → settlement; anti-scoperto; conio solo dietro € — [LOCKED]
+Decisione: scioglie Q-MINT (corregge i 2 bug del revisore su T-029). **Anti-scoperto**: nessun conto va in
+negativo (l'utente non spende ciò che non ha); `ledger_post` (authenticated) fa **solo trasferimenti** di
+crediti esistenti. Il **conio** vive in RPC **privilegiata** (`service_role`) dietro un fatto verificato:
+- **Ricarica (mint backed):** l'utente invia € reali a Shaer.it (Stripe — chiavi già su Vercel) → si accredita
+  SHAER `purchased`. `100 € = 10.000 SHAER` (1 SHAER = 1 centesimo). Bonus ricarica (es. +10% su 200€ → 22.000)
+  = SHAER **`promo`** (non coperto). Il coperto è coperto perché l'utente ha versato.
+- **Spesa:** alla vendita l'utente paga da 0 a 100% in SHAER, il resto in € contanti — lo decide il
+  **commerciante** per vendita. Il commerciante versa **sempre** la fee a Shaer.it, **anche** se l'incasso è
+  in contanti.
+- **Settlement commerciante:** alla vendita Shaer registra che € reali devono **uscire** verso il commerciante
+  (che riceve € contro i SHAER incassati); **payout su richiesta**, schedulabile (giorno/settimana/mese, stile Stripe).
+Perché: chiude gli exploit (nessun conio dal client, nessuno scoperto); il coperto entra solo con € reali;
+il commerciante è pagato in € e Shaer trattiene sempre la fee. **Nota aperta (JIT):** il payout € al
+commerciante è un **off-ramp lato business** (diverso dall'off-ramp utente rimandato, E-D-23) + KYC
+commerciante — si modellano quando si costruisce il settlement, non ora.

@@ -26,7 +26,12 @@ Gerarchia della forza: nota < lezione < regola < controllo meccanico < hook.
 
 ## In vigore — testo, a scadenza
 
-*(nessuna voce in vigore)*
+- **L-011** (2026-07-29b) · In una RPC privilegiata che scrive denaro, un parametro **dichiarato dal
+  chiamante** (`p_kind`) non è mai un'attestazione di un fatto reale, e un gate d'invariante **scoped a un
+  conto esemplare** (solo TREASURY) invece che universale è un buco strutturale: insieme lasciavano coniare
+  backed dal nulla (T-029, respinta dal revisore prima del commit). **Conversione `→ test`**: il test
+  d'integrazione di T-029a che *tenta* i due exploit (conio via kind auto-dichiarato; scoperto da conto
+  non-TREASURY) e li vede **rifiutati**. Finché quel test non esiste, resta testo.
 
 ## Ritirate
 
