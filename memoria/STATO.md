@@ -32,5 +32,5 @@ Sessione 2026-07-29b. Fatto: **SAD F1** (contratto costruibile); **T-028** → F
 
 - **Riferimenti** (verificati) in memoria `shaer-riferimenti-esterni`. Dominio canonico: `MD/SHAER_MASTER.md`; QR: `MD/modulo-qr/`.
 - **Modulo 0 (ancora vero)**: dietro auth non eyeball-abile da Claude (gate = Nick, finché T-024);
-  DDL = `[N]` via SQL editor; DB dev `alrguvxspssjwfmtuhdw`. `[N]`: N-f (Stripe) · T-008.
+  DDL = `[N]` via SQL editor; DB dev `alrguvxspssjwfmtuhdw`. `[N]`: T-008. Stripe `pk`+`sk` su progetto qr (N-f fatto).
 - cwd Bash non persiste: **path assoluti**.

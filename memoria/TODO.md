@@ -15,14 +15,6 @@ Solo la sezione «Per Nick» si sostituisce.
 
 ## Da te — azioni `[N]` (col come-fare, si rimuovono a conferma)
 
-- [N] **N-f · Chiavi Stripe nei secret Vercel** (sblocca l'implementazione di T-016) — in
-      **Vercel › progetto qr › Settings › Environment Variables**, ambiente **Production**:
-      1. `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` = la `pk_live_…` (già fornita: sicura lato client).
-      2. `STRIPE_SECRET_KEY` = la tua `sk_live_…` — **prendila dalla dashboard Stripe e incollala
-         solo qui, mai in chat né nel repo**.
-      3. `STRIPE_WEBHOOK_SECRET` = `whsec_…` — te lo dò io quando implemento il webhook (dopo).
-      → poi scrivi «N-f fatto» (le prime due bastano per partire).
-
 - [N] **T-008 · Progetto Supabase prod separato (Confirm email ON)** `↻3` — deciso (2026-07-26c):
       **non** accendere Confirm email su `alrguvxspssjwfmtuhdw` (romperebbe i test d'integrazione).
       Passi: **Dashboard Supabase › New project** («shaer-qr-prod», stessa region) → **Authentication
@@ -34,7 +26,8 @@ Solo la sezione «Per Nick» si sostituisce.
 
 - [ ] T-016 **Piano free/pro + metering** (nuovo) `C` 💰 — ≤100 scansioni/mese gratis, oltre
       si bloccano **analisi+export+nuovi QR**, **mai il redirect** (D-009, regola 7). Include
-      export **PDF** (feature pro). Provider = **Stripe** (D-011; chiavi in env via N-f). **Prima
+      export **PDF** (feature pro). Provider = **Stripe** (D-011; `pk`+`sk` già in env sul progetto qr;
+      `STRIPE_WEBHOOK_SECRET` quando implemento il webhook). **Prima
       di costruire**: metering derivato vs materializzato, fuso del mese, comportamento a quota.
       Piano e nodi in **`dossier/T-016-piano-free-pro.md`**. Precede T-020. Precedente: **T-007**.
 

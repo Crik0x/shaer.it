@@ -49,9 +49,11 @@ Quindi il trust boundary va spezzato:
   Copre transfer utente→utente, spese, escrow hold/release di crediti già esistenti.
 - **Conio backed** (TREASURY negativo) = **RPC separata callable solo da `service_role`**, dietro un fatto
   DB verificato (riga `payments` con stato confermato dal webhook Stripe). → **Q-MINT risposto (E-D-28)**:
-  modello ricarica→spesa→settlement, anti-scoperto confermato; **chiavi Stripe già su Vercel** (conio non più
-  lontano). Resta un **task nuovo** (RPC ricarica dietro webhook), fuori da T-029a. Payout € al commerciante
-  = off-ramp business, modellato JIT col settlement (E-D-28, nota aperta).
+  modello ricarica→spesa→settlement, anti-scoperto confermato. **Chiavi Stripe** `pk`+`sk` **sul progetto
+  qr** (N-f fatto); manca `STRIPE_WEBHOOK_SECRET` (la fornisco io implementando il webhook). Resta un **task
+  nuovo** (RPC ricarica dietro webhook Stripe verificato), fuori da T-029a. **Nodo da sciogliere in quel task
+  (D-005)**: il webhook Stripe del ledger vive sul progetto Vercel `qr` o su un futuro `apps/shaer`? — le
+  chiavi ora sono sul qr. Payout € al commerciante = off-ramp business, modellato JIT col settlement (E-D-28).
 - **Conio promo** (ADV negativo) = stessa logica: privilegiato, dietro budget campagna autorizzato (T-035).
 - `ledger_journal.kind` → aggiungere `CHECK` sull'enum (chiudere il text libero).
 - **Prova** (regola 5, prima di far applicare a Nick): test d'integrazione SQL su DB reale che *tenta gli
