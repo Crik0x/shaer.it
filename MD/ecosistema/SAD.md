@@ -248,10 +248,13 @@ una tabella ledger/txn concede `INSERT` a `authenticated`, o se una RPC esce dal
 ## 5 · Il motore puro (`packages/core-*`) — regola 5
 
 Logica di dominio in **funzioni pure**, testabili senza I/O né UI, riusate identiche da RPC e app:
-- `core-ledger`: `balanceEntries(...)→postings[]` (garantisce somma-zero); `checkSolvency(reserve,
-  circulating)→bool`; `splitFidelity(points, params)→postings[]`; `nextTxnState(from,event)→state|null`;
+- `core-ledger`: `isBalanced(postings)→bool` (somma-zero **per classe**, interi; la RPC costruisce i
+  postings col suo sapere di dominio e poi **li valida** con questa — validatore, non costruttore, coerente
+  col modello DB-authoritative §4); `checkSolvency(reserveCents, backedCirculating)→bool`;
+  `splitFidelity(points, params)→postings[]`; `nextTxnState(from,event)→state|null`;
   `escrowReleasable(state, confirmations, window)→bool`. Ricevono i **parametri come argomenti**
-  (③ ibrido: mai leggono `param_sets` da sé — l'I/O sta nella RPC che li chiama).
+  (③ ibrido: mai leggono `param_sets` da sé — l'I/O sta nella RPC che li chiama). *Stato T-029: `isBalanced`
+  + `checkSolvency` implementati e provati (8/8); il resto arriva coi task che li consumano.*
 - `core-rbac`: `canAssign(actor, capability)`, `roleConflictOnTxn(subject, roles)` (E-D-21),
   `approverLimit(capability)` (E-D-24, mai `own`/`admin`).
 
