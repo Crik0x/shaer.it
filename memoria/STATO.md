@@ -17,7 +17,8 @@ alla prosa in anticipo (requisiti futuri = JIT come test). **Prossimo: costruire
 
 - **Fonti vive ecosistema (2)**: `MD/ecosistema/SAD.md` v0.1 (contratto F1) + `memoria/DECISIONI.md`
   (**E-D-01…E-D-26**). `MD/ecosistema/MDD.md` v1.5 = **congelato** (mappa 17 moduli §5 + roadmap §10).
-- **Archiviati** (E-D-26): `Archivio/2026-07-29/` = ex `PRD.md` v0.3 + `DOMANDE-NICK.md` (assorbiti/risolti).
+- **`MD/ecosistema/DOMANDE-NICK.md`**: file vivo delle domande aperte (riscritto a ogni giro, git=storico);
+  ora porta `Q-SOLV` (solvibilità, sblocca T-029 p.2). PRD v0.3 archiviato in `Archivio/2026-07-29/` (E-D-26).
 - **`MD/modulo-qr/`**: i 5 doc QR invariati. **Modulo 0 (`apps/qr/`)**: invariato, in produzione.
 - Memoria personale: `shaer-ecosistema-fase-preparazione`, `shaer-riferimenti-esterni`, `avvisare-prima-di-eseguire`.
 
