@@ -48,7 +48,7 @@ sono bloccate dal ledger F1 (D-016): prima T-029a. Le senza-soldi cedono priorit
 *T-018 assorbe l'estensione enum `purpose`→`station`/`employee` (`[N]` DDL). T-016+T-017 = dashboard
 Shaer.it per attivare il SaaS (D-015: dentro apps/qr).*
 
-## Ecosistema — F1 costruzione (da T-028, sequenza stabilisce→consuma)
+## Ecosistema — F1 costruzione (da T-028, sequenza stabilisce→consuma) 
 
 *Dettaglio in `MD/ecosistema/SAD.md` §3–8 (E-D-26). Test-first (regola 5). Codice **dentro `apps/qr`**
 (D-015: non `apps/shaer`). Precedenti (distillatore): T-030→`archivio/T-007` (introspezione grant reale) +
