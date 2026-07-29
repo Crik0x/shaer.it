@@ -310,3 +310,14 @@ presso tutti gli aderenti. Riscatto presso l'**emittente** = valore **100%**; ri
 del riscatto**. Perché: la fidelity universale ha valore di rete solo se spendibile ovunque, ma lo split
 tutela chi ha emesso il punto e chi lo onora. I tre addendi sommano a 1; i movimenti restano a partita
 doppia (E-D-17 ③: lo split è un parametro compartimentato). Alternativa scartata: fidelity per-tenant (zero effetto rete).
+
+## E-D-26 · 2026-07-29b · Struttura doc snellita: SAD+DECISIONI come verità, PRD archiviato, MDD congelato — [LOCKED]
+Decisione: la cascata MDD→PRD→SAD ri-diceva gli stessi fatti a tre quote (peso da team enterprise, non
+da coppia founder+AI). D'ora in poi **due sole fonti vive** per l'ecosistema: **DECISIONI** (il perché,
+bloccato) e **SAD** (il come costruibile: schema, RPC, criteri di accettazione come test). Il **PRD di
+ecosistema è archiviato** (`Archivio/2026-07-29/`, contenuto assorbito da SAD §8 + DECISIONI); l'**MDD è
+congelato** a mappa dei moduli + roadmap, non si espande. I requisiti dei blocchi non ancora costruiti si
+scrivono **just-in-time**, spesso come il test stesso. Perché: un fatto = una casa; una modifica futura
+tocca 2 file, non 4 (chiude la famiglia di bug L-008, propagazione non fatta). Non riduce il budget d'avvio
+(MDD/PRD/SAD non erano auto-caricati) ma taglia la superficie di manutenzione e il tempo di stesura futuro.
+Alternativa scartata: tenere i tre livelli "perché è lo standard" (è lo standard di team che qui non esistono).

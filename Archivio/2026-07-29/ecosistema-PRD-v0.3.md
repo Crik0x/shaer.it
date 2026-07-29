@@ -1,7 +1,7 @@
 # Shaer.it — Product Requirements Document (PRD) · Ecosistema
 
 Versione: 0.3 · Stato: **in riempimento (T-025)** — EE1–EE7, EE10, EE12 con criteri testabili · 2026-07-29
-Padre: [MDD](MDD.md) · Tecnica: [SAD](SAD.md) *(da creare)* · Dominio: [SHAER_MASTER](../SHAER_MASTER.md)
+Padre: [MDD](MDD.md) · Tecnica: [SAD](SAD.md) v0.1 (F1) · Dominio: [SHAER_MASTER](../SHAER_MASTER.md)
 
 > **Questo è uno skeleton pre-impostato**, non un PRD completo. Fissa la **struttura**
 > e la **roadmap dei requisiti** (fatto/da fare) allineata all'[MDD](MDD.md) §5 e §10 e

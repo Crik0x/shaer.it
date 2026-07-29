@@ -1,6 +1,6 @@
 # TODO
 
-**Saldo: 10 aperti — 8 nuovi (T-016, T-017, T-018, T-020, T-024, T-025, T-026, T-028), 2 riportati (T-022 `↻1`, T-008 `↻3`)**  ·  18 chiusi (T-001…T-005 il 2026-07-24; T-006, T-007, T-009, T-010 il 2026-07-25; T-011, T-013, T-012 il 2026-07-26; T-014, T-015, T-019, T-021, T-023 il 2026-07-27; T-027 il 2026-07-28)
+**Saldo: 17 aperti — 15 nuovi (T-016, T-017, T-018, T-020, T-024, T-025, T-026, T-028, T-029…T-035), 2 riportati (T-022 `↻1`, T-008 `↻3`)**  ·  18 chiusi (T-001…T-005 il 2026-07-24; T-006, T-007, T-009, T-010 il 2026-07-25; T-011, T-013, T-012 il 2026-07-26; T-014, T-015, T-019, T-021, T-023 il 2026-07-27; T-027 il 2026-07-28)
 
 Stati: `[ ]` da fare · `[~]` scritto ma non provato · `[A]` provato e accettato ·
 `[x]` fatto con prova · `[>]` riportato (con `↻` e il suo dossier) ·
@@ -58,18 +58,27 @@ Solo la sezione «Per Nick» si sostituisce.
       chiave (KPI, «Dashboard»/«Esci», titoli widget). Chiude il → test del pattern; il browser resta
       solo per il pixel. Precedente: `apps/qr/lib/auth.test.ts`, `dossier/PATTERN.md` (riga muro-auth).
 
-## Ecosistema — preparazione (nuovo livello)
+## Ecosistema — preparazione (chiusa, → dettaglio in STATO/DECISIONI/SAD)
 
-*Radice `MD/ecosistema/MDD.md` **v1.5**; decisioni **E-D-01…E-D-25** (§12, §13 senza nodi aperti);
-roadmap §10. Analisi in `dossier/T-025-ecosistema-fondazione.md`.*
+- [~] T-025 **PRD di ecosistema** `C` — assorbito: decisioni → DECISIONI (E-D-01…26); PRD **archiviato** (E-D-26).
+- [~] T-026 **SAD di ecosistema** `C` — `MD/ecosistema/SAD.md` v0.1 (F1). Coda EE7–14 = JIT. Da chiudere a `/chiusura`.
+- [~] T-028 **Decomposizione F1** `C` — fatto: emessi T-029…T-035 (sotto). Da chiudere a `/chiusura`.
 
-- [ ] T-025 **PRD di ecosistema** `C` — **avanzato 2026-07-29** (`PRD.md` v0.3): EE1–EE7/EE10/EE12 con
-      requisiti + criteri testabili. Resta la coda EE8/9/11/13/14 + NFR (non fondativa). Piano nel dossier.
-- [ ] T-026 **SAD di ecosistema** `C` — **sbloccato** (nodi §13 decisi): ledger partita doppia + escrow
-      (E-D-16/22), TXN engine, RBAC + limiti approvatore (E-D-13/24), **parametri ③ ibrido** (E-D-17).
-      Consuma T-025. **Prossimo passo netto.**
-- [ ] T-028 **Analisi completa + blocchi eseguibili** `C` — stabilisce→consuma per B1…B12 (§10),
-      decompone **F1** in task. Consuma MDD §10 + T-025/026. Prompt sotto.
+## Ecosistema — F1 costruzione (da T-028, sequenza stabilisce→consuma)
+
+*Dettaglio (schema, RPC, prove) in `MD/ecosistema/SAD.md` §3–8 — qui solo ordine e dipendenze, non si
+ripete (E-D-26). Ogni task è **test-first** (regola 5). Codice in `apps/shaer/`+`packages/core-*`.*
+
+- [ ] T-029 **Ledger core** `C` 💰 — SAD §3.3/4/5. **Stabilisce** invarianti del denaro + pattern
+      definer-unico-writer + `packages/core-ledger`/`db-types`. **Consuma** nulla → **irreversibile, PRIMA di tutto** (§4).
+- [ ] T-030 **Identità, ruoli, RBAC** `C` — SAD §3.1/4/6. **Stabilisce** `user_id`+`role`, gate verifica,
+      limiti approvatore (E-D-24), vincolo ruoli/TXN (E-D-21). **Consuma** pattern RLS/definer di T-029.
+- [ ] T-031 **TXN engine** `C` — SAD §3.2/4. **Stabilisce** il tronco TXN. **Consuma** T-029 (journal.txn_id) + T-030 (owner/ruoli).
+- [ ] T-032 **Wallet derivato + conti utente** `M` — SAD §3.1/3.3. **Consuma** T-029 (postings) + T-030 (roles).
+- [ ] T-033 **Escrow + circuito chiuso** `C` 💰 — SAD §3.3 (E-D-16/22). **Consuma** T-029 (held) + T-031 (txn).
+- [ ] T-034 **Recensioni & Rank bayesiano** `M` — SAD §3.5. **Consuma** T-031 (COMPLETED).
+- [ ] T-035 **Referral versionato + `param_sets`** `M` — SAD §3.4/3.5. **Stabilisce** `param_sets` (③ ibrido).
+      **Consuma** T-029 (reward) + T-031 (txn).
 
 ## Riportati
 
@@ -84,12 +93,7 @@ roadmap §10. Analisi in `dossier/T-025-ecosistema-fondazione.md`.*
 
 ## Fatto
 
-*(Il **saldo** dei chiusi vive nella riga di testata di questo file. La **prova
-completa** — esito, valore misurato, riferimento — è nel libro mastro
-`memoria/REGISTRO.md` (append-only, non caricato all'avvio) e nel dossier
-archiviato in `dossier/archivio/T-NNN-*.md`. Qui non si ripete: era costo di
-contesto a ogni sessione per informazione che REGISTRO già conserva. — potato
-2026-07-27, opzione A.)*
+*(Prova completa in `memoria/REGISTRO.md` + `dossier/archivio/`. Qui non si ripete — potato 2026-07-27.)*
 
 **Chiusi (18):** T-001…T-007, T-009…T-015, T-019, T-021, T-023, T-027 → `memoria/REGISTRO.md`
 

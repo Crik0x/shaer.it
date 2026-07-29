@@ -1,6 +1,9 @@
 # Shaer.it — Master Design Document (MDD) · Ecosistema
 
-Versione: 1.5 · Stato: **Visione approvata + nodi impl. sciolti (2026-07-29)** — decisioni in [DECISIONI](../../memoria/DECISIONI.md) (E-D-01…E-D-25). Nessun nodo §13 aperto per F1.
+Versione: 1.5 · Stato: **CONGELATO — mappa/visione di riferimento** (E-D-26, 2026-07-29b). Non si espande.
+Decisioni in [DECISIONI](../../memoria/DECISIONI.md) (E-D-01…E-D-26); contratto tecnico F1 in [SAD](SAD.md).
+Il **PRD separato è stato archiviato** (era la stessa cosa a un'altra quota): `Archivio/2026-07-29/`.
+Questo file resta per la **mappa dei 17 moduli** (§5) e la **roadmap a blocchi** (§10); il resto è narrativa.
 Autore: Nicolaj D'Ortona · Assistente: Claude (Anthropic)
 Fonti-seme: [SHAER_MASTER](../SHAER_MASTER.md) (dominio economico) ·
 [SAAS_BUILD_PLAN_V1](../SAAS_BUILD_PLAN_V1.md) (ampiezza moduli, tecnica) ·
