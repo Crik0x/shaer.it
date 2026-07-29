@@ -1,0 +1,24 @@
+{
+  "sessione": "2026-07-29c",
+  "ancora": "73930cf",
+  "head": "066296e",
+  "esito": "approvato",
+  "file_produzione": [
+    "supabase/migrations/20260729000001_ledger_core.sql",
+    "apps/qr/lib/ledger.test.ts",
+    "apps/qr/lib/bonus.ts",
+    "apps/qr/lib/bonus.test.ts",
+    "apps/qr/app/_components/simulator.tsx",
+    "apps/qr/app/(auth)/login/login-form.tsx"
+  ],
+  "rilievi": [
+    {
+      "gravita": 2,
+      "file": "supabase/migrations/20260729000001_ledger_core.sql",
+      "riga": 192,
+      "problema": "ledger_post non verifica l'autorizzazione (un authenticated puo' indicare qualsiasi account_id); oggi innocuo perche' il ledger e' vuoto (ogni transfer da zero va in scoperto ed e' rifiutato).",
+      "rimedio": "Nessuna azione ora. Bloccare esplicitamente l'apertura di T-032 (saldi utente) finche' T-030 (RBAC) non e' chiuso e testato. Sequenza gia' in TODO."
+    }
+  ],
+  "sintesi": "La correzione dei 2 bug (conio via kind fidato; anti-scoperto solo-TREASURY) regge: anti-scoperto ora universale e verificato dopo l'insert nella stessa transazione. Test genuini, non tautologici. Nessun gravita >= 4."
+}

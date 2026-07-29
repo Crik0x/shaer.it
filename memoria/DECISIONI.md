@@ -352,3 +352,29 @@ Perché: chiude gli exploit (nessun conio dal client, nessuno scoperto); il cope
 il commerciante è pagato in € e Shaer trattiene sempre la fee. **Nota aperta (JIT):** il payout € al
 commerciante è un **off-ramp lato business** (diverso dall'off-ramp utente rimandato, E-D-23) + KYC
 commerciante — si modellano quando si costruisce il settlement, non ora.
+
+## D-015 · 2026-07-29 · Dashboard Shaer.it = evoluzione di apps/qr (non nuovo app)
+Contesto: Nick chiede la dashboard business Shaer.it per attivare il SaaS (pay-per-activation,
+MDD §7). Bivio: nuovo `apps/shaer` (monorepo, separazione ecosistema/modulo) vs evolvere
+`apps/qr`. Decisione (Nick 2026-07-29c): **evolvere `apps/qr`** — la dashboard attuale diventa
+il pannello business, il QR una sua sezione; un solo deploy, momentum. Alternativa scartata:
+`apps/shaer` separato (più pulito per SAD/MDD ma raddoppia setup/deploy e va montato il monorepo
+ora). Conseguenza: `apps/shaer` citato in STATO/SAD **non** si crea; il codice F1 evolve dentro
+`apps/qr` finché non serve davvero separare.
+
+## D-016 · 2026-07-29 · Ordine: ledger F1 prima delle feature economiche — [LOCKED]
+Contesto: bonus reale (§5.4), crediti, fidelity dipendono dal ledger F1, il cui layer DB è stato
+**respinto dal revisore** (T-029, conio dal nulla). Decisione (Nick 2026-07-29c): **prima si
+finisce il ledger F1** (T-029a: `ledger_post` transfer-only + anti-scoperto + test anti-exploit),
+poi le feature che toccano il denaro. Nessuna feature economica **finta spacciata per vera**.
+Le feature senza-soldi (QR postazione/dipendente, mappa demo, connessione-grafo) non sono bloccate
+ma cedono la priorità al ledger. Alternativa scartata: costruire ora le UI economiche come demo
+(rischio di spacciare finto per vero); Nick ha scelto «più lento a vedersi, ma niente da rifare».
+
+## D-017 · 2026-07-29 · Mappa postazioni: demo landing + editor reale gated da utente verificato
+Contesto: Nick vuole, al posto dell'albero nella home, una mappa di tavoli/postazioni spostabili,
+con collasso della sotto-rete via `-`. Decisione (Nick 2026-07-29c): **entrambi** — demo finta
+nella landing (subito, dati finti, no auth) **+** editor reale in dashboard che **persiste la
+disposizione solo per utente loggato E verificato**. Il gate «verificato» è quello di **T-030**
+(identità/RBAC, dentro F1) → la persistenza reale cade **dopo** ledger+identità; la demo landing è
+libera. Drag: **pointer-events custom, nessuna libreria** (regola 10), salvo richiesta di `dnd-kit`.

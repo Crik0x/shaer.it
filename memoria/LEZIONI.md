@@ -26,12 +26,11 @@ Gerarchia della forza: nota < lezione < regola < controllo meccanico < hook.
 
 ## In vigore — testo, a scadenza
 
-- **L-011** (2026-07-29b) · In una RPC privilegiata che scrive denaro, un parametro **dichiarato dal
-  chiamante** (`p_kind`) non è mai un'attestazione di un fatto reale, e un gate d'invariante **scoped a un
-  conto esemplare** (solo TREASURY) invece che universale è un buco strutturale: insieme lasciavano coniare
-  backed dal nulla (T-029, respinta dal revisore prima del commit). **Conversione `→ test`**: il test
-  d'integrazione di T-029a che *tenta* i due exploit (conio via kind auto-dichiarato; scoperto da conto
-  non-TREASURY) e li vede **rifiutati**. Finché quel test non esiste, resta testo.
+- **L-011** (2026-07-29b) · In una RPC che scrive denaro, un parametro dichiarato dal chiamante (`p_kind`)
+  non è un'attestazione, e un gate d'invariante scoped a un conto esemplare (solo TREASURY) invece che
+  universale è un buco: insieme coniavano backed dal nulla (T-029 respinta). **`→ test`**: `apps/qr/lib/
+  ledger.test.ts` (T-029a, scritto 2026-07-29c) *tenta* i 2 exploit e li vede rifiutati — resta testo finché
+  non gira verde (migrazione da applicare, `[N]`).
 
 ## Ritirate
 

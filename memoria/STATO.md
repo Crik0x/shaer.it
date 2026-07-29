@@ -7,30 +7,27 @@ riscrive. Tetto 3 KB.
 
 ## Dove siamo
 
-Sessione 2026-07-29b. Fatto: **SAD F1** (contratto costruibile); **T-028** → F1 in **T-029…T-035**;
-**E-D-26** (doc snelliti: PRD archiviato, MDD congelato, 2 fonti vive = DECISIONI+SAD); **E-D-27**
-(solvibilità); **motore puro ledger verde** (`e91b64e`, 8/8). La **migrazione DB = RESPINTA dal revisore**
-(2 bug: conio dal nulla) → bozza fuori da `migrations/`, piano in `dossier/T-029-ledger-core.md`.
-**Prossimo: `Q-MINT`**, poi `ledger_post` transfer-only + anti-scoperto + test DB reale.
+Sessione 2026-07-29c. **Pivot Modulo 0 sul QR operativo §5.4**. Provato: **T-038** (simulatore + `lib/bonus.ts`
+4/4). Scritto `[~]`: **T-036** (signup Confirm-safe, dip. T-008) + **T-029a** (migrazione ledger transfer-only
++ anti-scoperto universale + test anti-exploit — `[~]` finché Nick non applica). Deciso: **D-015** (dashboard
+Shaer.it dentro `apps/qr`) · **D-016** (prima il ledger F1) · **D-017** (mappa = demo + editor gated verificato).
+Scope aperto: T-037/039/040/041. Prossimo: applicare la migrazione ([N]) → test verde → T-029 `[x]`.
 
 ## Cosa esiste
 
-- **Fonti vive ecosistema (2)**: `MD/ecosistema/SAD.md` v0.1 (contratto F1) + `memoria/DECISIONI.md`
-  (**E-D-01…E-D-27**). `MD/ecosistema/MDD.md` v1.5 = **congelato** (mappa 17 moduli §5 + roadmap §10).
-- **`MD/ecosistema/DOMANDE-NICK.md`**: file vivo delle domande aperte (riscritto a ogni giro, git=storico);
-  `Q-SOLV` risposto (→E-D-27), ora aperta **`Q-MINT`**. PRD v0.3 archiviato in `Archivio/2026-07-29/` (E-D-26).
-- **`MD/modulo-qr/`**: i 5 doc QR invariati. **Modulo 0 (`apps/qr/`)**: invariato, in produzione.
+- **Fonti vive ecosistema (2)**: `MD/ecosistema/SAD.md` v0.1 + `DECISIONI.md` (**E-D-01…28, D-015/016/017**).
+  `MD/ecosistema/MDD.md` v1.5 = **congelato**. `DOMANDE-NICK.md`: `Q-SOLV`+`Q-MINT` risposti (E-D-27/28).
+- **Modulo 0 (`apps/qr/`)**: in produzione; landing ora col simulatore operativo §5.4 (T-038). `MD/modulo-qr/` invariati.
 - Memoria personale: `shaer-ecosistema-fase-preparazione`, `shaer-riferimenti-esterni`, `avvisare-prima-di-eseguire`.
 
 ## Cosa NON esiste ancora
 
-- **F1 codice**: fatto il motore puro ledger (T-029 p.1/2, 8/8, `e91b64e`). Manca il layer DB (p.2/2:
-  migrazione + RPC `ledger_post`, `[N]`). Poi T-030 → T-031 → T-032 → T-033 → T-034/035.
-- **Modulo 0 aperti**: T-016 free/pro · T-017 restyling · T-018 editor · T-020 slug · T-022/D · T-024.
+- **F1 codice**: motore puro (`e91b64e`, 8/8) + **T-029a scritto** (migrazione+test, revisore ok) — manca l'**apply `[N]`**.
+  Poi T-030→T-031→(guardia)→T-032→T-033→T-034/035.
+- **Modulo 0 aperti**: T-016 free/pro · T-017 restyling · T-018 editor · T-020 slug · T-022/D · T-024 · T-037/039/040/041 (§5.4).
 
 ## Note operative
 
-- **Riferimenti** (verificati) in memoria `shaer-riferimenti-esterni`. Dominio canonico: `MD/SHAER_MASTER.md`; QR: `MD/modulo-qr/`.
-- **Modulo 0 (ancora vero)**: dietro auth non eyeball-abile da Claude (gate = Nick, finché T-024);
-  DDL = `[N]` via SQL editor; DB dev `alrguvxspssjwfmtuhdw`. `[N]`: T-008. Stripe `pk`+`sk` su progetto qr (N-f fatto).
-- cwd Bash non persiste: **path assoluti**.
+- Dominio: `MD/SHAER_MASTER.md`; QR: `MD/modulo-qr/`; riferimenti esterni in memoria omonima.
+- Modulo 0 dietro auth non eyeball-abile (gate=Nick fino a T-024). DDL=`[N]` via SQL editor, DB dev `alrguvxspssjwfmtuhdw`.
+  **`[N]` pendenti**: applicare migrazione ledger (chiude T-029a) · T-008. Stripe `pk`+`sk` su qr (N-f fatto). Path assoluti (cwd Bash non persiste).

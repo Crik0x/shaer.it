@@ -5,7 +5,7 @@ titolo: Ledger core — motore puro + layer DB (partita doppia, solvibilità)
 aree: [ledger, denaro, partita-doppia, solvibilità, escrow, rls, definer, sicurezza]
 stato: aperto
 riporti: 0
-sessioni: [2026-07-29b]
+sessioni: [2026-07-29b, 2026-07-29c]
 ---
 
 ## Obiettivo
@@ -74,6 +74,22 @@ pagamenti (dopo N-f), **non** blocca T-030/031 (che muovono crediti esistenti / 
 - **Gate d'invariante scoped a un conto esemplare invece che universale.** L'anti-conio guardava solo
   TREASURY → ogni altro conto poteva andare negativo (conio) → **risolto in piano**: anti-scoperto su
   **ogni** conto → **prevenibile?** sì, stesso test d'exploit. Colto dal revisore prima del commit.
+
+## T-029a — FATTO (2026-07-29c), `[~]` in attesa dell'apply [N]
+Migrazione corretta scritta in **`supabase/migrations/20260729000001_ledger_core.sql`** (dentro
+`migrations/`, pronta): tabelle come la bozza; `ledger_post` **transfer-only** con **anti-scoperto
+universale** (nessun conto, TREASURY inclusa, negativo in nessuna classe → uccide i 2 exploit);
+`kind` degradato a etichetta con `CHECK`; via il temp-table fragile (ora `jsonb_to_recordset`);
+guardie NULL esplicite. Test **`apps/qr/lib/ledger.test.ts`**: tenta i 2 exploit + INSERT diretto +
+guardie di forma → rifiutati; ramo positivo (transfer valido) gated su `SUPABASE_SERVICE_ROLE_KEY`.
+`tsc` verde. **Prova in sospeso**: il test è rosso finché Nick non applica la migrazione (`[N]`,
+SQL editor DB dev) — allora `node --test --env-file=.env.local lib/ledger.test.ts` deve essere verde.
+
+**Rischio aperto n°1 (per il revisore e T-030)**: `ledger_post` impone la contabilità, non
+l'**autorizzazione**. Con `grant execute to authenticated`, quando esisteranno saldi (T-032) un
+utente potrebbe muovere crediti *esistenti* tra conti (furto, ≠ conio). Mitigazione: T-030/T-031
+(RBAC) devono atterrare **prima** di T-032; oggi il ledger è vuoto → nessun furto possibile.
+Alternativa da valutare: non concedere ad authenticated, ledger_post primitivo interno di T-031.
 
 ## Composizione
 **Stabilisce**: gli invarianti del denaro (somma-zero, anti-scoperto), il pattern definer-unico-writer,
