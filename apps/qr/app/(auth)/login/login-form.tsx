@@ -29,13 +29,22 @@ export function LoginForm() {
       mode === "login"
         ? supabase.auth.signInWithPassword({ email, password })
         : supabase.auth.signUp({ email, password });
-    const { error } = await fn;
+    const { data, error } = await fn;
     setPending(false);
     if (error) {
       setError(error.message);
       return;
     }
-    // Confirm email è OFF in dev: signup e login danno subito la sessione.
+    // Con Confirm email ON (prod) signUp NON ritorna una sessione: l'account
+    // esiste ma è inerte finché non si apre il link via email. Senza sessione
+    // non si va in dashboard — si dice all'utente di confermare. Con Confirm
+    // OFF (dev) la sessione c'è subito e si prosegue. Vale per entrambi.
+    if (!data.session) {
+      setMessage(
+        "Ti abbiamo inviato un'email di conferma: apri il link per attivare l'account, poi accedi.",
+      );
+      return;
+    }
     router.push("/dashboard");
     router.refresh();
   }

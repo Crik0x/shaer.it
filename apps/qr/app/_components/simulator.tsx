@@ -3,14 +3,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import {
-  MessageCircle,
+  Check,
+  Lock,
   QrCode,
-  ShoppingBag,
   TrendingUp,
-  UserPlus,
+  Users,
+  Utensils,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { bonusPool, goalReached, operatorBonus, type Campaign } from "@/lib/bonus";
 import type { SimPoint } from "./simulator-chart";
 
 // Componente pesante (grafico): entra con dynamic import, no SSR (regola 9).
@@ -19,44 +21,40 @@ const SimulatorChart = dynamic(() => import("./simulator-chart"), {
   loading: () => <div className="h-[150px] rounded-xl bg-muted/40" />,
 });
 
-type Accent = "gold" | "rose";
-type Campaign = {
-  key: string;
-  label: string;
-  hint: string;
-  accent: Accent;
-  icon: typeof ShoppingBag;
-  weight: number;
+// Campagna interna della demo (§5.4 MDD): 30% del fatturato attribuito, rilascio
+// dell'escrow gated dalla soglia di team. La matematica vive in @/lib/bonus.
+const CAMPAIGN: Campaign = { rate: 0.3, goalRevenue: 1000 };
+
+type Operator = {
+  id: string;
+  name: string;
+  station: string;
+  sales: number;
+  revenue: number;
 };
 
-const CAMPAIGNS: Campaign[] = [
-  { key: "vendite", label: "Vendite", hint: "Campagna A", accent: "gold", icon: ShoppingBag, weight: 45 },
-  { key: "registrazioni", label: "Registrazioni", hint: "Campagna B", accent: "rose", icon: UserPlus, weight: 35 },
-  { key: "contatti", label: "Contatti WhatsApp", hint: "Campagna C", accent: "gold", icon: MessageCircle, weight: 20 },
+const SEED_OPS: Operator[] = [
+  { id: "giulia", name: "Giulia", station: "Tavoli 1–3", sales: 8, revenue: 240 },
+  { id: "sara", name: "Sara", station: "Tavoli 4–6", sales: 6, revenue: 190 },
+  { id: "marta", name: "Marta", station: "Bar & dehors", sales: 5, revenue: 150 },
 ];
 
-const SEED: Record<string, number> = { vendite: 128, registrazioni: 74, contatti: 41 };
-
 function seedPoints(total: number): SimPoint[] {
-  // Rampa dolce che arriva al totale: la dashboard non nasce vuota.
+  // Rampa dolce che arriva al fatturato di partenza: la demo non nasce piatta.
   return Array.from({ length: 12 }, (_, i) => ({
     i,
-    v: Math.round((total * (i + 3)) / 14 + Math.sin(i) * 4),
+    v: Math.round((total * (i + 3)) / 14 + Math.sin(i) * 6),
   }));
 }
 
-function pickCampaign(): Campaign {
-  const roll = Math.random() * 100;
-  let acc = 0;
-  for (const c of CAMPAIGNS) {
-    acc += c.weight;
-    if (roll <= acc) return c;
-  }
-  return CAMPAIGNS[0];
-}
+const euro = (n: number) =>
+  n.toLocaleString("it-IT", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  });
 
-// Conteggio animato: interpola il valore mostrato verso il target con
-// easeOutCubic — nessuno scatto, ~0.7s.
+// Conteggio animato: interpola verso il target con easeOutCubic, ~0.7s.
 function useCountUp(target: number, duration = 700) {
   const [value, setValue] = useState(target);
   const fromRef = useRef(target);
@@ -78,49 +76,50 @@ function useCountUp(target: number, duration = 700) {
   return value;
 }
 
-function AnimatedNumber({ value, className }: { value: number; className?: string }) {
-  const shown = useCountUp(value);
-  return <span className={className}>{shown.toLocaleString("it-IT")}</span>;
+function AnimatedEuro({ value, className }: { value: number; className?: string }) {
+  const shown = useCountUp(Math.round(value));
+  return <span className={className}>{euro(shown)}</span>;
 }
 
-const ACCENT: Record<Accent, { chip: string; ring: string }> = {
-  gold: {
-    chip: "bg-gold-light text-gold-dark",
-    ring: "ring-gold/50",
-  },
-  rose: {
-    chip: "bg-rose/12 text-rose",
-    ring: "ring-rose/40",
-  },
-};
-
 export function Simulator() {
-  const [counts, setCounts] = useState<Record<string, number>>(SEED);
-  const initialTotal = SEED.vendite + SEED.registrazioni + SEED.contatti;
-  const [total, setTotal] = useState(initialTotal);
-  const [points, setPoints] = useState<SimPoint[]>(() => seedPoints(initialTotal));
-  const [activeKey, setActiveKey] = useState<string | null>(null);
+  const [ops, setOps] = useState<Operator[]>(SEED_OPS);
+  const initialRevenue = SEED_OPS.reduce((s, o) => s + o.revenue, 0);
+  const [points, setPoints] = useState<SimPoint[]>(() => seedPoints(initialRevenue));
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [approved, setApproved] = useState(false);
   const [pulse, setPulse] = useState(0);
   const clearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const totalRevenue = ops.reduce((s, o) => s + o.revenue, 0);
+  const held = bonusPool(ops.map((o) => o.revenue), CAMPAIGN);
+  const reached = goalReached(totalRevenue, CAMPAIGN);
+  const progress = Math.min(100, Math.round((totalRevenue / CAMPAIGN.goalRevenue) * 100));
+
   const scan = useCallback(() => {
-    const c = pickCampaign();
-    const hit = 1 + Math.floor(Math.random() * 3);
-    setCounts((prev) => ({ ...prev, [c.key]: prev[c.key] + hit }));
-    setTotal((prev) => {
-      const next = prev + hit;
-      setPoints((pts) => [...pts.slice(-19), { i: (pts.at(-1)?.i ?? 0) + 1, v: next }]);
+    const idx = Math.floor(Math.random() * SEED_OPS.length);
+    const sale = 15 + Math.floor(Math.random() * 31); // scontrino 15–45 €
+    setOps((prev) => {
+      const next = prev.map((o, i) =>
+        i === idx ? { ...o, sales: o.sales + 1, revenue: o.revenue + sale } : o,
+      );
+      const rev = next.reduce((s, o) => s + o.revenue, 0);
+      setPoints((pts) => [...pts.slice(-19), { i: (pts.at(-1)?.i ?? 0) + 1, v: rev }]);
       return next;
     });
-    setActiveKey(c.key);
+    // Ogni nuovo incasso è bonus nuovo: torna «in attesa», va ri-approvato (escrow).
+    setApproved(false);
+    setActiveId(SEED_OPS[idx].id);
     setPulse((p) => p + 1);
     if (clearRef.current) clearTimeout(clearRef.current);
-    clearRef.current = setTimeout(() => setActiveKey(null), 900);
+    clearRef.current = setTimeout(() => setActiveId(null), 900);
   }, []);
 
-  useEffect(() => () => {
-    if (clearRef.current) clearTimeout(clearRef.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (clearRef.current) clearTimeout(clearRef.current);
+    },
+    [],
+  );
 
   return (
     <div className="relative mx-auto w-full max-w-xl">
@@ -131,74 +130,159 @@ export function Simulator() {
       />
 
       <div className="rounded-3xl border border-border/70 bg-card/80 p-5 shadow-sm backdrop-blur-sm sm:p-6">
-        {/* Intestazione */}
+        {/* Intestazione: la campagna interna */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="relative flex size-2.5">
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-gold/60" />
               <span className="relative inline-flex size-2.5 rounded-full bg-gold" />
             </span>
-            <span className="text-xs font-medium text-muted-foreground">Dashboard live</span>
-          </div>
-          <span className="text-xs text-muted-foreground">@il-tuo-tag</span>
-        </div>
-
-        {/* Totale + grafico */}
-        <div className="mt-4">
-          <p className="text-xs font-medium text-muted-foreground">Scansioni totali</p>
-          <div className="flex items-end gap-2">
-            <AnimatedNumber
-              value={total}
-              className="text-4xl font-semibold tracking-tight tabular-nums text-foreground"
-            />
-            <span className="mb-1.5 inline-flex items-center gap-1 rounded-full bg-gold-light px-2 py-0.5 text-xs font-medium text-gold-dark">
-              <TrendingUp className="size-3" /> live
+            <span className="text-xs font-medium text-muted-foreground">
+              Campagna interna · live
             </span>
           </div>
-          <div className="mt-2">
+          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+            <Utensils className="size-3.5 text-gold" /> Trattoria del Porto
+          </span>
+        </div>
+
+        {/* Obiettivo team + fatturato + grafico */}
+        <div className="mt-4">
+          <div className="flex items-end justify-between">
+            <div>
+              <p className="text-xs font-medium text-muted-foreground">Fatturato del team</p>
+              <AnimatedEuro
+                value={totalRevenue}
+                className="text-4xl font-semibold tracking-tight tabular-nums text-foreground"
+              />
+            </div>
+            <span
+              className={cn(
+                "mb-1.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium transition-colors",
+                reached
+                  ? "bg-gold-light text-gold-dark"
+                  : "bg-muted text-muted-foreground",
+              )}
+            >
+              <TrendingUp className="size-3" />
+              obiettivo {euro(CAMPAIGN.goalRevenue)}
+            </span>
+          </div>
+
+          {/* Barra progresso verso la soglia che sblocca il rilascio */}
+          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-gold to-gold-dark transition-all duration-700 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+
+          <div className="mt-3">
             <SimulatorChart points={points} />
           </div>
         </div>
 
-        {/* Le tre campagne */}
+        {/* Le postazioni: ogni QR è legato a un operatore, la vendita gli è attribuita */}
         <div className="mt-4 grid grid-cols-3 gap-2.5">
-          {CAMPAIGNS.map((c) => {
-            const a = ACCENT[c.accent];
-            const active = activeKey === c.key;
+          {ops.map((o) => {
+            const active = activeId === o.id;
+            const bonus = operatorBonus(o.revenue, CAMPAIGN);
             return (
               <div
-                key={c.key}
+                key={o.id}
                 className={cn(
                   "rounded-2xl border border-border/60 bg-background/60 p-3 transition-all duration-500 ease-out",
-                  active && cn("scale-[1.03] ring-2", a.ring),
+                  active && "scale-[1.03] ring-2 ring-gold/50",
                 )}
               >
-                <span className={cn("inline-flex size-7 items-center justify-center rounded-xl", a.chip)}>
-                  <c.icon className="size-3.5" />
-                </span>
-                <p className="mt-2 text-lg font-semibold tabular-nums text-foreground">
-                  <AnimatedNumber value={counts[c.key]} />
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex size-7 items-center justify-center rounded-xl bg-gold-light text-gold-dark">
+                    <Users className="size-3.5" />
+                  </span>
+                  <span className="rounded-md bg-muted px-1.5 py-0.5 text-[0.6rem] font-medium tabular-nums text-muted-foreground">
+                    {o.sales} vend.
+                  </span>
+                </div>
+                <p className="mt-2 truncate text-sm font-semibold text-foreground">{o.name}</p>
+                <p className="truncate text-[0.65rem] text-muted-foreground">{o.station}</p>
+                <p className="mt-1.5 text-[0.7rem] tabular-nums text-muted-foreground">
+                  {euro(o.revenue)}
                 </p>
-                <p className="truncate text-[0.7rem] font-medium text-foreground">{c.label}</p>
-                <p className="text-[0.65rem] text-muted-foreground">{c.hint}</p>
+                <p className="text-[0.7rem] font-semibold tabular-nums text-rose">
+                  bonus {euro(bonus)}
+                </p>
               </div>
             );
           })}
         </div>
 
-        {/* Il pulsante-QR: ogni click è una scansione simulata */}
+        {/* L'escrow: il bonus è trattenuto (held), si rilascia solo su approvazione */}
+        <div
+          className={cn(
+            "mt-4 flex items-center justify-between gap-3 rounded-2xl border p-3 transition-colors duration-500",
+            approved
+              ? "border-gold/40 bg-gold-light/50"
+              : "border-border/60 bg-background/60",
+          )}
+        >
+          <div className="flex items-center gap-2.5">
+            <span
+              className={cn(
+                "inline-flex size-8 items-center justify-center rounded-xl transition-colors",
+                approved ? "bg-gold text-cream" : "bg-muted text-muted-foreground",
+              )}
+            >
+              {approved ? <Check className="size-4" /> : <Lock className="size-4" />}
+            </span>
+            <div>
+              <p className="text-[0.7rem] text-muted-foreground">
+                {approved ? "Bonus rilasciato al personale" : "Bonus in escrow (trattenuto)"}
+              </p>
+              <AnimatedEuro
+                value={held}
+                className="text-lg font-semibold tabular-nums text-foreground"
+              />
+            </div>
+          </div>
+          <button
+            type="button"
+            disabled={!reached || approved}
+            onClick={() => setApproved(true)}
+            className={cn(
+              "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-xl px-3 text-xs font-semibold transition-all duration-300",
+              approved
+                ? "bg-gold-light text-gold-dark"
+                : reached
+                  ? "bg-ink text-cream hover:bg-ink/90 active:scale-[0.98]"
+                  : "cursor-not-allowed bg-muted text-muted-foreground",
+            )}
+          >
+            {approved ? (
+              <>
+                <Check className="size-3.5" /> Rilasciato
+              </>
+            ) : reached ? (
+              "Approva e rilascia"
+            ) : (
+              "Raggiungi l'obiettivo"
+            )}
+          </button>
+        </div>
+
+        {/* Il pulsante-QR: ogni click = un cliente che scansiona a una postazione */}
         <button
           type="button"
           onClick={scan}
-          className="group mt-5 flex w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-ink to-gold-dark px-5 py-3 text-sm font-semibold text-cream shadow-sm transition-all duration-300 ease-out hover:shadow-md active:scale-[0.98]"
+          className="group mt-4 flex w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-ink to-gold-dark px-5 py-3 text-sm font-semibold text-cream shadow-sm transition-all duration-300 ease-out hover:shadow-md active:scale-[0.98]"
         >
           <span key={pulse} className="flex size-5 items-center justify-center">
             <QrCode className="size-5 transition-transform duration-500 ease-out group-hover:rotate-6" />
           </span>
-          Simula una scansione
+          Simula una scansione a una postazione
         </button>
         <p className="mt-2 text-center text-[0.7rem] text-muted-foreground">
-          Clicca: guarda i dati muoversi in tempo reale.
+          Ogni scansione è attribuita a chi lavora quella postazione: vendite, bonus,
+          escrow si muovono in tempo reale.
         </p>
       </div>
     </div>
