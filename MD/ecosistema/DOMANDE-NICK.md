@@ -35,7 +35,7 @@ circolante. Serve prima di scrivere la RPC, perché decide se la solvibilità è
 
 → **Consiglio:** **c** (solvibilità per costruzione — è la più coerente con «un QR non si rompe mai» /
 regola 7 applicata al denaro). Se preferisci poter coniare e riconciliare dopo, allora **a**.
-→ **Risposta:** 
+→ **Risposta:** _(risposto 2026-07-29b, vedi E-D-27)_
 
 ### Q-SOLV.2 — Cosa conta come «circolante da coprire»?
 
@@ -44,7 +44,7 @@ regola 7 applicata al denaro). Se preferisci poter coniare e riconciliare dopo, 
 
 → **Consiglio:** **b** — un bonus in escrow è denaro che la piattaforma dovrà onorare; coprirlo da subito
 è più prudente e coerente con E-D-16 (circuito chiuso: spendibile solo con € versati).
-→ **Risposta:** 
+→ **Risposta:** _(risposto 2026-07-29b, vedi E-D-27)_
 
 ### Q-SOLV.3 — In F1 closed-loop (E-D-23, niente off-ramp) l'invariante è strict da subito?
 
@@ -53,4 +53,28 @@ regola 7 applicata al denaro). Se preferisci poter coniare e riconciliare dopo, 
 
 → **Consiglio:** **a** — costa quasi nulla tenerlo strict ora, ed è l'invariante che dà valore al ledger;
 rilassarlo significherebbe ricostruirlo dopo (e riaprire codice del denaro).
+→ **Risposta:** _(risposto 2026-07-29b, vedi E-D-27)_
+
+---
+
+## Q-MINT · Chi può coniare crediti, e quando — sblocca la correzione di **T-029** (dopo i 2 bug del revisore)
+
+**Contesto:** il revisore ha colto che *coniare* (far nascere crediti, un conto che va negativo) è diverso
+dal *trasferire* crediti esistenti. In F1 **non c'è ancora un layer pagamenti** (Stripe/N-f non configurato):
+quindi non esiste una fonte € reale che attesti un conio backed. Fidare su un `kind` auto-dichiarato dal
+client = coniare dal nulla (il bug). Dettaglio in `../../dossier/T-029-ledger-core.md`.
+
+### Q-MINT.1 — In F1, `ledger_post` (l'utente loggato) cosa può fare?
+
+- **a) Solo trasferire crediti esistenti** (transfer, spesa, escrow hold/release), con invariante
+  **anti-scoperto** (nessun conto va sotto zero, TREASURY inclusa). Il **conio** (backed da TREASURY contro €;
+  promo da ADV) vive in **RPC separate privilegiate** (`service_role`), costruite col layer pagamenti /
+  budget campagna — **dopo**. *Conseguenza:* la fondazione del ledger è **sicura e testabile subito**; il
+  denaro «entra» solo quando c'è Stripe a coprirlo. T-030/031 (che muovono crediti, non coniano) non sono bloccati.
+- **b) Costruire subito anche il conio**, con una tabella `payments` stub che simula l'attestazione €.
+  *Conseguenza:* si tocca il layer pagamenti ora, fuori sequenza, con uno stub da rifare quando arriva Stripe.
+
+→ **Consiglio:** **a** — separa conio da trasferimento, chiude gli exploit, e non anticipa il layer
+pagamenti prima del suo momento (N-f è pre-lancio). Il conio diventa un task suo quando configuri Stripe.
 → **Risposta:** 
+

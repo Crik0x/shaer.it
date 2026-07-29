@@ -7,18 +7,18 @@ riscrive. Tetto 3 KB.
 
 ## Dove siamo
 
-Sessione 2026-07-29b **— SAD scritto + struttura snellita, si passa al codice**. Fatto: **SAD F1**
-(`MD/ecosistema/SAD.md` v0.1) = contratto costruibile (schema, RPC, motore puro, AC→test); **T-028**
-ha decomposto F1 in **T-029…T-035**. **Lezione + E-D-26**: la cascata MDD→PRD→SAD ripeteva gli stessi
-fatti → **PRD archiviato**, **MDD congelato**; **2 fonti vive**: DECISIONI (perché) + SAD (come). Stop
-alla prosa in anticipo (requisiti futuri = JIT come test). **Prossimo: costruire T-029 (ledger), test-first.**
+Sessione 2026-07-29b. Fatto: **SAD F1** (contratto costruibile); **T-028** → F1 in **T-029…T-035**;
+**E-D-26** (doc snelliti: PRD archiviato, MDD congelato, 2 fonti vive = DECISIONI+SAD); **E-D-27**
+(solvibilità); **motore puro ledger verde** (`e91b64e`, 8/8). La **migrazione DB = RESPINTA dal revisore**
+(2 bug: conio dal nulla) → bozza fuori da `migrations/`, piano in `dossier/T-029-ledger-core.md`.
+**Prossimo: `Q-MINT`**, poi `ledger_post` transfer-only + anti-scoperto + test DB reale.
 
 ## Cosa esiste
 
 - **Fonti vive ecosistema (2)**: `MD/ecosistema/SAD.md` v0.1 (contratto F1) + `memoria/DECISIONI.md`
-  (**E-D-01…E-D-26**). `MD/ecosistema/MDD.md` v1.5 = **congelato** (mappa 17 moduli §5 + roadmap §10).
+  (**E-D-01…E-D-27**). `MD/ecosistema/MDD.md` v1.5 = **congelato** (mappa 17 moduli §5 + roadmap §10).
 - **`MD/ecosistema/DOMANDE-NICK.md`**: file vivo delle domande aperte (riscritto a ogni giro, git=storico);
-  ora porta `Q-SOLV` (solvibilità, sblocca T-029 p.2). PRD v0.3 archiviato in `Archivio/2026-07-29/` (E-D-26).
+  `Q-SOLV` risposto (→E-D-27), ora aperta **`Q-MINT`**. PRD v0.3 archiviato in `Archivio/2026-07-29/` (E-D-26).
 - **`MD/modulo-qr/`**: i 5 doc QR invariati. **Modulo 0 (`apps/qr/`)**: invariato, in produzione.
 - Memoria personale: `shaer-ecosistema-fase-preparazione`, `shaer-riferimenti-esterni`, `avvisare-prima-di-eseguire`.
 

@@ -321,3 +321,15 @@ scrivono **just-in-time**, spesso come il test stesso. Perché: un fatto = una c
 tocca 2 file, non 4 (chiude la famiglia di bug L-008, propagazione non fatta). Non riduce il budget d'avvio
 (MDD/PRD/SAD non erano auto-caricati) ma taglia la superficie di manutenzione e il tempo di stesura futuro.
 Alternativa scartata: tenere i tre livelli "perché è lo standard" (è lo standard di team che qui non esistono).
+
+## E-D-27 · 2026-07-29b · Solvibilità del ledger = per costruzione (specchio TREASURY), escrow incluso, strict — [LOCKED]
+Decisione: scioglie Q-SOLV (sblocca T-029 p.2). **Q-SOLV.1=c** — la riserva € **non è un numero a parte**:
+con la somma-zero per classe, il saldo backed (`purchased`+`earned`) negativo di **TREASURY** è già l'esatto
+opposto di tutti i backed in circolazione. Se `ledger_post` permette di **coniare backed (debitare TREASURY)
+solo** in un journal che attesta un incasso € reale (kind `purchase`/`deposit`), allora *riserva ≥ backed*
+vale come **uguaglianza automatica** — l'invariante è **strutturale, non un check**. `promo` esce da ADV, non
+tocca la riserva. **Q-SOLV.2=b** — il «circolante da coprire» include gli held in `ESCROW` (passività reale,
+coerente con E-D-16); rientra da sé nello specchio. **Q-SOLV.3=a** — strict da subito anche in F1 closed-loop
+(E-D-23): il ledger nasce pronto per l'off-ramp; rilassarlo = ricostruire codice-denaro dopo.
+Perché: anti-frode strutturale (lo stato scoperto non esiste proprio), regola 7 applicata al denaro.
+Alternative scartate: riserva fuori dal ledger (invariante debole, contro L-001) · riserva rilassata in F1.
