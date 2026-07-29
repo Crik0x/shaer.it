@@ -69,8 +69,10 @@ Solo la sezione «Per Nick» si sostituisce.
 *Dettaglio (schema, RPC, prove) in `MD/ecosistema/SAD.md` §3–8 — qui solo ordine e dipendenze, non si
 ripete (E-D-26). Ogni task è **test-first** (regola 5). Codice in `apps/shaer/`+`packages/core-*`.*
 
-- [ ] T-029 **Ledger core** `C` 💰 — SAD §3.3/4/5. **Stabilisce** invarianti del denaro + pattern
-      definer-unico-writer + `packages/core-ledger`/`db-types`. **Consuma** nulla → **irreversibile, PRIMA di tutto** (§4).
+- [~] T-029 **Ledger core** `C` 💰 — **parte 1/2 fatta** (`e91b64e`, 8/8): motore puro (`isBalanced`,
+      `checkSolvency`). **Parte 2/2 = layer DB** (SAD §3.3/§4): migrazione tabelle + RPC `ledger_post` +
+      revoke anon + `grants.test`. Prima: **pinnare il modello solvibilità** («riserva €» nei conti, abbozzata
+      nel SAD); `journal.transaction_id` senza FK (T-031 non esiste). Applica = `[N]`, poi test DB reale.
 - [ ] T-030 **Identità, ruoli, RBAC** `C` — SAD §3.1/4/6. **Stabilisce** `user_id`+`role`, gate verifica,
       limiti approvatore (E-D-24), vincolo ruoli/TXN (E-D-21). **Consuma** pattern RLS/definer di T-029.
 - [ ] T-031 **TXN engine** `C` — SAD §3.2/4. **Stabilisce** il tronco TXN. **Consuma** T-029 (journal.txn_id) + T-030 (owner/ruoli).

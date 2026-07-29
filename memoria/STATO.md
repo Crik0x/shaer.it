@@ -23,15 +23,13 @@ alla prosa in anticipo (requisiti futuri = JIT come test). **Prossimo: costruire
 
 ## Cosa NON esiste ancora
 
-- **Tutta F1 (codice)**: T-029 ledger → T-030 RBAC → T-031 TXN → T-032 wallet → T-033 escrow →
-  T-034 recensioni → T-035 referral. Niente `apps/shaer/` né `packages/` ancora (li stabilisce T-029).
+- **F1 codice**: fatto il motore puro ledger (T-029 p.1/2, 8/8, `e91b64e`). Manca il layer DB (p.2/2:
+  migrazione + RPC `ledger_post`, `[N]`). Poi T-030 → T-031 → T-032 → T-033 → T-034/035.
 - **Modulo 0 aperti**: T-016 free/pro · T-017 restyling · T-018 editor · T-020 slug · T-022/D · T-024.
 
 ## Note operative
 
-- **Riferimenti** (verificati): `Struttura/Schema/Shaer_it_Simulatore_MVP_v5.html` · `D:\Desktop\Arkés\arkes_dashboard_v3.html`
-  · `D:\Desktop\I Damascati\Code\Sito\damascati` (**gemello**, stesso stack Next 16 + Supabase + metodo).
-- Dominio economico canonico: `MD/SHAER_MASTER.md`. Il QR resta governato da `MD/modulo-qr/`.
+- **Riferimenti** (verificati) in memoria `shaer-riferimenti-esterni`. Dominio canonico: `MD/SHAER_MASTER.md`; QR: `MD/modulo-qr/`.
 - **Modulo 0 (ancora vero)**: dietro auth non eyeball-abile da Claude (gate = Nick, finché T-024);
   DDL = `[N]` via SQL editor; DB dev `alrguvxspssjwfmtuhdw`. `[N]`: N-f (Stripe) · T-008.
 - cwd Bash non persiste: **path assoluti**.
