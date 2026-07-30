@@ -42,11 +42,8 @@ Stati: `[ ]` da fare · `[~]` scritto non provato · `[A]` accettato · `[x]` fa
 
 ## Ecosistema — F1 costruzione (sequenza stabilisce→consuma)
 
-*SAD §3–8 (E-D-26), test-first (regola 5), codice in `apps/qr`/`packages` (D-015). Precedenti nei singoli task.*
+*SAD §3–8 (E-D-26), test-first (regola 5), codice in `apps/qr`/`packages` (D-015). Precedenti nei singoli task. **T-029** (ledger core) chiuso `[x]` → sezione «Fatto»; conio backed = task nuovo (post-webhook Stripe).*
 
-- [x] T-029 **Ledger core** `C` 💰 — motore puro (8/8) + migrazione applicata + DB-test verde 4/4 (2 exploit
-      + INSERT diretto rifiutati). Chiuso 2026-07-30 → REGISTRO. Dossier `dossier/archivio/T-029-ledger-core.md`.
-      Residuo minore `[N]` (service key, ramo positivo skipped). Conio backed = task nuovo (post-webhook Stripe).
 - [ ] T-030 **Identità, ruoli, RBAC** `C` — SAD §3.1/4/6 + **E-D-29** (3 piani). **Motore puro fatto+verde 10/10**
       (`packages/core-rbac`, AC-EE1.5/1.7/1.8). Resta: migrazione (`user_roles`+`permissions`+`work_*`) + 2 RPC
       definer + grants.test → `[N]` apply. Piano pronto in `dossier/T-030-rbac.md`. Prec: `archivio/T-007` (grant anon), `T-004` (client SSR).

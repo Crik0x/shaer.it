@@ -406,3 +406,29 @@ nella landing (subito, dati finti, no auth) **+** editor reale in dashboard che 
 disposizione solo per utente loggato E verificato**. Il gate «verificato» è quello di **T-030**
 (identità/RBAC, dentro F1) → la persistenza reale cade **dopo** ledger+identità; la demo landing è
 libera. Drag: **pointer-events custom, nessuna libreria** (regola 10), salvo richiesta di `dnd-kit`.
+
+## E-D-31 · 2026-07-30 · Pannello unico che routa a home diverse per ruolo — [LOCKED]
+Contesto: Nick descrive «3 pannelli separati» (admin/utente/business); il MDD §8.1 aveva già
+deciso **un solo pannello + accessi granulari RBAC**. Bivio: 3 superfici separate vs pannello
+unico. Decisione (Nick 2026-07-30): **pannello unico** che **routa a home diverse per ruolo** —
+ADMIN, utente e business atterrano su viste distinte sulla **stessa base** auth+dati+RBAC.
+*Unico ora, splittabile poi* senza riscrivere. **Raffina** il §8.1, non lo riapre. Alternativa
+scartata: 3 pannelli separati (triplica routing/layout/manutenzione, riapre un lock). Conseguenza:
+T-030/T-042/T-043 poggiano su questo modello; le viste per-ruolo sono un livello di routing, non
+app diverse.
+
+## E-D-32 · 2026-07-30 · Modello profili: ADMIN interno · UTENTE base · BUSINESS come attivazione — [LOCKED]
+Contesto: il MDD §3 elenca 5 attori (BUYER, SELLER, PRODUCER, TRANSPORTER, ADMIN); Nick parlava di
+«4 profili» e «intermediario = business». Decisione (Nick 2026-07-30), tre profili top-level:
+1. **ADMIN** — **non si registra**, interno Shaer.it, **2FA obbligatoria**, capability esclusive
+   **mai** visibili agli altri; stessa shell del pannello (E-D-31), viste in più.
+2. **UTENTE** (consumatore, = BUYER) — registrazione base; **resta sempre**, anche dopo l'upgrade.
+3. **BUSINESS** — **non** è una registrazione separata da zero: è un'**attivazione** sopra il
+   profilo utente (verifica documentale P.IVA) con **pulsante switch** consumatore↔business. Il
+   sotto-tipo sblocca viste/funzioni: **commerciante** (SELLER) · **produttore** (PRODUCER) ·
+   **libero professionista** (PRO/servizi) · **intermediario/trasporti** (TRANSPORTER = corriere/
+   logistica che connette imprenditori e piattaforme via Shaer.it).
+Scioglie: «4 profili» (= 3 top + sotto-tipi business) e «intermediario» (= sotto-tipo trasporti,
+**non** la modalità SHAERER, che resta un interruttore referral del BUYER). Conseguenza: la
+registrazione base è una sola (utente); il business è un flag+verifica+sotto-tipo sul medesimo
+account. Aggiorna la mappa attori del MDD §3 senza cancellarla (i 5 attori → sotto-tipi).

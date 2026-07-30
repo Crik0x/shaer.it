@@ -173,7 +173,7 @@ il resto è visione. `Fase`: F1 economia · F2 servizi business · F3 rete&intel
 | 4 | **Recensioni & Rank** | 10 stelle/categoria, solo da TXN `completed`, **rank bayesiano**, moltiplicatore Shaerer | F1 | — | ▢ |
 | 5 | **Referral (promo Shaer)** | programmi promozionali **mono-livello**, parametrici e a tempo (§4.1-A) | F1–F3 | — | ▢ |
 | 6 | **Wishlist · Compleanni · Crowdfunding · Gruppi** | lista desideri, regali collettivi, obiettivi di raccolta personali/comunitari; segnale d'interesse (§5.1) | **F1–F2 · da subito** | parz. | ▢ |
-| 7 | **Prenotazioni (STUDIO)** | sedi, staff, servizi, widget di prenotazione pubblico | F2 | ✓ | ▢ |
+| 7 | **Gestionale attività** (assorbe Prenotazioni) | pannello business: staff, catalogo servizi+prodotti, pacchetti, presenze, abilitazioni; **prenotazioni** come sotto-parte (sedi/staff/widget). Dettaglio → `MODULO-7-GESTIONALE.md` | F2 | ✓ | ▢ |
 | 8 | **Shop** | catalogo, ordini, checkout via **PSP terzo** | F2 | ✓ | ▢ |
 | 9 | **Fidelity → universale** | punti/livelli **non** per-negozio ma sul wallet unico di rete (è la §2) | F2–F3 | ✓ | ▢ |
 | 10 | **MLM-as-a-service** | motore MLM **parametrico** (profondità/larghezza) per reti interne business (§4.1-B) | F2–F3 | ✓ | ▢ |
