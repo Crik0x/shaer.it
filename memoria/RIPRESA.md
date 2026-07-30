@@ -21,7 +21,7 @@ es. `OPEN→IN_PROGRESS` o `SUGGESTED→COMPLETED`).
 - **B) monotòna-forward** — più flessibile, più superficie d'abuso.
 A conferma la registro come `D-NNN`. Il motore puro è banale da adeguare a B.
 
-**Le tue `[N]`:** ① (minore) `SUPABASE_SERVICE_ROLE_KEY` in `apps/qr/.env.local` (ramo
+**Le tue `[N]`:** ① (minore) `SUPABASE_SERVICE_ROLE_KEY` in `apps/web/.env.local` (ramo
 positivo ledger) · ② **T-008** (Supabase prod, Confirm ON).
 **Segnalo:** `Struttura/appadmin.html` + `prenotazioni.html` untracked, **non committati**
 — dimmi se versionarli. Prototipo booking → Sprint 3.
@@ -40,14 +40,14 @@ PASSO 0 (bloccante): confermami la FSM — A) adiacenza stretta (default) o B) m
   A conferma la registro come D-NNN in DECISIONI.md, POI si scrive la migrazione (irreversibile).
 
 Poi, in ordine stabilisce→consuma:
-1. Migrazione apps/qr/supabase/migrations/2026073100000X_txn.sql (DDL → [N], la applichi tu):
+1. Migrazione apps/web/supabase/migrations/2026073100000X_txn.sql (DDL → [N], la applichi tu):
    transactions + transaction_events (append-only) + FK su ledger_journal.transaction_id
    (già nullable) + revoke INSERT/UPDATE/DELETE from authenticated + RLS owner-scoped.
 2. RPC definer txn_transition(txn_id,to_state) e txn_append_event(txn_id,type,meta): rivalidano
    canTransition/canAppendEvent dentro la transazione DB (SAD §4). Unico writer.
-3. Integration test apps/qr/lib/txn.test.ts (node --test --env-file=apps/qr/.env.local): tenta e
+3. Integration test apps/web/lib/txn.test.ts (node --test --env-file=apps/web/.env.local): tenta e
    fa RIFIUTARE salto illegale, evento su terminale, reward su non-COMPLETED, INSERT diretto (42501).
-4. Estendi apps/qr/lib/grants.test.ts alla nuova superficie (L-001).
+4. Estendi apps/web/lib/grants.test.ts alla nuova superficie (L-001).
 
 Leggi PRIMA: dossier/archivio/T-029 (schema exploit-rifiutato), T-030 (maker-checker + L-013),
 T-007 (grants.test), SAD §3.2/§4. Test-first (regola 5) → revisore → [~]/[x] → /chiusura.

@@ -7,7 +7,7 @@ Stati: `[ ]` da fare · `[~]` scritto non provato · `[A]` accettato · `[x]` fa
 ## Da te — azioni `[N]` (col come-fare, si rimuovono a conferma)
 
 - [N] **T-008 · Supabase prod separato (Confirm email ON)** `↻3` — NON accendere Confirm su `alrguvxspssjwfmtuhdw` (romperebbe i test). New project «shaer-qr-prod» → Auth Confirm ON → URL+anon+service key nei secret Vercel (Production) → migrazioni nel SQL editor. Come-fare completo: `dossier/archivio/T-004-auth-dashboard.md`. → «T-008 fatto».
-- [N] **(minore) Service key ramo positivo ledger** — `SUPABASE_SERVICE_ROLE_KEY` in `apps/qr/.env.local` (Supabase › Settings › API › service_role). Poi il test «transfer lecito accettato» esce da `skipped`. → «service key messa».
+- [N] **Vercel Root Directory → `apps/web`** (rename apps/qr→apps/web, sessione 2026-07-31) — Vercel › Project shaer.it › Settings › Build & Deployment › **Root Directory**: da `apps/qr` a `apps/web`. Senza, il prossimo deploy non trova l'app. → «root dir aggiornata».
 
 ## Ora
 
@@ -29,7 +29,7 @@ Stati: `[ ]` da fare · `[~]` scritto non provato · `[A]` accettato · `[x]` fa
 
 ## Ecosistema — F1 costruzione (sequenza stabilisce→consuma)
 
-*SAD §3–8 (E-D-26), test-first (regola 5), codice in `apps/qr`/`packages` (D-015).*
+*SAD §3–8 (E-D-26), test-first (regola 5), codice in `apps/web`/`packages` (D-015).*
 
 - [ ] T-031 **TXN engine** `C` — SAD §3.2/4. Stabilisce il tronco TXN. Consuma T-029 + T-030. **Fetta 1/2 `[x]`**: motore puro FSM `packages/core-ledger/txn.ts` 11/11 + revisore approvato (commit 266fffa). Resta **fetta 2/2** (migrazione+RPC definer+integration test) — **prima confermare con Nick la FSM adiacenza-stretta vs monotòna-forward → D-NNN**. → `dossier/T-031-txn-engine.md`. Prec: `archivio/T-029` (schema exploit-rifiutato), `T-030` (maker-checker, L-013), `T-007` (grants.test).
 - [ ] T-032 **Wallet derivato + conti utente** `M` — SAD §3.1/3.3. Consuma T-029 + T-030. **Sbloccato** da T-030.

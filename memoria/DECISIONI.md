@@ -42,7 +42,7 @@ Alternativa scartata: Next 14 PWA + Node/Express + FCM — due deploy da mantene
 
 ## D-005 · 2026-07-25 · Monorepo ecosistema Shaer, Damascati fuori — [LOCKED]
 Contesto: QR Platform è il primo prodotto; Shaer MVP la userà come motore; Damascati
-la integrerà. Decisione: **una repo** per l'ecosistema Shaer — `apps/qr` (rinominata
+la integrerà. Decisione: **una repo** per l'ecosistema Shaer — `apps/web` (rinominata
 da `apps/web`), domani `apps/shaer`, con `packages/` per il codice condiviso (tipi DB,
 core QR, design system) e **lo stesso Supabase**. **Damascati resta la sua repo + il
 suo Supabase** e consuma il QR come *servizio* (dominio redirect / API). Vercel: **un
@@ -381,14 +381,14 @@ Perché: monetizza il dato senza violare il consenso; l'utente resta padrone del
 resta l'unico titolare del trattamento. Nota privacy: consenso esplicito + granularità = base GDPR; la
 tabella `consents` (utente × business × scope × stato) è fondativa e sarà un task dedicato prima del CRM.
 
-## D-015 · 2026-07-29 · Dashboard Shaer.it = evoluzione di apps/qr (non nuovo app)
+## D-015 · 2026-07-29 · Dashboard Shaer.it = evoluzione di apps/web (non nuovo app)
 Contesto: Nick chiede la dashboard business Shaer.it per attivare il SaaS (pay-per-activation,
 MDD §7). Bivio: nuovo `apps/shaer` (monorepo, separazione ecosistema/modulo) vs evolvere
-`apps/qr`. Decisione (Nick 2026-07-29c): **evolvere `apps/qr`** — la dashboard attuale diventa
+`apps/web`. Decisione (Nick 2026-07-29c): **evolvere `apps/web`** — la dashboard attuale diventa
 il pannello business, il QR una sua sezione; un solo deploy, momentum. Alternativa scartata:
 `apps/shaer` separato (più pulito per SAD/MDD ma raddoppia setup/deploy e va montato il monorepo
 ora). Conseguenza: `apps/shaer` citato in STATO/SAD **non** si crea; il codice F1 evolve dentro
-`apps/qr` finché non serve davvero separare.
+`apps/web` finché non serve davvero separare.
 
 ## D-016 · 2026-07-29 · Ordine: ledger F1 prima delle feature economiche — [LOCKED]
 Contesto: bonus reale (§5.4), crediti, fidelity dipendono dal ledger F1, il cui layer DB è stato

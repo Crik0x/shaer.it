@@ -18,7 +18,7 @@
 
 | Fondamenta | Stato | Dove |
 |---|---|---|
-| **Modulo 0 QR** — albero `qr_codes` (`parent_id`+`owner_id`+`granted_by`+`purpose`), `qr_scans` append-only, resolve, analytics | ✅ in produzione | `apps/qr/`, migrazioni `2026072[4-6]*` |
+| **Modulo 0 QR** — albero `qr_codes` (`parent_id`+`owner_id`+`granted_by`+`purpose`), `qr_scans` append-only, resolve, analytics | ✅ in produzione | `apps/web/`, migrazioni `2026072[4-6]*` |
 | **Auth + profiles** + RLS multi-tenant | ✅ | `20260727000001_profiles.sql` |
 | **Ledger F1 core** — `accounts`, `ledger_journal`, `ledger_postings`, RPC `ledger_post` transfer-only + anti-scoperto universale (2 exploit rifiutati, test verde 4/4) | ✅ provato | `20260729000001_ledger_core.sql`, `lib/ledger.test.ts` |
 | **Modello economico** deciso | ✅ | `SHAER_MASTER §1.4`, `DOMANDE-NICK` Q-SOLV/Q-MINT |

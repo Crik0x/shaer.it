@@ -26,7 +26,7 @@ e il TODO porta i blocchi da fare.
   (repo, meccanica economica) · `D:\Desktop\Arkés\arkes_dashboard_v3.html` (fuori repo) ·
   `D:\Desktop\I Damascati\Code\Sito\damascati` (fuori repo, **stesso stack** Next 16 +
   React 19 + Supabase `apps/public`, **stesso metodo**).
-- **Nessun codice di produzione toccato** (`apps/qr/` intatto). Zero task chiusi.
+- **Nessun codice di produzione toccato** (`apps/web/` intatto). Zero task chiusi.
 
 ## Domande e risposte (a Nick, con conseguenza)
 1. **Stella polare?** → Super-piattaforma unica (build plan = moduli + SHAER_MASTER =
@@ -69,4 +69,4 @@ cliente (da definire), privacy tracking trasporto (E-D-06).
 ## Composizione
 **Stabilisce** per tutti i task futuri: la struttura documentale (`ecosistema/` sopra,
 `modulo-qr/` sotto), la mappa moduli, le 16 decisioni, la roadmap a blocchi. T-025/026/027/
-028 **consumano** questo. Non tocca `apps/qr/` (Modulo 0, in produzione).
+028 **consumano** questo. Non tocca `apps/web/` (Modulo 0, in produzione).

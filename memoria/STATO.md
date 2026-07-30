@@ -3,7 +3,7 @@
 Fotografia: si **riscrive**, non si accumula. È il solo file di memoria che si
 riscrive. Tetto 3 KB.
 
-**Apertura:** `266fffa` *(sessione 2026-07-30 parte 3)*
+**Apertura:** `8712516` *(sessione 2026-07-31)*
 
 ## Dove siamo
 
@@ -21,9 +21,9 @@ test). **PRIMA serve una decisione di Nick**: la FSM è adiacenza-stretta vs mon
 
 - **TXN FSM puro (T-031 fetta 1/2)**: `packages/core-ledger/txn.ts` — `canTransition`/`nextStates`/
   `isTerminal`/`canAppendEvent`. `txn.test.ts` 11/11. Confine puro/DB onesto (append-only = policy DB, L-011).
-- **Ledger F1**: `packages/core-ledger/ledger.ts` 8/8 + migrazione `20260729000001` applicata + `apps/qr/lib/ledger.test.ts` 4/4. Anti-frode provato (E-D-27/28); L-011 → test.
-- **RBAC F1**: `packages/core-rbac` 10/10 + migrazione `20260730000001` applicata + `apps/qr/lib/grants.test.ts` **9/9** sul DB reale. admins elevabile/multi-admin, user_roles ≤3, permissions, maker-checker multisig, RLS finestra ADMIN, 5 definer.
-- **Modulo 0 (`apps/qr/`)**: in produzione (QR albero, scan, analytics, auth, profiles); landing simulatore §5.4.
+- **Ledger F1**: `packages/core-ledger/ledger.ts` 8/8 + migrazione `20260729000001` applicata + `apps/web/lib/ledger.test.ts` 4/4. Anti-frode provato (E-D-27/28); L-011 → test.
+- **RBAC F1**: `packages/core-rbac` 10/10 + migrazione `20260730000001` applicata + `apps/web/lib/grants.test.ts` **9/9** sul DB reale. admins elevabile/multi-admin, user_roles ≤3, permissions, maker-checker multisig, RLS finestra ADMIN, 5 definer.
+- **Modulo 0 (`apps/web/`)**: in produzione (QR albero, scan, analytics, auth, profiles); landing simulatore §5.4.
 - **Fonti vive**: `MAPPA.md` (atlante) · `SAD.md` · `DECISIONI.md` (E-D-01…33, D-015/016/017) · `MODULO-7-GESTIONALE.md`. `MDD.md` congelato.
 
 ## Cosa NON esiste ancora
@@ -36,6 +36,6 @@ test). **PRIMA serve una decisione di Nick**: la FSM è adiacenza-stretta vs mon
 ## Note operative
 
 - Domini: `MD/ecosistema/MAPPA.md` (atlante) · `MD/SHAER_MASTER.md` · `MD/modulo-qr/` · `MODULO-7-GESTIONALE.md`.
-- DDL = `[N]` via SQL editor, DB dev `alrguvxspssjwfmtuhdw`. `[N]` pendenti: service key ledger · T-008.
-- Test puri: `node --test packages/core-ledger/<file>.test.ts`. Test DB reali: `node --test --env-file=apps/qr/.env.local apps/qr/lib/<file>.test.ts` (`--env-file` relativo al cwd).
+- DDL = `[N]` via SQL editor, DB dev `alrguvxspssjwfmtuhdw`. `[N]` pendenti: T-008 · Vercel Root Directory → `apps/web`.
+- Test puri: `node --test packages/core-ledger/<file>.test.ts`. Test DB reali: `node --test --env-file=apps/web/.env.local apps/web/lib/<file>.test.ts` (`--env-file` relativo al cwd).
 - Untracked non committati (chiedere se versionare): `Struttura/appadmin.html`, `prenotazioni.html`. Booking → Sprint 3.

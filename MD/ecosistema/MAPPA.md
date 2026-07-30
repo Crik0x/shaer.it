@@ -60,7 +60,7 @@ Qui solo *stato + aggancio task*; i dettagli di ogni modulo vivono in `MDD.md §
 
 | # | Modulo | Fase | Stato | Task / dossier |
 |---|---|:---:|---|---|
-| **0** | QR / Verifica | F0 | **✅ costruito e provato** | Modulo 0 (`apps/qr`) |
+| **0** | QR / Verifica | F0 | **✅ costruito e provato** | Modulo 0 (`apps/web`) |
 | 1 | Identità & Wallet | F1 | 🔴 motore RBAC puro 10/10; layer DB da fare | **T-030** · `dossier/T-030-rbac.md` |
 | 2 | TXN Engine | F1 | 🔴 stabilisce il tronco TXN | **T-031** |
 | 3 | Economia a crediti (ledger) | F1 | 🟢 **ledger core chiuso** (T-029, 4/4) | T-029 ✅ · T-032/033 aperti |

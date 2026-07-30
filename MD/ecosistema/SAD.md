@@ -8,19 +8,19 @@ Dominio: [SHAER_MASTER](../SHAER_MASTER.md) §1.4–1.5 · SAD del Modulo 0: [mo
 > puro, infra, e i **criteri di accettazione** come lista di test (§8). Non c'è un PRD separato —
 > era la stessa cosa a un'altra quota (archiviato). I requisiti di dettaglio dei blocchi non
 > ancora costruiti (EE7–EE14) si scrivono **just-in-time**, spesso come il test stesso. Fa fede
-> la **realtà verificata** (regola 1): il Modulo 0 (`apps/qr/`) è in produzione e non si tocca;
+> la **realtà verificata** (regola 1): il Modulo 0 (`apps/web/`) è in produzione e non si tocca;
 > F1 vive in `apps/shaer/` e `packages/`, **stesso Supabase** (D-005).
 
 ---
 
 ## 1 · Stack & topologia (D-005 — non cambiare senza chiedere)
 
-- **Monorepo**, una repo: `apps/qr/` (Modulo 0, ✅ costruito) · **`apps/shaer/`** (F1, **nuova**) ·
+- **Monorepo**, una repo: `apps/web/` (Modulo 0, ✅ costruito) · **`apps/shaer/`** (F1, **nuova**) ·
   **`packages/`** (codice condiviso: **tipi DB generati**, motore di dominio puro, design system).
   Vercel: **un project per app**, Root Directory su `apps/<nome>`.
 - **Stesso Supabase** del Modulo 0 (dev `alrguvxspssjwfmtuhdw`; prod separato = **T-008**). Le
   migrazioni F1 nascono in **`supabase/migrations/`** (root del repo — realtà verificata: le 8
-  migrazioni QR sono lì, **non** sotto `apps/qr/`), applicate da Nick nel SQL editor (`[N]`).
+  migrazioni QR sono lì, **non** sotto `apps/web/`), applicate da Nick nel SQL editor (`[N]`).
 - **Next.js 16 App Router** (TS), Server Components di default, `proxy.ts` (non `middleware.ts`,
   L → hook §7). **Tailwind + shadcn/ui**, token in `globals.css`. Modello dashboard = gemello
   **damascati** (E-D-12), struttura non palette.
@@ -37,7 +37,7 @@ packages/
   core-ledger/    MOTORE PURO — partita doppia, solvibilità, split, escrow FSM, TXN FSM (no I/O)
   core-rbac/      MOTORE PURO — valutazione permessi, maker-checker, vincolo ruoli per-TXN
   db-types/       tipi generati dallo schema Supabase (verità dei nomi colonna, regola 5)
-  design-system/  token + primitivi condivisi con apps/qr
+  design-system/  token + primitivi condivisi con apps/web
 supabase/migrations/   DDL F1 additivo, versionato (root repo)
 ```
 

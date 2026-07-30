@@ -3,7 +3,7 @@
 Versione: 1.0 · Stato: In vigore · 2026-07-26
 Padre: [MDD](MDD.md) · Requisiti: [PRD](PRD.md)
 
-Fonte di verità dei token: `apps/qr/app/globals.css` (`:root` + `@theme inline`).
+Fonte di verità dei token: `apps/web/app/globals.css` (`:root` + `@theme inline`).
 **Regola 8:** i colori vivono nei CSS variables e nella config Tailwind — **mai**
 hex di brand inline nelle pagine. Nei CSS module si usa `var(--token)` /
 `color-mix`, mai un hex duplicato (il revisore lo respinge).

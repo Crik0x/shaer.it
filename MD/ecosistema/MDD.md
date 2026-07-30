@@ -381,7 +381,7 @@ impostano** — con accessi diversi per ruolo. Non tanti pannelli: uno, filtrato
 
 ## 9 · Dove si posiziona il QR di oggi
 
-Il codice in `apps/qr/` **è già** il "motore di transazioni verificate via QR" che
+Il codice in `apps/web/` **è già** il "motore di transazioni verificate via QR" che
 l'ecosistema richiede — il **Modulo 0**, l'unico costruito e provato:
 
 - L'**albero di QR** (`parent_id` + `owner_id` + `granted_by`) è **già** la struttura
@@ -402,7 +402,7 @@ in `memoria/TODO.md` (legge di conservazione); in conflitto sul *fatto*, vince i
 Il dettaglio **stabilisce → consuma** di ogni blocco è compito dell'**analisi
 completa** (task T-028) e del SAD di ecosistema. Legenda: ✅ fatto · ◐ in corso · ▢ da fare.
 
-**F0 · Verifica** — ✅ **fatto** (Modulo 0 / QR: 17 task chiusi, `apps/qr/`).
+**F0 · Verifica** — ✅ **fatto** (Modulo 0 / QR: 17 task chiusi, `apps/web/`).
 
 **FD · Documentazione d'ecosistema** — ◐ *in corso (questa fase)*
 - ◐ **B-D1** MDD di ecosistema (questo file) — bozza completa, da confermare.

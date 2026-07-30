@@ -86,7 +86,7 @@ fi
 # Next 16 ha rinominato Middleware → Proxy. Un middleware.ts a root non viene
 # registrato e rompe il dev server con un 500 "Could not parse module
 # middleware.ts" (attrito reale di T-004). Il file giusto e' proxy.ts.
-for f in apps/qr/middleware.ts apps/qr/middleware.js apps/qr/src/middleware.ts apps/qr/src/middleware.js; do
+for f in apps/web/middleware.ts apps/web/middleware.js apps/web/src/middleware.ts apps/web/src/middleware.js; do
   if [ -f "$f" ]; then
     echo "⛔ $f: in Next 16 il Middleware si chiama Proxy. Rinomina in proxy.ts (export 'proxy')."
     BLOCCO=1
@@ -124,16 +124,16 @@ for f in $STAGED; do
   esac
 done
 
-# ── 9 · Type-check di apps/qr ──────────────────────────────────────────────
+# ── 9 · Type-check di apps/web ──────────────────────────────────────────────
 # Un type-error Recharts e' arrivato fino al deploy Vercel (rosso) perche' nessun
 # controllo locale girava `tsc` prima del commit (attrito reale di T-011). Se il
-# commit tocca il TypeScript di apps/qr, si type-checka qui. Si ignorano gli
+# commit tocca il TypeScript di apps/web, si type-checka qui. Si ignorano gli
 # errori nei tipi generati (.next/) e nelle dipendenze. L-004.
-if echo "$STAGED" | grep -qE '^apps/qr/.*\.(ts|tsx)$'; then
+if echo "$STAGED" | grep -qE '^apps/web/.*\.(ts|tsx)$'; then
   if command -v npx >/dev/null 2>&1; then
-    TSCOUT=$( cd apps/qr && npx --no-install tsc --noEmit 2>&1 | grep -vE '^\.next/|node_modules/' )
+    TSCOUT=$( cd apps/web && npx --no-install tsc --noEmit 2>&1 | grep -vE '^\.next/|node_modules/' )
     if echo "$TSCOUT" | grep -qE 'error TS'; then
-      echo "⛔ apps/qr: type-check fallito (tsc --noEmit):"
+      echo "⛔ apps/web: type-check fallito (tsc --noEmit):"
       echo "$TSCOUT" | grep -E 'error TS' | head -10
       BLOCCO=1
     fi
@@ -151,7 +151,7 @@ for f in $STAGED; do
   case "$f" in
     *.test.ts) continue ;;
     *.sql)        NAMES="$NAMES $(grep -oiE 'create (or replace )?function [a-z0-9_.]+' "$f" 2>/dev/null | sed -E 's/.* //; s/^public\.//')" ;;
-    apps/qr/*.ts) NAMES="$NAMES $(grep -oE 'export function [A-Za-z0-9_]+' "$f" 2>/dev/null | sed -E 's/.* //')" ;;
+    apps/web/*.ts) NAMES="$NAMES $(grep -oE 'export function [A-Za-z0-9_]+' "$f" 2>/dev/null | sed -E 's/.* //')" ;;
   esac
 done
 for name in $NAMES; do

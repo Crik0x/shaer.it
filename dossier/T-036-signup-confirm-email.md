@@ -13,7 +13,7 @@ Chiudere la radice del bug «registrazione infinita / utenti finti»: il signup 
 manda l'utente in dashboard **assumendo** una sessione che con *Confirm email ON* non esiste.
 
 ## Cosa è stato fatto
-`apps/qr/app/(auth)/login/login-form.tsx`: dopo `signUp`/`signInWithPassword` si legge `data.session`.
+`apps/web/app/(auth)/login/login-form.tsx`: dopo `signUp`/`signInWithPassword` si legge `data.session`.
 Se **manca** la sessione (caso Confirm ON: account creato ma inerte finché non si apre il link) →
 schermata «Ti abbiamo inviato un'email di conferma…», **niente** `router.push("/dashboard")`.
 Se la sessione c'è (dev, Confirm OFF) → si prosegue come prima. Regge entrambi i mondi. `tsc --noEmit` verde.

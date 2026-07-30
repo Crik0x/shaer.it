@@ -11,7 +11,7 @@ verificata (regola 1), non alle intenzioni.
 
 ## 1 · Stack (non cambiare senza chiedere — CLAUDE.md)
 
-- **Next.js 16 App Router** (TypeScript) in `apps/qr/`, deploy **Vercel**.
+- **Next.js 16 App Router** (TypeScript) in `apps/web/`, deploy **Vercel**.
   Server Components di default; `proxy.ts` (non `middleware.ts`, Next 16).
 - **Supabase** `alrguvxspssjwfmtuhdw`: PostgreSQL + Auth + Storage + RLS.
 - **Tailwind + shadcn/ui** (Button = `@base-ui`, `render={<Link/>}`), token in
@@ -21,7 +21,7 @@ verificata (regola 1), non alle intenzioni.
 - Test: `node --test lib/*.test.ts` (node 24 strippa TS). Nessuna libreria nuova
   senza conferma (regola 10).
 
-## 2 · Struttura del codice (reale, `apps/qr/`)
+## 2 · Struttura del codice (reale, `apps/web/`)
 
 ```
 app/

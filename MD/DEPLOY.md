@@ -1,4 +1,4 @@
-# Deploy — QR Platform (`apps/qr`) su Vercel
+# Deploy — QR Platform (`apps/web`) su Vercel
 
 Checklist operativa. Struttura decisa in `memoria/DECISIONI.md` → **D-005**
 (monorepo ecosistema Shaer, un Vercel project per app).
@@ -6,7 +6,7 @@ Checklist operativa. Struttura decisa in `memoria/DECISIONI.md` → **D-005**
 ## Stato
 
 - Repo GitHub: `https://github.com/Crik0x/shaer.it.git` (privata)
-- App da deployare: `apps/qr` (QR Platform)
+- App da deployare: `apps/web` (QR Platform)
 - Supabase: progetto `alrguvxspssjwfmtuhdw` (condiviso con il futuro Shaer MVP)
 
 ## 1 · Push su GitHub
@@ -22,9 +22,9 @@ Sicurezza: `.gitignore` esclude `.env*` ovunque; nessun segreto è tracciato
 ## 2 · Vercel — nuovo project
 
 1. **New Project** → importa `Crik0x/shaer.it`
-2. **Root Directory = `apps/qr`** ← fondamentale, è un monorepo
+2. **Root Directory = `apps/web`** ← fondamentale, è un monorepo
 3. Framework: Next.js (auto-rilevato)
-4. **Environment Variables** (valori dal tuo `apps/qr/.env.local`, mai committati):
+4. **Environment Variables** (valori dal tuo `apps/web/.env.local`, mai committati):
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `NEXT_PUBLIC_SITE_URL` → il dominio del redirect (vedi §4)

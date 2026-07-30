@@ -14,12 +14,12 @@ heatmap, timeline oraria). Il dato resta UTC (D-013). Granularità timeline:
 Giorno default + toggle Ora. Tocca dashboard aggregata **e** singolo QR.
 
 ## Accertato
-- Le tre funzioni di bucketing in `apps/qr/lib/dashboard.ts` keyano **in UTC**:
+- Le tre funzioni di bucketing in `apps/web/lib/dashboard.ts` keyano **in UTC**:
   `dailyBuckets` (l.54 `toISOString().slice(0,10)`), `hourlyBuckets`
   (l.79 `slice(0,13)`), `hourDayMatrix` (l.126-127 `getUTCDay()/getUTCHours()`).
 - **Non esisteva** alcuna tabella profilo: solo `qr_codes` e `qr_scans`
   (migrazione `20260724000001`). L'utente era puro `auth.users`.
-- `.env.local` (apps/qr) ha **solo** anon key + URL: niente service role / DB URL
+- `.env.local` (apps/web) ha **solo** anon key + URL: niente service role / DB URL
   → Claude non può applicare DDL, l'apply della migrazione è un'azione `[N]`.
 
 ## Domande e risposte
@@ -66,7 +66,7 @@ Giorno default + toggle Ora. Tocca dashboard aggregata **e** singolo QR.
   (`handle_new_user` SECURITY DEFINER, `search_path=''`, `on conflict do nothing`)
   + backfill utenti esistenti + **revoke L-001** su `handle_new_user`
   (from public, anon, authenticated).
-- `apps/qr/lib/profiles.test.ts`: signup → profilo auto-creato a `'UTC'`; RLS isola
+- `apps/web/lib/profiles.test.ts`: signup → profilo auto-creato a `'UTC'`; RLS isola
   i profili; un utente non scrive il fuso di un altro. **Verde sul DB dev** insieme
   a `grants.test.ts` (la nuova tabella con RLS non entra nella superficie anon).
 - Migrazione **già applicata** al DB dev da Nick (2026-07-27c).

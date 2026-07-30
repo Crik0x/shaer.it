@@ -57,7 +57,7 @@ SAD §4). API: `canTransition(from,to)`, `nextStates(state)`, `isTerminal(state)
 
 Ordine stabilisce→consuma (la migrazione è irreversibile → prima di chi la consuma):
 
-1. **Migrazione** `apps/qr/supabase/migrations/2026073100000X_txn.sql` (DDL → `[N]`:
+1. **Migrazione** `apps/web/supabase/migrations/2026073100000X_txn.sql` (DDL → `[N]`:
    Nick la applica dal SQL editor su `alrguvxspssjwfmtuhdw`, come 20260729/20260730):
    - `transactions` (id, owner_id→auth.users, qr_id→qr_codes null, state check-enum
      default OPEN, kind, expires_at, created_at, updated_at) — `owner_id` + **RLS
@@ -75,11 +75,11 @@ Ordine stabilisce→consuma (la migrazione è irreversibile → prima di chi la 
    - `txn_append_event(txn_id, type, meta)` — rivalida `canAppendEvent`; reward/review
      solo su COMPLETED (AC-EE2.3); nessun evento su terminale.
    - Idempotenza dove serve (una transizione applicata una volta).
-3. **Integration test DB reale** `apps/qr/lib/txn.test.ts` (come `ledger.test.ts`,
-   `node --test --env-file=apps/qr/.env.local`): tenta e fa **rifiutare** salto illegale,
+3. **Integration test DB reale** `apps/web/lib/txn.test.ts` (come `ledger.test.ts`,
+   `node --test --env-file=apps/web/.env.local`): tenta e fa **rifiutare** salto illegale,
    evento su terminale, reward su non-COMPLETED, INSERT diretto in `transactions`/
    `transaction_events` da `authenticated` (deve dare 42501).
-4. **Estendi `apps/qr/lib/grants.test.ts`** alla nuova superficie (SAD §4 fondo, L-001):
+4. **Estendi `apps/web/lib/grants.test.ts`** alla nuova superficie (SAD §4 fondo, L-001):
    fallisce se `transactions`/`transaction_events` concedono INSERT ad `authenticated`, o
    se `txn_transition`/`txn_append_event` escono dalla whitelist attesa `authenticated`.
 
@@ -98,7 +98,7 @@ Ordine stabilisce→consuma (la migrazione è irreversibile → prima di chi la 
   codice. *Prevenibile? No*: è drift di prosa fra due sezioni del SAD, non meccanizzabile;
   si sana quando si tocca il SAD.
 - **Gap tsc**: i motori puri in `packages/` non hanno copertura `tsc` nel pre-commit (solo
-  `apps/qr`, §9). `ledger.ts`/`rbac.ts`/`txn.ts` sono type-checkati solo a mano.
+  `apps/web`, §9). `ledger.ts`/`rbac.ts`/`txn.ts` sono type-checkati solo a mano.
   *Prevenibile? Sì, hook*: estendere `pre-commit §9` a `packages/**/*.ts` (LEZIONI, speculare
   a L-004).
 - **Decisione FSM in corsa** (vedi riquadro sopra): asse strutturale risolto senza fermarsi
