@@ -1,0 +1,22 @@
+{
+  "scope": "modulo gestionale dentro apps/qr (Modulo 7 STUDIO anticipato)",
+  "ciclo": 3,
+  "media": 85,
+  "pronto_per_progettazione": true,
+  "file_intake_consumati": ["arkes_admin_panel_v14.html (struttura UI: tab Servizi&Badge/Operatrici&Servizi/Catalogo/Prodotti/Pacchetti; modello sede, badge{key,scadenza}, sconto+scontoFine, pacchetti prezzoPieno/prezzoPacchetto/componenti)", "Shaer_it_Simulatore_MVP_v5.html (motore economico F1 + CRM/suggeriti/recensioni bayesiane: conferma che storico-cliente e a valle del TXN engine)"],
+  "documento_visione": "MD/ecosistema/MODULO-7-GESTIONALE.md (cosa abbiamo vs cosa manca + taglio G1 + modello dati + sequenza T-030->T-042->T-043)",
+  "nota_prontezza": "Design-ready SOLO per la prima fetta (gestionale/admin single-activity). La visione finale (CRM storico cliente, multi-attivita, rete produttori/SKU, vetrina pubblica, verifica documenti) e chiara ma va sequenziata: dipende da TXN engine, T-030 verify gate, e rete produttori inesistenti.",
+  "risposte_ciclo2": {
+    "schema_catalogo": "Visione finale: business in registrazione sceglie tipo attivita + n. attivita + dipendenti; carica documenti titolarita (KYC). Preimposta profilo attivita (es. salone). SERVIZI {titolo, descrizione, tempo, prezzo}. PRODOTTI {titolo, descrizione, prezzo, scadenza, categoria, SKU}. Sceglie come comporre menu/vetrina PUBBLICA (cio che l'utente vede sulla pagina). PACCHETTI/OFFERTE: sconti con scadenza, o bundle prodotti+servizi. Prodotto: idealmente generato dal PRODUTTORE con codice univoco; merchant lo aggiunge collegandosi alla rete (inizialmente inserisce il proprio, non ci sono produttori). Attivita puo vendere sia proprio servizio sia prodotto di un partner (accordo). MULTI-ATTIVITA: un merchant aggiunge una seconda attivita/salone e gestisce piu attivita da UN gestionale (prenotazioni/calendari/tavoli/prodotti separati), con dashboard principale che riassume tutte.",
+    "monitoraggio": "TUTTO + STORICO CLIENTE (CRM): il cliente ha uno storico col commerciante; il commerciante vede abitudini, acquisti, prenotazioni eseguite/annullate, soldi spesi, clienti suggeriti venuti tramite lui, prodotti/servizi consigliati agli amici, il piu consigliato (modello simulatore v5). + Presenze/turni staff + Vendite/occupazione + Analytics scan QR + Catalogo/abilitazioni.",
+    "legame_qr": "ENTITA SEPARATA che referenzia opzionalmente il nodo QR."
+  },
+  "materiali_da_intake": [
+    "BOOKING prototipo (Nick lo ha): flusso prenotazione cliente -> intake dedicato allo Sprint 3.",
+    "D:/Desktop/Arkes/GiT/Admin/arkes_admin_panel_v14.html : versione evoluta del pannello admin (multi-attivita/catalogo/pacchetti). Nick offre intake ora o dopo.",
+    "D:/Desktop/Shaer.it/Struttura/Schema/Shaer_it_Simulatore_MVP_v5.html : simulatore (CRM storico cliente, suggeriti, cashback). Fonte di verita funzionale.",
+    "D:/Desktop/I Damascati/Code/Sito/damascati/apps/public/app/admin : riferimento dashboard multi-attivita (progetto gemello, fuori repo)."
+  ],
+  "prima_fetta_proposta": "Schema money-ready (pagamento OFF) + CRUD admin single-activity: attivita, servizi, prodotti, pacchetti/offerte, dipendenti (entita separata, ref QR opzionale) con ruoli-template a scadenza, vetrina bozza. Escluso: booking cliente, CRM storico, multi-attivita summary, rete produttori, verifica KYC, pagamenti.",
+  "sequenza_dipendenze": "T-030 (RBAC: ruoli + role-template con expiry + verify gate) e PREREQUISITO del gestionale. Converge con la sequenza ledger F1 gia stabilita."
+}

@@ -353,6 +353,34 @@ il commerciante è pagato in € e Shaer trattiene sempre la fee. **Nota aperta 
 commerciante è un **off-ramp lato business** (diverso dall'off-ramp utente rimandato, E-D-23) + KYC
 commerciante — si modellano quando si costruisce il settlement, non ora.
 
+## E-D-29 · 2026-07-30 · RBAC a tre piani: ADMIN superuser · sensibili admin-first · operativi al titolare — [LOCKED]
+Decisione (Nick 2026-07-30): affina E-D-13/24 distinguendo esplicitamente **tre piani** di permessi.
+1. **ADMIN Shaer.it = superuser**: fa tutto, interviene anche sul profilo di ogni commerciante per
+   **assisterlo** (gestire personale/prodotti/ecc.), vede dati sensibili, verifica transazioni.
+2. **Sensibili (verify TXN, lettura conti/denaro): admin-first** — restano come E-D-24, mai delegati
+   fino a owner. Il piano del ledger/TXN non cambia.
+3. **Operativi del gestionale (menu, catalogo, staff, prenotazioni proprie)**: li governa il **titolare**
+   sul **proprio** business (owner_id + RLS), assegnati allo staff via **ruoli-template con scadenza**
+   (`expires_at`); il dipendente vede/gestisce **solo le proprie** (intake 2026-07-30). Non toccano MAI
+   denaro/verify. Vivono nel gestionale (T-042), non nella `permissions` admin-first.
+Perché: E-D-24 resta intatto (nessun delegato business verifica transazioni = niente buco anti-frode),
+e il titolare ottiene il controllo operativo della sua attività. Alternativa scartata: un piano unico
+in cui il titolare assegna anche verify/lettura conti (riapre l'anti-frode del ledger).
+
+## E-D-30 · 2026-07-30 · Visibilità dati cliente = consenso utente × abbonamento commerciante
+Decisione (Nick 2026-07-30) — direzione; mecccanica JIT alla fase CRM/fidelity (post-TXN). I dati
+comportamentali dell'utente (storico, abitudini, acquisti) sono un **terzo asse** oltre all'RBAC:
+- **Consenso a Shaer.it**: esplicito e **obbligatorio** per usare la piattaforma → **Shaer.it ha
+  sempre** i dati, a prescindere da qualunque attivazione.
+- **Condivisione col commerciante**: la decide **l'utente** (nessuno / commercianti specifici / tutti),
+  tipicamente sottoscrivendo la **fidelity card** di Shaer.it per quel commerciante.
+- **Entitlement commerciante**: i dati che l'utente ha acconsentito a condividere diventano **visibili
+  al commerciante solo se questo attiva l'abbonamento** al servizio-dati (pay-per-activation, MDD §15).
+  Shaer.it fornisce i dati solo a chi paga. Il commerciante sui dati cliente **solo visualizza**.
+Perché: monetizza il dato senza violare il consenso; l'utente resta padrone della condivisione, Shaer
+resta l'unico titolare del trattamento. Nota privacy: consenso esplicito + granularità = base GDPR; la
+tabella `consents` (utente × business × scope × stato) è fondativa e sarà un task dedicato prima del CRM.
+
 ## D-015 · 2026-07-29 · Dashboard Shaer.it = evoluzione di apps/qr (non nuovo app)
 Contesto: Nick chiede la dashboard business Shaer.it per attivare il SaaS (pay-per-activation,
 MDD §7). Bivio: nuovo `apps/shaer` (monorepo, separazione ecosistema/modulo) vs evolvere

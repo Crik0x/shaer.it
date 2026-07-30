@@ -1,13 +1,7 @@
 # Lezioni
 
-Una lezione **o diventa codice, o muore**. Ogni voce nasce con una `conversione`:
-`→ test` · `→ tipo` · `→ hook` · `→ regola`.
-
-`→ regola` è l'unica che resta testo, e costa contesto a ogni sessione: **tetto 5
-voci**. Una lezione ferma su `→ regola` per **3 sessioni** viene riscritta come
-controllo meccanico o ritirata.
-
-Gerarchia della forza: nota < lezione < regola < controllo meccanico < hook.
+Una lezione **o diventa codice, o muore** (`lavoro.md §9`). Conversione: `→ test`·`→ tipo`·`→ hook`·`→ regola`.
+`→ regola` resta testo e costa contesto: **tetto 5 voci**, e a 3 sessioni ferma si converte o si ritira.
 
 ## Convertite — protette senza costare contesto
 
@@ -23,14 +17,13 @@ Gerarchia della forza: nota < lezione < regola < controllo meccanico < hook.
 | L-008 · Decisione strutturale marcata `[LOCKED]`/«deciso» in un dossier o in TODO ma non promossa a `DECISIONI.md` come `D-NNN` nello stesso giro. 3 occorrenze (T-008, T-016, T-020) | `→ hook` — `pre-commit §11` (avviso): righe aggiunte con `[LOCKED`/`deciso (202…` in `dossier/*.md` o `TODO.md` senza `DECISIONI.md` nel commit vengono segnalate |
 | L-009 · `stato:` nel frontmatter di un dossier fuori dall'enum `aperto\|chiuso` (T-019 scrisse `in-corso`): superava il check-presenza chiavi di §8 ma rompe i filtri per stato. Colto solo dal distillatore | `→ hook` — `pre-commit §8`: valida il **dominio** di `stato`, non solo la presenza della chiave (blocca se ∉ `{aperto,chiuso}`) |
 | L-010 · Sessione senza `/apertura`: ancora `Apertura:` di STATO stantia → la `/chiusura` diffa la baseline sbagliata (2026-07-28) | `→ hook` — `pre-commit §12`: l'ancora dev'essere un commit reale e antenato di HEAD (la freschezza resta a `/apertura`) |
+| L-011 · In una RPC che scrive denaro, un `p_kind` dichiarato dal chiamante non è un'attestazione, e un gate d'invariante scoped a un conto esemplare invece che universale conia backed dal nulla (T-029 respinta) | `→ test` — `apps/qr/lib/ledger.test.ts` (T-029a): i 2 exploit (conio da TREASURY via authenticated; scoperto conto non-TREASURY) e l'INSERT diretto sono **tentati e rifiutati**, verde 4/4 sul DB reale (2026-07-30) |
 
 ## In vigore — testo, a scadenza
 
-- **L-011** (2026-07-29b) · In una RPC che scrive denaro, un parametro dichiarato dal chiamante (`p_kind`)
-  non è un'attestazione, e un gate d'invariante scoped a un conto esemplare (solo TREASURY) invece che
-  universale è un buco: insieme coniavano backed dal nulla (T-029 respinta). **`→ test`**: `apps/qr/lib/
-  ledger.test.ts` (T-029a, scritto 2026-07-29c) *tenta* i 2 exploit e li vede rifiutati — resta testo finché
-  non gira verde (migrazione da applicare, `[N]`).
+- **L-012** (2026-07-30) · Un `T-NNN` citato in un dossier/`DECISIONI.md` ma assente dal saldo di `TODO.md`
+  si perde (viola §8-bis). **`→ hook`** (da costruire): `pre-commit` segnala un `T-NNN` presente in
+  `dossier/*.md`/`DECISIONI.md` ma non nel saldo TODO. Sessioni su `→ regola`: 0.
 
 ## Ritirate
 

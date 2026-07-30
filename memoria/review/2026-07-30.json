@@ -1,0 +1,1 @@
+{"esito":"approvato","data":"2026-07-30","scope":"packages/core-rbac (rbac.ts + rbac.test.ts)","rilievi":[],"sintesi":"Motore puro core-rbac coerente con contratto SAD §5 e stile del gemello core-ledger; 10/10 test verdi verificati, nessun segreto, nessuna violazione delle regole d'oro."}

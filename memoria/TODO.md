@@ -1,24 +1,20 @@
 # TODO
 
-**Saldo: 19 aperti — 17 nuovi (T-016, T-017, T-018, T-020, T-024, T-029…T-041), 2 riportati (T-022 `↻1`, T-008 `↻3`)**  ·  22 chiusi (…T-023 il 2026-07-27; T-027 il 2026-07-28; T-025, T-026, T-028 il 2026-07-29b; **T-038 il 2026-07-29c**)
+**Saldo: 20 aperti — 18 nuovi (T-016, T-017, T-018, T-020, T-024, T-030…T-037, T-039…T-043), 2 riportati (T-022 `↻1`, T-008 `↻3`)**  ·  23 chiusi (…T-027 il 2026-07-28; T-025, T-026, T-028 il 2026-07-29b; T-038 il 2026-07-29c; **T-029 il 2026-07-30**)
 
-Stati: `[ ]` da fare · `[~]` scritto non provato · `[A]` provato/accettato · `[x]` fatto con prova ·
-`[>]` riportato (`↻`+dossier) · `[N]` azione di Nick (col come-fare; si rimuove a conferma).
-**Non si riscrive mai** (saldo, non fotografia): regole in `lavoro.md` §8-bis/ter. `↻3`→ci si ferma.
-Solo «Per Nick» si sostituisce.
+Stati: `[ ]` da fare · `[~]` scritto non provato · `[A]` accettato · `[x]` fatto con prova · `[>]` riportato (`↻`) · `[N]` azione di Nick (si rimuove a conferma). **Non si riscrive mai** (`lavoro.md §8-bis/ter`); `↻3`→stop; solo «Per Nick» si sostituisce.
 
 ## Da te — azioni `[N]` (col come-fare, si rimuovono a conferma)
 
-- [N] **T-008 · Progetto Supabase prod separato (Confirm email ON)** `↻3` — deciso (2026-07-26c):
-      **non** accendere Confirm email su `alrguvxspssjwfmtuhdw` (romperebbe i test d'integrazione).
-      Passi: **Dashboard Supabase › New project** («shaer-qr-prod», stessa region) → **Authentication
-      › Providers › Email**: *Confirm email* **ON** → copia URL + anon key + service key nei secret
-      Vercel (ambiente Production) → applica le migrazioni `0001`+`0002` nel SQL editor del nuovo
-      progetto. Dettaglio in `dossier/archivio/T-004-auth-dashboard.md`. → poi scrivi «T-008 fatto».
+- [N] **T-008 · Supabase prod separato (Confirm email ON)** `↻3` — NON accendere Confirm su
+      `alrguvxspssjwfmtuhdw` (romperebbe i test). Passi: New project «shaer-qr-prod» → Auth›Email Confirm ON
+      → URL+anon+service key nei secret Vercel (Production) → applica migrazioni nel SQL editor. Come-fare
+      completo in `dossier/archivio/T-004-auth-dashboard.md`. → poi «T-008 fatto».
 
-- [N] **Applica la migrazione ledger** `20260729000001_ledger_core.sql` (T-029a) — SQL editor DB dev,
-      incolla+run. Poi da `apps/qr`: `node --test --env-file=.env.local lib/ledger.test.ts` → dev'essere
-      verde. → scrivi «ledger applicato» (T-029 `[~]`→`[x]`).
+- [N] **(minore) Service key per il ramo positivo del ledger** — aggiungi `SUPABASE_SERVICE_ROLE_KEY` a
+      `apps/qr/.env.local` (Dashboard Supabase › Settings › API › service_role). Poi `node --test
+      --env-file=.env.local lib/ledger.test.ts` proverà anche «un transfer lecito è accettato» (ora `skipped`).
+      Non tocca l'anti-frode (già provato). → scrivi «service key messa».
 
 ## Ora
 
@@ -29,10 +25,9 @@ Solo «Per Nick» si sostituisce.
 - [ ] T-020 **Slug custom + @tag** `C` ⚠️ — pro, 2€/mese, immutabile/riassegnabile (D-010). **Consuma T-016**. Nodi @tag+orfani in `dossier/T-020-slug-custom-tag.md`.
 - [ ] T-024 **Harness verifica auth (SSR cookie→route)** `M` — 4ª recidiva muro auth-non-testabile. Test: cookie Supabase-SSR in `fetch` verso route → asserisce stringhe chiave. Prec: `auth.test.ts`, `PATTERN.md`.
 
-## Modulo 0 — QR operativo §5.4 (2026-07-29c, D-015/016/017)
+## Modulo 0 — QR operativo §5.4 (D-015/016/017)
 
-*Pivot sul QR operativo (postazioni/dipendenti/bonus/escrow, MDD §5.4). Le feature sul **denaro**
-sono bloccate dal ledger F1 (D-016): prima T-029a. Le senza-soldi cedono priorità, non sono bloccate.*
+*QR operativo (postazioni/dipendenti/bonus/escrow, MDD §5.4). Feature denaro bloccate dal ledger F1; le senza-soldi no.*
 
 - [~] T-036 **Signup robusto a Confirm-email** `M` — fatto (`login-form.tsx`: no sessione → «controlla
       l'email»; tsc verde). Ramo ON provabile solo dopo T-008 → `[~]`. `dossier/T-036-signup-confirm-email.md`.
@@ -45,27 +40,33 @@ sono bloccate dal ledger F1 (D-016): prima T-029a. Le senza-soldi cedono priorit
 - [ ] T-041 **Fidelity card** `C` 💰 **[BLOCCATO su F1]** — punti = crediti (D-016): non lavorabile finché
       T-029a…T-032 non danno crediti reali. Segnaposto.
 
-*T-018 assorbe l'estensione enum `purpose`→`station`/`employee` (`[N]` DDL). T-016+T-017 = dashboard
-Shaer.it per attivare il SaaS (D-015: dentro apps/qr).*
+## Ecosistema — F1 costruzione (sequenza stabilisce→consuma)
 
-## Ecosistema — F1 costruzione (da T-028, sequenza stabilisce→consuma) 
+*SAD §3–8 (E-D-26), test-first (regola 5), codice in `apps/qr`/`packages` (D-015). Precedenti nei singoli task.*
 
-*Dettaglio in `MD/ecosistema/SAD.md` §3–8 (E-D-26). Test-first (regola 5). Codice **dentro `apps/qr`**
-(D-015: non `apps/shaer`). Precedenti (distillatore): T-030→`archivio/T-007` (introspezione grant reale) +
-`T-004`; T-031→`archivio/T-003` (definer unico-writer, log non bloccante); T-033→`archivio/T-038` (modello
-bonus/escrow già validato, riusare non ri-derivare); T-032→`archivio/T-002`.*
-
-- [~] T-029 **Ledger core** `C` 💰 — p.1 motore puro (`e91b64e`, 8/8) + **T-029a scritto** (migrazione
-      `20260729000001_ledger_core.sql` transfer-only + anti-scoperto universale + test anti-exploit,
-      revisore approvato). `[~]` finché Nick non applica (`[N]`) e il test gira verde. Dettaglio + rischio
-      aperto (autorizzazione=T-030) in `dossier/T-029-ledger-core.md`. Conio backed = task nuovo (post-webhook Stripe).
-- [ ] T-030 **Identità, ruoli, RBAC** `C` — SAD §3.1/4/6. Stabilisce `user_id`+`role`, gate verifica, limiti approvatore. Consuma RLS/definer di T-029.
+- [x] T-029 **Ledger core** `C` 💰 — motore puro (8/8) + migrazione applicata + DB-test verde 4/4 (2 exploit
+      + INSERT diretto rifiutati). Chiuso 2026-07-30 → REGISTRO. Dossier `dossier/archivio/T-029-ledger-core.md`.
+      Residuo minore `[N]` (service key, ramo positivo skipped). Conio backed = task nuovo (post-webhook Stripe).
+- [ ] T-030 **Identità, ruoli, RBAC** `C` — SAD §3.1/4/6 + **E-D-29** (3 piani). **Motore puro fatto+verde 10/10**
+      (`packages/core-rbac`, AC-EE1.5/1.7/1.8). Resta: migrazione (`user_roles`+`permissions`+`work_*`) + 2 RPC
+      definer + grants.test → `[N]` apply. Piano pronto in `dossier/T-030-rbac.md`. Prec: `archivio/T-007` (grant anon), `T-004` (client SSR).
 - [ ] T-031 **TXN engine** `C` — SAD §3.2/4. Stabilisce il tronco TXN. Consuma T-029 + T-030.
 - [ ] T-032 **Wallet derivato + conti utente** `M` — SAD §3.1/3.3. Consuma T-029 + T-030.
       ⚠️ **NON aprire finché T-030 (RBAC) non è chiuso** (revisore 2026-07-29c g2: senza RBAC, saldi utente = furto possibile).
 - [ ] T-033 **Escrow + circuito chiuso** `C` 💰 — SAD §3.3. Consuma T-029 (held) + T-031. Prec: `archivio/T-038` (modello bonus).
 - [ ] T-034 **Recensioni & Rank bayesiano** `M` — SAD §3.5. Consuma T-031.
 - [ ] T-035 **Referral versionato + `param_sets`** `M` — SAD §3.4/3.5. Stabilisce `param_sets`. Consuma T-029 + T-031.
+
+## Modulo 7 — Gestionale attività (G1) — nuovo scope (E-D-29/30)
+
+*Prima fetta = admin single-activity, schema money-ready ma **pagamento OFF**, generico multi-verticale. Visione+taglio+modello in `MD/ecosistema/MODULO-7-GESTIONALE.md`. Booking cliente + CRM = fuori (Sprint 3 / post-TXN).*
+
+- [ ] T-042 **Schema gestionale G1** `C` — tabelle `businesses`, `offerings`(service|product), `bundles`,
+      `staff`(ref QR opzionale), `role_templates`+`staff_roles`(scadenza), tutte `owner_id`+RLS, prezzo_shaer
+      **inerte**. **Consuma T-030** (RBAC/verify-gate). Modello in `MODULO-7-GESTIONALE.md §4`.
+- [ ] T-043 **CRUD admin G1** `M` — dashboard servizi/prodotti/pacchetti/staff/ruoli, Server Components
+      (regola 9), estetica Stripe/Vercel (regola 8). **Consuma T-042** + struttura di `arkes_admin_panel_v14.html`
+      (tab Servizi&Badge/Operatrici&Servizi/Catalogo/Prodotti/Pacchetti — struttura, non palette).
 
 ## Riportati
 
@@ -77,36 +78,34 @@ bonus/escrow già validato, riusare non ri-derivare); T-032→`archivio/T-002`.*
 
 *(Prova completa in `memoria/REGISTRO.md` + `dossier/archivio/`. Qui non si ripete — potato 2026-07-27.)*
 
-**Chiusi (22):** T-001…T-007, T-009…T-015, T-019, T-021, T-023, T-025, T-026, T-027, T-028, **T-038** → `memoria/REGISTRO.md`
+**Chiusi (23):** T-001…T-007, T-009…T-015, T-019, T-021, T-023, T-025, T-026, T-027, T-028, T-038, **T-029** → `memoria/REGISTRO.md`
 
 ## Per Nick — comandi e azioni
 
 *(questa sezione si **sostituisce** a ogni avanzamento, non si accumula)*
 
-**Sessione 2026-07-29c — pivot Modulo 0 su §5.4 + ledger T-029a.** Fatto e provato: **T-038** (simulatore
-operativo + `lib/bonus.ts` 4/4). Scritto `[~]`: **T-036** (signup) + **T-029a** (migrazione ledger + test
-anti-exploit). Deciso: **D-015/016/017**. Scope aperto: T-037/039/040/041.
+**Sessione 2026-07-30.** Provato: **T-029** ledger `[x]` (DB-test 4/4) · **T-030** motore puro RBAC 10/10.
+Intake gestionale → `MODULO-7-GESTIONALE.md`. Deciso **E-D-29/30**. Nuovi: **T-042/T-043**.
 
-**Tocca a te — le `[N]` (come-fare in testa «Da te»):** ① applicare la **migrazione ledger** + far girare
-`lib/ledger.test.ts` (chiude T-029a) · ② **T-008** (Supabase prod Confirm ON → chiude il bug utenti finti +
-T-036) · ③ purgare gli utenti finti dev · ④ confermare *quali* chiavi Stripe e *su quale* progetto.
+**Le tue `[N]`:** ① (minore) `SUPABASE_SERVICE_ROLE_KEY` in `apps/qr/.env.local` (ramo positivo ledger) · ② **T-008**.
+**Segnalo:** `Struttura/appadmin.html` (2389 righe) + `prenotazioni.html` untracked, **non committati** (riferimento, non miei) — dimmi se versionarli. Il **prototipo booking** che hai: dammelo allo Sprint 3.
 
 ## Prossima sessione — prompt da lanciare
 
 *(standing: dopo ogni `/chiusura` questa sezione porta il prompt pronto — `lavoro.md` §8-quater)*
 
+*(Sessione mirata: puoi saltare `/apertura`. Basta l'àncora — dammi il task e la fisso io con un `git rev-parse`.)*
+
 ```
-/apertura. Shaer.it = super-piattaforma, QR = Modulo 0. Fonti vive: SAD (MD/ecosistema/SAD.md v0.1) +
-DECISIONI (E-D-01…28, D-015/016/017). Dominio: MD/SHAER_MASTER.md; §5.4 = QR operativo.
+Lavoriamo su T-030 (RBAC): scrivi la migrazione. Il motore puro è già fatto e verde 10/10
+(packages/core-rbac). Piano pronto in dossier/T-030-rbac.md, decisione locked E-D-29 (3 piani).
 
-Priorità (D-016): il ledger F1 prima delle feature economiche. T-029a è SCRITTO (migrazione
-supabase/migrations/20260729000001_ledger_core.sql + test apps/qr/lib/ledger.test.ts), resta `[~]`:
-se Nick ha applicato la migrazione ([N]), esegui `node --test --env-file=.env.local lib/ledger.test.ts`
-da apps/qr → dev'essere verde (rifiuta i 2 exploit + INSERT diretto); se verde, T-029→[x] in REGISTRO +
-converti L-011 (→test). Poi valuta il rischio aperto n°1 (autorizzazione: chi muove quale conto = T-030).
-Dettaglio in dossier/T-029-ledger-core.md.
-
-Dopo il ledger, Modulo 0 §5.4 (senza-soldi): T-018 (editor + enum purpose station/employee), T-039 (mappa
-postazioni: demo landing no-lib + editor reale gated verificato, D-017), T-040 (connessione scan-to-connect),
-T-037 (copy landing). T-041 fidelity = BLOCCATO su F1. Dashboard Shaer.it dentro apps/qr (D-015). /chiusura.
+Scrivi supabase/migrations/2026073000000X_rbac.sql (SAD §3.1): user_roles (tetto ≤3 via definer,
+non unique), permissions admin-first (capability {read,verify}, granted_by=ADMIN), work_relationships
++ work_sessions; RLS owner-scoped; 2 RPC definer assign_permission + approve_pending (pending_actions,
+maker-checker idempotente); estendi apps/qr/lib/grants.test.ts (nessun INSERT diretto a authenticated,
+whitelist anon invariata). Precedenti da leggere PRIMA (non ri-derivare): archivio/T-007 (grant anon:
+revoke from public NON toglie l'EXECUTE di default, si revoca da anon), T-004 (client SSR getUser).
+Poi revisore → migrazione [~] finché Nick applica ([N]). Dopo T-030: T-031 (TXN) o T-042 (schema
+gestionale G1, MODULO-7-GESTIONALE.md §4). /chiusura.
 ```

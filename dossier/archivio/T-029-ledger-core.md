@@ -3,10 +3,20 @@ task: T-029
 tier: C
 titolo: Ledger core — motore puro + layer DB (partita doppia, solvibilità)
 aree: [ledger, denaro, partita-doppia, solvibilità, escrow, rls, definer, sicurezza]
-stato: aperto
+stato: chiuso
 riporti: 0
-sessioni: [2026-07-29b, 2026-07-29c]
+sessioni: [2026-07-29b, 2026-07-29c, 2026-07-30]
 ---
+
+## Chiusura 2026-07-30 (prova)
+Nick ha applicato la migrazione `20260729000001_ledger_core.sql` (ex-`[N]`). Il DB-test
+`apps/qr/lib/ledger.test.ts` gira **verde**: `4 pass / 0 fail` — i 2 exploit del revisore
+**rifiutati** (conio da TREASURY via authenticated; scoperto conto non-TREASURY), **INSERT
+diretto rifiutato** (unico-writer), guardie di forma ok. L'anti-frode strutturale (il cuore di
+T-029a) è **provato**. → T-029 `[x]` (REGISTRO). Converte **L-011 → test**.
+**Residuo minore (`[N]`):** il ramo positivo «un transfer lecito è accettato» è `skipped` per
+`SUPABASE_SERVICE_ROLE_KEY` mancante in `.env.local` — non tocca l'invariante anti-frode; si prova
+aggiungendo la service key. Il conio backed (RPC privilegiata post-webhook Stripe) resta task nuovo (E-D-28).
 
 ## Obiettivo
 La fondazione economica dell'ecosistema: partita doppia, 6 conti, saldo derivato, unico writer
