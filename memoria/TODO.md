@@ -6,6 +6,11 @@ Stati: `[ ]` da fare · `[~]` scritto non provato · `[A]` accettato · `[x]` fa
 
 ## Da te — azioni `[N]` (col come-fare, si rimuovono a conferma)
 
+- [N] **T-030 · Applicare la migrazione RBAC** — SQL editor DB dev `alrguvxspssjwfmtuhdw`: incolla
+      `supabase/migrations/20260730000001_rbac.sql` → Run. Poi `node --test --env-file=.env.local
+      apps/qr/lib/grants.test.ts` → verdi. Ramo ADMIN: `insert into public.admins(user_id) values ('<tuo-uid>')`.
+      Dettagli `dossier/T-030-rbac.md`. → «migrazione RBAC applicata».
+
 - [N] **T-008 · Supabase prod separato (Confirm email ON)** `↻3` — NON accendere Confirm su
       `alrguvxspssjwfmtuhdw` (romperebbe i test). Passi: New project «shaer-qr-prod» → Auth›Email Confirm ON
       → URL+anon+service key nei secret Vercel (Production) → applica migrazioni nel SQL editor. Come-fare
@@ -44,9 +49,9 @@ Stati: `[ ]` da fare · `[~]` scritto non provato · `[A]` accettato · `[x]` fa
 
 *SAD §3–8 (E-D-26), test-first (regola 5), codice in `apps/qr`/`packages` (D-015). Precedenti nei singoli task. **T-029** (ledger core) chiuso `[x]` → sezione «Fatto»; conio backed = task nuovo (post-webhook Stripe).*
 
-- [ ] T-030 **Identità, ruoli, RBAC** `C` — SAD §3.1/4/6 + **E-D-29** (3 piani). **Motore puro fatto+verde 10/10**
-      (`packages/core-rbac`, AC-EE1.5/1.7/1.8). Resta: migrazione (`user_roles`+`permissions`+`work_*`) + 2 RPC
-      definer + grants.test → `[N]` apply. Piano pronto in `dossier/T-030-rbac.md`. Prec: `archivio/T-007` (grant anon), `T-004` (client SSR).
+- [~] T-030 **Identità, ruoli, RBAC** `C` — E-D-29/31/32/33. Motore 10/10 + migrazione
+      `20260730000001_rbac.sql` **scritta+revisore-approvata** + grants.test +6. **Resta `[N]` apply**.
+      Dossier `dossier/T-030-rbac.md`.
 - [ ] T-031 **TXN engine** `C` — SAD §3.2/4. Stabilisce il tronco TXN. Consuma T-029 + T-030.
 - [ ] T-032 **Wallet derivato + conti utente** `M` — SAD §3.1/3.3. Consuma T-029 + T-030.
       ⚠️ **NON aprire finché T-030 (RBAC) non è chiuso** (revisore 2026-07-29c g2: senza RBAC, saldi utente = furto possibile).

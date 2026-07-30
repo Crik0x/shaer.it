@@ -20,7 +20,7 @@ un'**attivazione** sopra, con **pulsante switch** consumatore↔business (fino a
 
 | Profilo | Come si ottiene | Verifica | Note |
 |---|---|---|---|
-| **ADMIN** | **non si registra** — interno Shaer.it | **2FA obbligatoria** | stessa shell del pannello, capability esclusive **mai** visibili agli altri |
+| **ADMIN** | si registra come utente, poi **elevato dal DB** (`admins`, monitorabile — E-D-33) | **2FA obbligatoria** | più ADMIN con `role`/`powers` (preimpostati); **gestisce tutti i profili** (finestra RLS); capability esclusive |
 | **UTENTE** (consumatore) | registrazione base | email | scan, wallet, cashback, wishlist; include la modalità **SHAERER** (referral). Resta anche dopo l'upgrade a business |
 | **BUSINESS** | **attivazione** dal profilo utente (switch) | documentale (P.IVA) | il **sotto-tipo** sblocca viste/funzioni diverse |
 
@@ -47,6 +47,9 @@ profondità dei permessi si collauda solo lato ADMIN; poi la stessa capacità pa
 - **E-D-31 [LOCKED].** Il pannello unico **routa a home diverse per ruolo** (ADMIN / utente /
   business atterrano su viste distinte sulla stessa base auth+dati). *Unico ora, splittabile poi*:
   raffina il §8.1, **non** lo riapre. **ADMIN protetto da 2FA** (E-D-32).
+- **E-D-33 [LOCKED].** Maker-checker **a soglia (multisig)**: `required_approvals` + firme distinte,
+  ≠ dal maker. Interno agli ADMIN (verifica il personale ADMIN) **e propagabile al business** (il
+  titolare assegna N verificatori su uno scope, es. contabilità). Stessa macchina, due contesti.
 - Catalogo servizi **sempre visibile** anche se non attivo (badge `PRESTO`) + trial da ADMIN (§8.2).
 
 ## 3 · I servizi (catalogo moduli) — autorità: `MDD.md §5`

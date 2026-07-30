@@ -65,11 +65,37 @@ Migrazione additiva `supabase/migrations/2026073000000X_rbac.sql` (SAD §3.1):
 - Il verify-gate KYC in F1 è **specificato, non costruito** (E-D-23): `verified_at` esiste, l'upload
   documenti è stub. Tabelle gestionale (businesses/staff/role_templates) = T-042, non qui.
 
-## [N] per Nick (dopo la decisione + scrittura migrazione)
-Applicare la migrazione RBAC nel SQL editor (DB dev `alrguvxspssjwfmtuhdw`), poi
-rigenerare `packages/db-types`, poi far girare `rbac` DB-test → verde.
+## REALIZZATO — migrazione scritta (2026-07-30, sessione 2) `[~]` · include **E-D-33**
+- **`supabase/migrations/20260730000001_rbac.sql`** — tabelle `admins` (ADMIN elevabile dal DB, E-D-33:
+  `role`+`powers` preimpostati, seed solo service_role), `user_roles` (tetto ≤3 via definer), `permissions`
+  (read/verify), `pending_actions` (+`required_approvals`) e **`pending_approvals`** (maker-checker **multisig
+  a soglia**, E-D-33), `work_relationships`+`work_sessions` (struttura+RLS, write-flow a T-042).
+- **Finestra ADMIN in RLS** (E-D-33 «gestire tutti i profili»): `is_admin()` **no-arg** (sonda solo il chiamante,
+  no probe altrui), EXECUTE ad authenticated, usato nelle SELECT policy → l'ADMIN vede tutte le righe di
+  controllo + lista `admins` + policy additiva su `profiles`. Ricerca per email/nome = RPC dedicata del
+  pannello (T-043), non qui.
+- **Definer**: `grant_default_role` (trigger buyer al signup + backfill), `assign_role`, `verify_role`
+  (admin-first, stub KYC E-D-23), `assign_permission` (rispecchia `canAssign`), `approve_pending` (**multisig
+  idempotente**: firma distinta ≠ maker, chiude a `required_approvals`; ADMIN o delega `verify`). Grant:
+  authenticated solo EXECUTE sui 5 RPC; nessun DML diretto; anon invariato (L-001).
+- **`apps/qr/lib/grants.test.ts`** — +6 test: no INSERT diretto (42501) su user_roles/permissions/
+  pending_actions/pending_approvals/admins; `assign_permission` rifiuta non-ADMIN; `assign_role` impone ≤3 +
+  verify-gate; `is_admin()` esposto ma false per non-ADMIN; `grant_default_role` (buyer verificato al signup);
+  `verify_role` rifiuta non-ADMIN + `approve_pending` rifiuta azione inesistente. `tsc --noEmit` verde. I test
+  sono DB-reali → verdi **dopo** l'apply (rossi prima: tabelle assenti = rosso onesto).
+- **Gap sciolto in implementazione**: il SAD non definiva *come* si riconosce un ADMIN → realizzato con tabella
+  `admins` + `is_admin()` (fedele a E-D-32). La **2FA** è livello auth (Supabase MFA), fuori dallo SQL.
+- **Manca**: revisore (diff tocca produzione, §8) → poi commit → poi `[N]` apply.
+
+## [N] per Nick — applicare la migrazione RBAC
+1. Supabase dashboard DB dev `alrguvxspssjwfmtuhdw` › **SQL editor** › incolla il contenuto di
+   `supabase/migrations/20260730000001_rbac.sql` › **Run**. (Assume schema con ledger già applicato.)
+2. Facoltativo: renditi ADMIN per provare il ramo admin-first →
+   `insert into public.admins (user_id) values ('<il-tuo-auth-uid>');`
+3. `node --test --env-file=.env.local apps/qr/lib/grants.test.ts` → i 3 test RBAC diventano verdi.
+   → scrivi «migrazione RBAC applicata».
 
 ## Prossimo passo a freddo
-1. Nick decide il piano RBAC (separati vs fusi) → promuovi E-D-NN.
-2. Scrivi la migrazione §3.1 + le 2 RPC definer + estendi grants.test → revisore → `[N]` apply.
-3. Poi T-042 (schema gestionale) consuma questo.
+1. ~~Nick decide il piano RBAC~~ → E-D-29/30/31/32 fatte. ~~Scrivi migrazione + RPC + test~~ → fatto `[~]`.
+2. **revisore** sul diff SQL+test → se approvato, commit → `[N]` apply.
+3. Poi **T-031** (TXN engine) o **T-042** (schema gestionale G1) consumano questo.

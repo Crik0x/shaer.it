@@ -432,3 +432,32 @@ Scioglie: «4 profili» (= 3 top + sotto-tipi business) e «intermediario» (= s
 **non** la modalità SHAERER, che resta un interruttore referral del BUYER). Conseguenza: la
 registrazione base è una sola (utente); il business è un flag+verifica+sotto-tipo sul medesimo
 account. Aggiorna la mappa attori del MDD §3 senza cancellarla (i 5 attori → sotto-tipi).
+**Nota:** la clausola «ADMIN non si registra» è **corretta da E-D-33** (l'ADMIN si registra come
+utente normale e poi viene elevato dal DB).
+
+## E-D-33 · 2026-07-30 · ADMIN elevabile dal DB · multi-ADMIN con ruoli/poteri · maker-checker a soglia — [LOCKED]
+Contesto (Nick 2026-07-30): raffina il modello ADMIN di E-D-31/32 e generalizza il maker-checker.
+Decisione:
+1. **ADMIN si elevo dal DB, non è un attore separato.** Un utente si registra normalmente; poi viene
+   **elevato ad ADMIN** inserendo una riga in `public.admins` (da service_role: SQL editor / backend
+   fidato). Questo rende gli ADMIN **monitorabili** («c'è un utente ADMIN o no?» = query su `admins`).
+   Corregge il «non si registra» di E-D-32.
+2. **Più ADMIN, con ruoli e poteri differenziati.** `admins.role` + `admins.powers[]` nascono
+   **preimpostati** (`role='superadmin'`, `powers='{}'`=pieni); la semantica fine dei poteri si
+   decide **dopo**, ma lo schema è pronto ora (nessuna migrazione futura per aggiungerli). Oggi
+   `is_admin()` è un gate booleano (qualsiasi riga = ADMIN).
+3. **ADMIN gestisce tutti i profili iscritti** (ricerca per id/email/nome): realizzato a DB con la
+   **finestra ADMIN in RLS** — l'ADMIN vede tutte le righe di `profiles`/`user_roles`/`permissions`/
+   `pending_actions` e la lista `admins`. La ricerca per **email** (in `auth.users`) e per **nome**
+   (campo profilo oggi assente) esige una RPC/finestra dedicata = pannello ADMIN (T-043), non questa
+   migrazione: qui c'è la **fondazione di visibilità**, non la UI.
+4. **Maker-checker a SOGLIA (multisig), interno agli ADMIN e propagabile al business.**
+   `pending_actions.required_approvals` (default 1) + tabella `pending_approvals` (firme distinte):
+   un'azione si applica solo quando raccoglie N firme di verificatori abilitati, **≠ dal maker**
+   (E-D-21). Uso interno: verificare il lavoro del personale ADMIN. Uso business: il **titolare
+   assegna i verificatori** (delega `verify` su uno scope, es. `contabilità`) — uno agisce, l'altro
+   conferma. Stessa macchina, due contesti. **2FA ADMIN** resta al livello auth (Supabase MFA).
+Alternative scartate: allowlist ADMIN non-monitorabile (E-D-32 originale) — scartata perché Nick vuole
+vedere e gestire gli ADMIN dal DB; maker-checker a firma singola fissa — scartata perché il titolare
+deve poter esigere doppia firma sulle azioni sensibili. Conseguenza: T-043 (pannello ADMIN) e T-042
+(deleghe operative business) consumano questa fondazione.

@@ -7,11 +7,11 @@ riscrive. Tetto 3 KB.
 
 ## Dove siamo
 
-Sessione 2026-07-30. **T-029 ledger `[x]`** (DB-test 4/4: 2 exploit + INSERT rifiutati; migrazione applicata).
-**T-030 RBAC avviato**: motore puro `packages/core-rbac` 10/10 — resta migrazione + 2 RPC definer + grants.test
-(`[N]`). **Intake gestionale** (Modulo 7) → `MD/ecosistema/MODULO-7-GESTIONALE.md`. Deciso **E-D-29** (RBAC 3
-piani: admin superuser · sensibili admin-first · operativi al titolare) + **E-D-30** (dati = consenso × abbonamento).
-Nuovi: **T-042** (schema G1) + **T-043** (CRUD admin). Prossimo: migrazione T-030 (`dossier/T-030-rbac.md`).
+Sessione 2026-07-30. **T-029 ledger `[x]`**. **T-030 RBAC `[~]`**: motore 10/10 + migrazione
+`20260730000001_rbac.sql` **scritta+revisore-approvata** (admins elevabile/multi-admin, user_roles ≤3, permissions,
+maker-checker **multisig**, RLS finestra ADMIN, 5 definer) + grants.test +6. **Resta `[N]` apply**. Decise
+**E-D-31/32/33** (pannello routa per ruolo · profili ADMIN/UTENTE/BUSINESS+sotto-tipi · ADMIN elevabile+multi-admin+
+maker-checker a soglia). Nuovi: `MAPPA.md` + `futuro/`. Dopo l'apply: T-031 o T-042.
 
 ## Cosa esiste
 
@@ -22,7 +22,7 @@ Nuovi: **T-042** (schema G1) + **T-043** (CRUD admin). Prossimo: migrazione T-03
 
 ## Cosa NON esiste ancora
 
-- **T-030 layer DB**: migrazione `user_roles`+`permissions`+`work_*` + RPC `assign_permission`/`approve_pending` + grants.test. Piano pronto → `[N]`. Sblocca T-031/T-042.
+- **T-030 layer DB — scritto+approvato, non applicato**: migrazione + grants.test pronti; `[N]` apply → DB-test verdi. Sblocca T-031/T-042/T-043.
 - **Gestionale G1**: T-042 (schema money-ready OFF) → T-043 (CRUD). Consumano T-030.
 - **Modulo 0 aperti**: T-016/017/018/020/024 · T-037/039/040/041. **CRM/dati** (E-D-30): `consents`+abbonamento = task post-TXN.
 
