@@ -7,48 +7,47 @@ turno di lavoro). Si **sostituisce** a ogni `/chiusura`, non si accumula
 
 ## Per Nick — comandi e azioni
 
-**Sessione 2026-07-30 (parte 3).** ① Ottimizzato il **metodo** (commit `0289e20`): costo
-fisso −11% (A1/A2/A3/B2/C). ② **T-031 TXN engine — fetta 1/2 fatta e provata** (commit
-`266fffa`): motore puro FSM, 11/11 test + revisore approvato.
+**Sessione 2026-07-31.** ① **Rename `apps/qr`→`apps/web`**: l'app Next è la piattaforma Shaer.it, il
+QR è il Modulo 0 (commit `5373a7f`). ② **T-024 harness auth CHIUSO** (`8e2abc0`): ora ogni route
+protetta è provabile da un test, non dal tuo occhio. ③ **T-017 dashboard `[~]`**: shell con sidebar,
+build verde — **manca solo il tuo ok visivo**.
 
-**⚠️ Decisione che ti spetta — PRIMA della fetta 2/2** (la migrazione è irreversibile):
-la macchina a stati della transazione è, per come l'ho scritta, **adiacenza stretta**
-(`OPEN→SUGGESTED→IN_PROGRESS→COMPLETED`, un passo alla volta; `EXPIRED`/`ABANDONED` da
-ogni stato non-terminale). L'alternativa è **monotòna-forward** (permette salti in avanti,
-es. `OPEN→IN_PROGRESS` o `SUGGESTED→COMPLETED`).
-- **A) adiacenza stretta** — anti-frode massima, ogni salto futuro è un allargamento
-  esplicito. *(mia scelta di default)*
-- **B) monotòna-forward** — più flessibile, più superficie d'abuso.
-A conferma la registro come `D-NNN`. Il motore puro è banale da adeguare a B.
+**👁️ Guarda T-017:** il dev server gira su :3000 (utente `t017.demo.c.20260731@shaer.it` già loggato).
+Apri il pannello Browser su `/dashboard`, oppure `npm run dev` in `apps/web`. Se ti piace → diventa `[x]`;
+altrimenti dimmi cosa aggiustare.
 
-**Le tue `[N]`:** ① (minore) `SUPABASE_SERVICE_ROLE_KEY` in `apps/web/.env.local` (ramo
-positivo ledger) · ② **T-008** (Supabase prod, Confirm ON).
-**Segnalo:** `Struttura/appadmin.html` + `prenotazioni.html` untracked, **non committati**
-— dimmi se versionarli. Prototipo booking → Sprint 3.
+**Le tue `[N]`:**
+- **Vercel Root Directory → `apps/web`** (Settings › Build & Deployment): senza, il prossimo deploy non
+  trova l'app. → «root dir aggiornata».
+- **T-008** `↻3` (Supabase prod, Confirm ON) — invariata.
+- **Chiavi Stripe** quando vorrai affrontare T-016/T-020 (senza, scrivo solo la logica pura).
+
+**Decisione che ti spetta (cricchetto lezioni):** **L-012** è ferma a 3 sessioni come `→ hook` non
+costruito. Regola: a 3 si converte o si ritira. Due vie: **(a)** costruisco il pre-commit che segnala un
+`T-NNN` citato nei dossier/DECISIONI ma assente dal saldo TODO; **(b)** la ritiro (0 ricorrenze reali dopo
+la prima). Dimmi.
+
+**Segnalo:** `Struttura/appadmin.html` + `prenotazioni.html` untracked, **non committati** — dimmi se
+versionarli (prototipo booking → Sprint 3).
 
 ## Prossima sessione — prompt da lanciare
 
-*(standing: dopo ogni `/chiusura` questa sezione porta il prompt pronto —
-`lavoro.md` §8-quater. Sessione mirata: puoi saltare `/apertura`, fisso io
-l'àncora con `git rev-parse`.)*
+*(standing: dopo ogni `/chiusura` questa sezione porta il prompt pronto — `lavoro.md` §8-quater.)*
 
 ```
-T-031 fetta 1/2 (motore puro FSM) è chiusa e provata (11/11 + revisore, commit 266fffa).
-Si fa la fetta 2/2 — piano pronto in dossier/T-031-txn-engine.md.
+Chiudi prima T-017: guarda /dashboard (dev server :3000, utente t017.demo.c già loggato, oppure
+npm run dev in apps/web). Se la shell sidebar + la griglia densa vanno bene → segna T-017 [x] in TODO
+e sposta il dossier in archivio; altrimenti aggiusta e ri-verifica con next build + albero a11y
+(pixel bloccato dall'ambiente = PATTERN «prova pixel», L-017).
 
-PASSO 0 (bloccante): confermami la FSM — A) adiacenza stretta (default) o B) monotòna-forward.
-  A conferma la registro come D-NNN in DECISIONI.md, POI si scrive la migrazione (irreversibile).
+Poi, in sequenza stabilisce→consuma:
+1. T-016 (piano free/pro + metering, C 💰) — Stripe (D-011). BLOCCANTE: servono le chiavi Stripe [N].
+   Senza, scrivo la logica pura (quota ≤100 scan/mese, mai il redirect D-009, export PDF pro) + lo
+   schema, e lascio appeso il checkout live. Provala con l'harness T-024 (dashboard-auth.test.ts) per
+   il metering scoped-utente. → dossier/T-016-piano-free-pro.md.
+2. T-020 (slug custom + @tag, C ⚠️) — CONSUMA T-016 (pro 2€/mese, D-010). Immutabile/riassegnabile.
+   Stessa harness per provare che lo slug pro è visibile solo al proprietario. → dossier/T-020-slug-custom-tag.md.
 
-Poi, in ordine stabilisce→consuma:
-1. Migrazione apps/web/supabase/migrations/2026073100000X_txn.sql (DDL → [N], la applichi tu):
-   transactions + transaction_events (append-only) + FK su ledger_journal.transaction_id
-   (già nullable) + revoke INSERT/UPDATE/DELETE from authenticated + RLS owner-scoped.
-2. RPC definer txn_transition(txn_id,to_state) e txn_append_event(txn_id,type,meta): rivalidano
-   canTransition/canAppendEvent dentro la transazione DB (SAD §4). Unico writer.
-3. Integration test apps/web/lib/txn.test.ts (node --test --env-file=apps/web/.env.local): tenta e
-   fa RIFIUTARE salto illegale, evento su terminale, reward su non-COMPLETED, INSERT diretto (42501).
-4. Estendi apps/web/lib/grants.test.ts alla nuova superficie (L-001).
-
-Leggi PRIMA: dossier/archivio/T-029 (schema exploit-rifiutato), T-030 (maker-checker + L-013),
-T-007 (grants.test), SAD §3.2/§4. Test-first (regola 5) → revisore → [~]/[x] → /chiusura.
+Prima di scrivere: se tocchi [N]/decisioni, chiedi PRIMA (regola 3). L'harness auth di T-024 è il
+precedente da riusare per ogni prova scoped-utente (archivio/T-024-harness-auth-ssr.md).
 ```

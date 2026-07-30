@@ -1,0 +1,17 @@
+{
+  "data": "2026-07-31",
+  "ancora": "8712516",
+  "esito": "approvato",
+  "ambito": "rename apps/qr->apps/web (5373a7f) + T-024 harness auth (8e2abc0) + T-017 restyling dashboard (working tree)",
+  "rilievi": [
+    {
+      "gravita": 2,
+      "file": "CLAUDE.md",
+      "riga": 46,
+      "problema": "Riferimento vivo non aggiornato dal rename apps/qr->apps/web: la fonte di verita di progetto restava col path vecchio.",
+      "regola": "lavoro.md §7 (propagazione) / coerenza col commit 5373a7f",
+      "stato": "CORRETTO in chiusura (apps/qr/ -> apps/web/)"
+    }
+  ],
+  "note": "Verificato: (a) protezione auth invariata (layout Server Component, redirect('/login') prima del render della shell); (b) nessun colore inline nuovo fuori dai token (dashboard-shell usa bg-sidebar/sidebar-accent/sidebar-border; bg-[var(--gold)]/[--flow] in page.tsx preesistenti); (c) client boundary corretta ('use client' solo sulla foglia shell, data-fetch nel Server Component); (d) nessun link morto (LIVE -> /dashboard, /dashboard/qr/new esistenti; SOON = span disabilitati); (e) cookie-jar T-024 regge il chunking @supabase/ssr, coerente col 1/1. TODO onesto: T-017 [~], T-024 [x]."
+}

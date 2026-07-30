@@ -24,16 +24,26 @@ Una lezione **o diventa codice, o muore** (`lavoro.md §9`). Conversione: `→ t
 
 - **L-012** (2026-07-30) · Un `T-NNN` citato in un dossier/`DECISIONI.md` ma assente dal saldo di `TODO.md`
   si perde (viola §8-bis). **`→ hook`** (da costruire): `pre-commit` segnala un `T-NNN` presente in
-  `dossier/*.md`/`DECISIONI.md` ma non nel saldo TODO. Sessioni in attesa: 2.
+  `dossier/*.md`/`DECISIONI.md` ma non nel saldo TODO. Sessioni in attesa: **3 → cricchetto scattato**:
+  da convertire (hook) o ritirare — portata a Nick in `RIPRESA.md`.
 - **L-014** (2026-07-30) · I motori puri in `packages/` (`ledger.ts`, `rbac.ts`, `txn.ts`) non hanno
   copertura `tsc` nel pre-commit (§9 copre solo `apps/web`): type-checkati solo a mano, sessione per
   sessione. **`→ hook`** (da costruire): estendere `pre-commit §9` a `packages/**/*.ts` (speculare a
-  L-004, costo basso). Sessioni in attesa: 1.
+  L-004, costo basso). Sessioni in attesa: 2.
 - **L-015** (2026-07-30) · Una decisione strutturale in un dossier `tier: C` scritta con parole diverse da
   «[LOCKED»/«deciso (202…» (qui «Decisione FSM») **sfugge** al `pre-commit §11` (L-008): manca sia il
   `D-NNN` sia la prova della conferma di Nick. 3ª recidiva del pattern PATTERN r.19 (T-029/030/031).
   **`→ hook`** (da costruire): estendere §11 alle intestazioni `## Decision*` in dossier `tier: C` senza
-  `DECISIONI.md` nel commit. Sessioni in attesa: 1.
+  `DECISIONI.md` nel commit. Sessioni in attesa: 2.
+- **L-016** (2026-07-31) · Un rename a tappeto di cartella/app (`apps/qr`→`apps/web`) sostituito a mano
+  file-per-file lascia sfuggire un riferimento vivo: `CLAUDE.md:46` colto solo dal revisore,
+  `intake_state.json` solo dal distillatore. **`→ hook`** (da costruire): un helper di rename che fa il
+  `grep` finale del path vecchio sui file **vivi** (esclusi `archivio/`, `REGISTRO`, `review/`) e blocca
+  finché non torna vuoto (§7). Sessioni in attesa: 1.
+- **L-017** (2026-07-31) · Prova pixel di una feature visiva impedita dal pannello Browser non
+  visualizzato (3ª recidiva: T-006/T-011/T-017). **`→ regola`** — il gradino di fallback (`next build`
+  verde + query a11y/DOM su un valore identificativo, mai un render generico) è ora in `PATTERN.md`
+  (riga «prova pixel bloccata dall'ambiente»); non mecanizzabile perché dipende dal tool, non dal codice.
 
 ## Ritirate
 

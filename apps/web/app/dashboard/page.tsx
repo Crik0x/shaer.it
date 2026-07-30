@@ -149,7 +149,7 @@ export default async function DashboardPage({
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="font-heading text-xl font-semibold tracking-tight text-foreground">
@@ -248,20 +248,13 @@ export default async function DashboardPage({
         </div>
       </div>
 
-      {/* Breakdown device + browser */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      {/* Breakdown — chi/cosa/dove in un'unica griglia densa (T-017): sei card
+          in 3 colonne invece di tre righe a due, taglia lo scroll */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         <Breakdown title="Dispositivo" slices={devices} total={windowTotal} />
         <Breakdown title="Browser" slices={browsers} total={windowTotal} />
-      </div>
-
-      {/* Breakdown sistema operativo + lingua */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Breakdown title="Sistema operativo" slices={oses} total={windowTotal} />
         <Breakdown title="Lingua" slices={langs} total={windowTotal} />
-      </div>
-
-      {/* Geografia (dagli header edge di Vercel; in locale resta ignoto) */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Breakdown title="Paese" slices={countries} total={windowTotal} />
         <Breakdown title="Città" slices={groupCount(rows.map((r) => r.city))} total={windowTotal} />
       </div>

@@ -1,6 +1,6 @@
 # TODO
 
-**Saldo: 19 aperti — 17 nuovi (T-016, T-017, T-018, T-020, T-024, T-031…T-037, T-039…T-043), 2 riportati (T-022 `↻1`, T-008 `↻3`)**  ·  24 chiusi → `memoria/REGISTRO.md`
+**Saldo: 18 aperti — 16 nuovi (T-016, T-017, T-018, T-020, T-031…T-037, T-039…T-043), 2 riportati (T-022 `↻1`, T-008 `↻3`)**  ·  25 chiusi → `memoria/REGISTRO.md`
 
 Stati: `[ ]` da fare · `[~]` scritto non provato · `[A]` accettato · `[x]` fatto con prova · `[>]` riportato (`↻`) · `[N]` azione di Nick (si rimuove a conferma). **Non si riscrive mai** (`lavoro.md §8-bis/ter`); `↻3`→stop. «Per Nick» e il prompt di ripresa vivono in `memoria/RIPRESA.md` (caricato da `/apertura`).
 
@@ -12,10 +12,9 @@ Stati: `[ ]` da fare · `[~]` scritto non provato · `[A]` accettato · `[x]` fa
 ## Ora
 
 - [ ] T-016 **Piano free/pro + metering** `C` 💰 — Stripe (D-011), quota ≤100 scan/mese, mai il redirect (D-009), export PDF pro. Precede T-020. → `dossier/T-016-piano-free-pro.md`.
-- [ ] T-017 **Restyling densità dashboard** `M` — token (regola 8), Server Components; struttura (non palette) da `arkes_dashboard_v3.html` (D-012). → `dossier/T-017-restyling-dashboard.md`.
+- [~] T-017 **Restyling densità dashboard** `M` — **scritto, build verde, visivo in attesa** (2026-07-31): shell arkes (sidebar 240px + main, `dashboard-shell.tsx`) + sei breakdown in griglia unica `xl:grid-cols-3`, token sidebar del DS (regola 8), Server Component + foglia client (regola 9). `next build` verde + a11y tree ok; pixel-shot → occhio di Nick (`npm run dev`, `/dashboard`). Residuo: ok visivo + drawer mobile. → `dossier/T-017-restyling-dashboard.md`.
 - [ ] T-018 **Editor QR avanzato** `M` — più tipi/opzioni + branding + `purpose`/`parent_id`; aggancio slug T-020. → `dossier/T-018-editor-qr-avanzato.md`.
 - [ ] T-020 **Slug custom + @tag** `C` ⚠️ — pro 2€/mese, immutabile/riassegnabile (D-010). **Consuma T-016**. → `dossier/T-020-slug-custom-tag.md`.
-- [x] T-024 **Harness verifica auth (SSR cookie→route)** `M` — **fatto+provato** (2026-07-31): `apps/web/lib/dashboard-auth.test.ts` 1/1 sul dev server (cookie SSR via jar-libreria → `fetch /dashboard` vede email di sessione + «Esci»; senza cookie → `/login`). Rompe il muro 4ª recidiva (PATTERN r.18 → ✅). Dossier `T-024`. → Chiusi in `/chiusura`.
 
 ## Modulo 0 — QR operativo §5.4 (D-015/016/017)
 
@@ -52,4 +51,4 @@ Stati: `[ ]` da fare · `[~]` scritto non provato · `[A]` accettato · `[x]` fa
 
 *(Prova in `memoria/REGISTRO.md` + `dossier/archivio/`. Qui non si ripete — potato 2026-07-27.)*
 
-**Chiusi (24):** T-001…T-007, T-009…T-015, T-019, T-021, T-023, T-025, T-026, T-027, T-028, T-038, T-029, T-030 → `memoria/REGISTRO.md`
+**Chiusi (25):** T-001…T-007, T-009…T-015, T-019, T-021, T-023, T-025, T-026, T-027, T-028, T-038, T-029, T-030, T-024 → `memoria/REGISTRO.md`
