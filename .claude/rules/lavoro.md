@@ -119,6 +119,10 @@ A task chiuso il dossier va in `dossier/archivio/`. **Non si cancella mai.**
 
 - Cresce solo per task nuovi.
 - Cala solo per task arrivati a destinazione **con prova**.
+- **Nessun task eseguito resta «da fare».** Ciò che la sessione ha chiuso, o che Nick
+  ha confermato fatto (`[N]` incluse), **esce** dalle sezioni operative in chiusura →
+  «Chiusi»/REGISTRO con la prova. Il TODO è il **residuo**, non lo storico di ciò che è
+  stato. Un task fatto a metà resta, ma con la fetta chiusa marcata.
 - Un task riportato **mantiene il suo id** e guadagna un contatore: `↻1`, `↻2`.
 - In testa al file, la riga di saldo: `12 aperti — 9 nuovi, 3 riportati`.
 

@@ -28,6 +28,14 @@ Le sole destinazioni lecite sono **fatto** (→REGISTRO, con la prova),
 > **Una riga sparita senza destinazione con prova rientra in TODO com'era.**
 > Non chiedere il permesso di rimetterla: rimettila e dimmelo.
 
+**Il verso opposto vale uguale, ed è obbligatorio.** Prima capisci *cosa è stato
+fatto* in questa sessione; poi ogni task **eseguito e chiuso**, o che **Nick ha
+confermato fatto** (le `[N]` incluse), **esce dalle sezioni operative**: va in
+«Chiusi»/REGISTRO con la prova (o si rimuove, se `[N]`). Chiuso il passo, **nessun
+`[ ]`/`[~]` nelle sezioni «da fare» è qualcosa che abbiamo già eseguito**. Il TODO è
+il residuo, mai lo storico. *(Un task solo parzialmente fatto resta, ma con la fetta
+chiusa marcata: il residuo dev'essere leggibile come «da fare» onesto.)*
+
 **2 · Stati onesti.**
 Ogni `[x]` senza una prova rintracciabile viene **declassato a `[~]`**.
 La prova è: un test che passa, un valore misurato, un hash di commit, uno
@@ -73,6 +81,9 @@ di 5, se ne converte una prima di aggiungerne un'altra.
   `[N]`, segnalazioni) **e** il blocco-prompt «Prossima sessione» col piano pronto
   per la sessione dopo. È il file che `/apertura` carica al posto delle sezioni
   d'avvio. **Sempre**, dopo ogni chiusura: se manca, la chiusura non è finita.
+  Il prompt riflette la **realtà di adesso**: non ripropone un task già eseguito né
+  una decisione già presa. Se la sessione ha chiuso ciò che il vecchio prompt
+  chiedeva, il nuovo riparte da ciò che resta — mai una fotografia stantìa.
 - `REGISTRO.md` in append: `T-NNN · data · task · esito · prova`
 - esegui `node scripts/costo.mjs`: i tetti si **misurano**, non si stimano a occhio
 - esegui `node scripts/resa.mjs --registra P D C R` coi quattro numeri di questa
