@@ -31,7 +31,7 @@ Stati: `[ ]` da fare · `[~]` scritto non provato · `[A]` accettato · `[x]` fa
 
 *SAD §3–8 (E-D-26), test-first (regola 5), codice in `apps/qr`/`packages` (D-015).*
 
-- [ ] T-031 **TXN engine** `C` — SAD §3.2/4. Stabilisce il tronco TXN. Consuma T-029 + T-030.
+- [ ] T-031 **TXN engine** `C` — SAD §3.2/4. Stabilisce il tronco TXN. Consuma T-029 + T-030. **Fetta 1/2 `[x]`**: motore puro FSM `packages/core-ledger/txn.ts` 11/11 + revisore approvato (commit 266fffa). Resta **fetta 2/2** (migrazione+RPC definer+integration test) — **prima confermare con Nick la FSM adiacenza-stretta vs monotòna-forward → D-NNN**. → `dossier/T-031-txn-engine.md`. Prec: `archivio/T-029` (schema exploit-rifiutato), `T-030` (maker-checker, L-013), `T-007` (grants.test).
 - [ ] T-032 **Wallet derivato + conti utente** `M` — SAD §3.1/3.3. Consuma T-029 + T-030. **Sbloccato** da T-030.
 - [ ] T-033 **Escrow + circuito chiuso** `C` 💰 — SAD §3.3. Consuma T-029 (held) + T-031. Prec: `archivio/T-038`.
 - [ ] T-034 **Recensioni & Rank bayesiano** `M` — SAD §3.5. Consuma T-031.

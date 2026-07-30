@@ -24,7 +24,16 @@ Una lezione **o diventa codice, o muore** (`lavoro.md §9`). Conversione: `→ t
 
 - **L-012** (2026-07-30) · Un `T-NNN` citato in un dossier/`DECISIONI.md` ma assente dal saldo di `TODO.md`
   si perde (viola §8-bis). **`→ hook`** (da costruire): `pre-commit` segnala un `T-NNN` presente in
-  `dossier/*.md`/`DECISIONI.md` ma non nel saldo TODO. Sessioni su `→ regola`: 1.
+  `dossier/*.md`/`DECISIONI.md` ma non nel saldo TODO. Sessioni in attesa: 2.
+- **L-014** (2026-07-30) · I motori puri in `packages/` (`ledger.ts`, `rbac.ts`, `txn.ts`) non hanno
+  copertura `tsc` nel pre-commit (§9 copre solo `apps/qr`): type-checkati solo a mano, sessione per
+  sessione. **`→ hook`** (da costruire): estendere `pre-commit §9` a `packages/**/*.ts` (speculare a
+  L-004, costo basso). Sessioni in attesa: 1.
+- **L-015** (2026-07-30) · Una decisione strutturale in un dossier `tier: C` scritta con parole diverse da
+  «[LOCKED»/«deciso (202…» (qui «Decisione FSM») **sfugge** al `pre-commit §11` (L-008): manca sia il
+  `D-NNN` sia la prova della conferma di Nick. 3ª recidiva del pattern PATTERN r.19 (T-029/030/031).
+  **`→ hook`** (da costruire): estendere §11 alle intestazioni `## Decision*` in dossier `tier: C` senza
+  `DECISIONI.md` nel commit. Sessioni in attesa: 1.
 
 ## Ritirate
 

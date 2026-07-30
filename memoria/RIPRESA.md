@@ -7,16 +7,24 @@ turno di lavoro). Si **sostituisce** a ogni `/chiusura`, non si accumula
 
 ## Per Nick — comandi e azioni
 
-**Sessione 2026-07-30 (parte 3).** Ottimizzato il **metodo** (richiesta di Nick):
-costo fisso sceso sotto budget e troncatura aggredita alla radice. Applicate
-A1 (dedup `CLAUDE.md`↔`lavoro.md`), A2 (sezioni d'avvio → questo file), A3 (TODO a
-riga secca), B2 (chiusura leggera se il diff non tocca produzione **e** nessun
-dossier è C), C (testimone 25%→30%, tetto 40% invariato).
+**Sessione 2026-07-30 (parte 3).** ① Ottimizzato il **metodo** (commit `0289e20`): costo
+fisso −11% (A1/A2/A3/B2/C). ② **T-031 TXN engine — fetta 1/2 fatta e provata** (commit
+`266fffa`): motore puro FSM, 11/11 test + revisore approvato.
 
-**Le tue `[N]`:** ① (minore) `SUPABASE_SERVICE_ROLE_KEY` in `apps/qr/.env.local`
-(ramo positivo ledger) · ② **T-008** (Supabase prod, Confirm ON).
-**Segnalo:** `Struttura/appadmin.html` + `prenotazioni.html` untracked, **non
-committati** — dimmi se versionarli. Prototipo booking → Sprint 3.
+**⚠️ Decisione che ti spetta — PRIMA della fetta 2/2** (la migrazione è irreversibile):
+la macchina a stati della transazione è, per come l'ho scritta, **adiacenza stretta**
+(`OPEN→SUGGESTED→IN_PROGRESS→COMPLETED`, un passo alla volta; `EXPIRED`/`ABANDONED` da
+ogni stato non-terminale). L'alternativa è **monotòna-forward** (permette salti in avanti,
+es. `OPEN→IN_PROGRESS` o `SUGGESTED→COMPLETED`).
+- **A) adiacenza stretta** — anti-frode massima, ogni salto futuro è un allargamento
+  esplicito. *(mia scelta di default)*
+- **B) monotòna-forward** — più flessibile, più superficie d'abuso.
+A conferma la registro come `D-NNN`. Il motore puro è banale da adeguare a B.
+
+**Le tue `[N]`:** ① (minore) `SUPABASE_SERVICE_ROLE_KEY` in `apps/qr/.env.local` (ramo
+positivo ledger) · ② **T-008** (Supabase prod, Confirm ON).
+**Segnalo:** `Struttura/appadmin.html` + `prenotazioni.html` untracked, **non committati**
+— dimmi se versionarli. Prototipo booking → Sprint 3.
 
 ## Prossima sessione — prompt da lanciare
 
@@ -25,19 +33,22 @@ committati** — dimmi se versionarli. Prototipo booking → Sprint 3.
 l'àncora con `git rev-parse`.)*
 
 ```
-T-030 (RBAC) è chiuso e provato (DB-test 7/7 sul DB reale, migrazione 20260730000001 applicata).
-Prossimo bivio — entrambi consumano T-030 (verify-gate + RBAC), scegli tu:
+T-031 fetta 1/2 (motore puro FSM) è chiusa e provata (11/11 + revisore, commit 266fffa).
+Si fa la fetta 2/2 — piano pronto in dossier/T-031-txn-engine.md.
 
-• T-031 · TXN engine (F1) — il tronco a cui si appendono wallet/escrow/recensioni/referral
-  (SAD §3.2/4). Test-first: motore puro FSM OPEN→SUGGESTED→IN_PROGRESS→COMPLETED→(EXPIRED/ABANDONED)
-  in packages, poi migrazione `transactions` + aggiungi la FK su ledger_journal.transaction_id
-  (già nullable, predisposta in 20260729000001). Leggi PRIMA: archivio/T-029 (ledger), SAD §3.2.
-  Continua l'economia F1 (D-016: ledger F1 prima delle feature).
+PASSO 0 (bloccante): confermami la FSM — A) adiacenza stretta (default) o B) monotòna-forward.
+  A conferma la registro come D-NNN in DECISIONI.md, POI si scrive la migrazione (irreversibile).
 
-• T-042 · Schema gestionale G1 — businesses/offerings(service|product)/bundles/staff/role_templates,
-  owner_id+RLS, prezzo_shaer INERTE (money OFF). Consuma il verify-gate di T-030. Modello in
-  MD/ecosistema/MODULO-7-GESTIONALE.md §4. Rende il prodotto usabile lato business.
+Poi, in ordine stabilisce→consuma:
+1. Migrazione apps/qr/supabase/migrations/2026073100000X_txn.sql (DDL → [N], la applichi tu):
+   transactions + transaction_events (append-only) + FK su ledger_journal.transaction_id
+   (già nullable) + revoke INSERT/UPDATE/DELETE from authenticated + RLS owner-scoped.
+2. RPC definer txn_transition(txn_id,to_state) e txn_append_event(txn_id,type,meta): rivalidano
+   canTransition/canAppendEvent dentro la transazione DB (SAD §4). Unico writer.
+3. Integration test apps/qr/lib/txn.test.ts (node --test --env-file=apps/qr/.env.local): tenta e
+   fa RIFIUTARE salto illegale, evento su terminale, reward su non-COMPLETED, INSERT diretto (42501).
+4. Estendi apps/qr/lib/grants.test.ts alla nuova superficie (L-001).
 
-Dimmi quale apro. Poi test-first (regola 5) → revisore → [~]/[x] → /chiusura.
-(Sessione mirata: puoi saltare /apertura, fisso io l'àncora con git rev-parse.)
+Leggi PRIMA: dossier/archivio/T-029 (schema exploit-rifiutato), T-030 (maker-checker + L-013),
+T-007 (grants.test), SAD §3.2/§4. Test-first (regola 5) → revisore → [~]/[x] → /chiusura.
 ```

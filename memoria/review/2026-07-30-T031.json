@@ -1,0 +1,14 @@
+{
+  "task": "T-031",
+  "data": "2026-07-30",
+  "diff": "packages/core-ledger/txn.ts + txn.test.ts (fetta 1/2, motore puro FSM)",
+  "esito": "approvato",
+  "rilievi": [],
+  "note": [
+    "Incongruenza INTERNA al SAD (non introdotta dal diff): §5 cita en passant `nextTxnState(from,event)`, §4 (più specifica) usa `txn_transition(txn_id, to_state)`. Il motore segue §4 con `canTransition(from,to)` — endorsed dal revisore.",
+    "Confine puro/DB onesto: append-only dichiarato policy del DB, non finto in puro (segue L-011).",
+    "Test 36-coppie esaustivo con verità `LEGAL` scritta a mano indipendente dalla tabella `NEXT`."
+  ],
+  "verifica": "node --test packages/core-ledger/txn.test.ts -> 11/11 verde; tsc --noEmit --strict pulito",
+  "sintesi": "Motore puro FSM corretto rispetto a SAD §3.2/§4, fondamento solido per la RPC definer della fetta 2/2."
+}
