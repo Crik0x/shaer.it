@@ -3,10 +3,27 @@ task: T-030
 tier: C
 titolo: RBAC — identità, ruoli, permessi admin-first, verify-gate, maker-checker
 aree: [rbac, ruoli, permessi, verifica, maker-checker, admin-first, definer, rls, sicurezza, gestionale]
-stato: aperto
+stato: chiuso
 riporti: 0
 sessioni: [2026-07-30]
 ---
+
+## Composizione — cosa stabilisce per chi consuma
+- **Identità/ruoli**: `user_roles` (buyer/seller/producer/transporter, ≤3, `verified_at`) + `is_admin()` +
+  `admins` (elevabile). Consuma: **T-032** (conti utente per ruolo), **T-039** (gate «verificato»).
+- **Maker-checker multisig** (`pending_actions.required_approvals` + `pending_approvals`, E-D-33): riusabile
+  tal quale. Consuma: **T-031** (approvazioni TXN sensibili), **T-042/T-043** (deleghe business).
+- **Finestra ADMIN in RLS** (E-D-33 p.3): fondata; la ricerca per email/nome = RPC del pannello **T-043**,
+  non riaprire la migrazione. **T-042**: i ruoli operativi (staff/titolare, piano 3 E-D-29) NON vanno in
+  `permissions` admin-first — tabelle proprie del gestionale.
+- **Non costruito qui** (deliberato): upload KYC (stub, E-D-23); write-flow di `work_*` (T-042).
+
+## CHIUSO (2026-07-30) — prova
+Migrazione applicata da Nick sul DB dev; **DB-test `apps/qr/lib/grants.test.ts` verde 9/9** sul DB reale
+(`node --test --env-file=apps/qr/.env.local apps/qr/lib/grants.test.ts`): anon-surface + no-INSERT-diretto
+(42501) + admin-first + tetto ≤3 (anche **concorrente**) + verify-gate + grant_default_role +
+verify_role/approve_pending + admins-SELECT-RLS. Revisore
+approvato (`memoria/review/2026-07-30.json`). Commit `ac3d97e`. Sblocca T-031/T-042/T-043.
 
 ## Obiettivo
 Fondare identità/ruoli/permessi che il ledger F1 e il gestionale (Modulo 7) consumano.
@@ -32,6 +49,15 @@ Spec di riferimento: `MD/ecosistema/SAD.md` §3.1/§4/§5/§6.
   **Come risolto:** fermato (regola 3), esposte le opzioni con conseguenza, Nick ha deciso → E-D-29 (tre
   piani) + E-D-30 (dati=consenso×abbonamento). **Prevenibile:** sì — vedi `dossier/PATTERN.md` (gate assi
   di permesso/denaro prima della migrazione). Stesso attrito, stessa forma, di T-029 (conio vs trasferimento).
+- **Attrito (revisore, g4):** `revoke all ... from authenticated` su `admins` che ha già una policy di SELECT
+  (`admins_select_admin`) → **policy morta**: il grant a livello tabella precede la RLS, scriverla non basta.
+  **Causa vera:** confusione fra «togliere il DML» e «togliere tutto»; la SELECT va lasciata al filtro RLS.
+  **Come risolto:** `revoke insert,update,delete ... from authenticated` (mig. riga ~380). **Prevenibile:** sì →
+  `→ test` L-013 (`grants.test.ts`: non-ADMIN legge `admins` vuoto, non 42501).
+- **Attrito (revisore, g3):** tetto ≤3 in `assign_role` via `count`+`insert` **senza lock** → race concorrente
+  (identico a T-012 anti-ciclo). **Causa vera:** un vincolo di cardinalità tradotto come check applicativo, non
+  come serializzazione. **Come risolto:** `pg_advisory_xact_lock` (mig. riga 237) **+ test concorrente**
+  (`grants.test.ts`, Promise.allSettled su assign_role) — vedi `dossier/PATTERN.md`.
 
 ## Decisioni prese (alternative scartate)
 - **Tre piani separati** (E-D-29) invece di un piano unico dove il titolare assegna anche verify/lettura
@@ -92,7 +118,8 @@ Migrazione additiva `supabase/migrations/2026073000000X_rbac.sql` (SAD §3.1):
    `supabase/migrations/20260730000001_rbac.sql` › **Run**. (Assume schema con ledger già applicato.)
 2. Facoltativo: renditi ADMIN per provare il ramo admin-first →
    `insert into public.admins (user_id) values ('<il-tuo-auth-uid>');`
-3. `node --test --env-file=.env.local apps/qr/lib/grants.test.ts` → i 3 test RBAC diventano verdi.
+3. Dalla root: `node --test --env-file=apps/qr/.env.local apps/qr/lib/grants.test.ts` → i 6 test RBAC
+   diventano verdi. (`.env.local` sta in `apps/qr/`, non nella root — `--env-file` è relativo al cwd.)
    → scrivi «migrazione RBAC applicata».
 
 ## Prossimo passo a freddo

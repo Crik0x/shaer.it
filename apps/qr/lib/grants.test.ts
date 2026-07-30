@@ -189,3 +189,36 @@ test("RBAC: verify_role rifiuta un non-ADMIN; approve_pending rifiuta un'azione 
   assert.ok(aErr, "approve_pending su azione inesistente doveva fallire");
   assert.match(aErr!.message, /inesistente/, `atteso 'azione inesistente', ottenuto: ${aErr!.message}`);
 });
+
+test("RBAC: un non-ADMIN legge admins con result-set vuoto (grant presente, RLS filtra), non 42501", async (t) => {
+  if (!url || !anon) {
+    t.skip("env mancante: lancia con --env-file=.env.local");
+    return;
+  }
+  const { client } = await authClient();
+  // Il grant SELECT su admins NON va revocato ad authenticated: altrimenti la policy admins_select_admin
+  // è morta e nemmeno un ADMIN legge la lista (rilievo revisore g4). Un non-ADMIN riceve [] via RLS,
+  // non un permission-denied. Questo test fallisce se qualcuno rimette `revoke all ... from authenticated`.
+  const { data, error } = await client.from("admins").select("user_id");
+  assert.equal(error, null, `atteso nessun errore (RLS filtra), ottenuto: ${error?.message}`);
+  assert.deepEqual(data, [], "un non-ADMIN non deve vedere alcuna riga di admins");
+});
+
+test("RBAC: assign_role sotto concorrenza rispetta il tetto ≤3 (advisory lock, no race)", async (t) => {
+  if (!url || !anon) {
+    t.skip("env mancante: lancia con --env-file=.env.local");
+    return;
+  }
+  const { client } = await authClient();
+  // buyer già presente (trigger). 3 richieste PARALLELE: senza il lock, count+insert andrebbe a 4.
+  const esiti = await Promise.allSettled(
+    ["seller", "producer", "transporter"].map((r) => client.rpc("assign_role", { p_role: r })),
+  );
+  const respinti = esiti.filter(
+    (e) => e.status === "fulfilled" && (e.value as { error: unknown }).error,
+  );
+  const { data, error } = await client.from("user_roles").select("role");
+  assert.equal(error, null, error?.message);
+  assert.ok((data?.length ?? 0) <= 3, `tetto ≤3 violato sotto concorrenza: ${data?.length} ruoli`);
+  assert.ok(respinti.length >= 1, "almeno una richiesta oltre il tetto dev'essere respinta");
+});

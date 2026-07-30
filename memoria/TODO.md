@@ -1,15 +1,10 @@
 # TODO
 
-**Saldo: 20 aperti — 18 nuovi (T-016, T-017, T-018, T-020, T-024, T-030…T-037, T-039…T-043), 2 riportati (T-022 `↻1`, T-008 `↻3`)**  ·  23 chiusi (…T-027 il 2026-07-28; T-025, T-026, T-028 il 2026-07-29b; T-038 il 2026-07-29c; **T-029 il 2026-07-30**)
+**Saldo: 19 aperti — 17 nuovi (T-016, T-017, T-018, T-020, T-024, T-031…T-037, T-039…T-043), 2 riportati (T-022 `↻1`, T-008 `↻3`)**  ·  24 chiusi (…T-028 il 2026-07-29b; T-038 il 2026-07-29c; **T-029, T-030 il 2026-07-30**)
 
 Stati: `[ ]` da fare · `[~]` scritto non provato · `[A]` accettato · `[x]` fatto con prova · `[>]` riportato (`↻`) · `[N]` azione di Nick (si rimuove a conferma). **Non si riscrive mai** (`lavoro.md §8-bis/ter`); `↻3`→stop; solo «Per Nick» si sostituisce.
 
 ## Da te — azioni `[N]` (col come-fare, si rimuovono a conferma)
-
-- [N] **T-030 · Applicare la migrazione RBAC** — SQL editor DB dev `alrguvxspssjwfmtuhdw`: incolla
-      `supabase/migrations/20260730000001_rbac.sql` → Run. Poi `node --test --env-file=.env.local
-      apps/qr/lib/grants.test.ts` → verdi. Ramo ADMIN: `insert into public.admins(user_id) values ('<tuo-uid>')`.
-      Dettagli `dossier/T-030-rbac.md`. → «migrazione RBAC applicata».
 
 - [N] **T-008 · Supabase prod separato (Confirm email ON)** `↻3` — NON accendere Confirm su
       `alrguvxspssjwfmtuhdw` (romperebbe i test). Passi: New project «shaer-qr-prod» → Auth›Email Confirm ON
@@ -47,14 +42,11 @@ Stati: `[ ]` da fare · `[~]` scritto non provato · `[A]` accettato · `[x]` fa
 
 ## Ecosistema — F1 costruzione (sequenza stabilisce→consuma)
 
-*SAD §3–8 (E-D-26), test-first (regola 5), codice in `apps/qr`/`packages` (D-015). Precedenti nei singoli task. **T-029** (ledger core) chiuso `[x]` → sezione «Fatto»; conio backed = task nuovo (post-webhook Stripe).*
+*SAD §3–8 (E-D-26), test-first (regola 5), codice in `apps/qr`/`packages` (D-015). Precedenti nei singoli task. **T-029/T-030** chiusi `[x]` → «Fatto»; conio backed = task nuovo (post-webhook Stripe).*
 
-- [~] T-030 **Identità, ruoli, RBAC** `C` — E-D-29/31/32/33. Motore 10/10 + migrazione
-      `20260730000001_rbac.sql` **scritta+revisore-approvata** + grants.test +6. **Resta `[N]` apply**.
-      Dossier `dossier/T-030-rbac.md`.
 - [ ] T-031 **TXN engine** `C` — SAD §3.2/4. Stabilisce il tronco TXN. Consuma T-029 + T-030.
 - [ ] T-032 **Wallet derivato + conti utente** `M` — SAD §3.1/3.3. Consuma T-029 + T-030.
-      ⚠️ **NON aprire finché T-030 (RBAC) non è chiuso** (revisore 2026-07-29c g2: senza RBAC, saldi utente = furto possibile).
+      ✅ T-030 (RBAC) chiuso → **sbloccato** (senza RBAC i saldi utente = furto, revisore 2026-07-29c g2).
 - [ ] T-033 **Escrow + circuito chiuso** `C` 💰 — SAD §3.3. Consuma T-029 (held) + T-031. Prec: `archivio/T-038` (modello bonus).
 - [ ] T-034 **Recensioni & Rank bayesiano** `M` — SAD §3.5. Consuma T-031.
 - [ ] T-035 **Referral versionato + `param_sets`** `M` — SAD §3.4/3.5. Stabilisce `param_sets`. Consuma T-029 + T-031.
@@ -80,17 +72,19 @@ Stati: `[ ]` da fare · `[~]` scritto non provato · `[A]` accettato · `[x]` fa
 
 *(Prova completa in `memoria/REGISTRO.md` + `dossier/archivio/`. Qui non si ripete — potato 2026-07-27.)*
 
-**Chiusi (23):** T-001…T-007, T-009…T-015, T-019, T-021, T-023, T-025, T-026, T-027, T-028, T-038, **T-029** → `memoria/REGISTRO.md`
+**Chiusi (24):** T-001…T-007, T-009…T-015, T-019, T-021, T-023, T-025, T-026, T-027, T-028, T-038, **T-029, T-030** → `memoria/REGISTRO.md`
 
 ## Per Nick — comandi e azioni
 
 *(questa sezione si **sostituisce** a ogni avanzamento, non si accumula)*
 
-**Sessione 2026-07-30.** Provato: **T-029** ledger `[x]` (DB-test 4/4) · **T-030** motore puro RBAC 10/10.
-Intake gestionale → `MODULO-7-GESTIONALE.md`. Deciso **E-D-29/30**. Nuovi: **T-042/T-043**.
+**Sessione 2026-07-30 (parte 2).** Chiuso **T-030 RBAC `[x]`** — DB-test **7/7** sul DB reale (admin-first,
+verify-gate, maker-checker **multisig**), migrazione applicata da te. Decise **E-D-31/32/33** (pannello routa
+per ruolo · profili ADMIN/UTENTE/BUSINESS+sotto-tipi · ADMIN elevabile+multi-admin+multisig). Nuovi file:
+`MD/ecosistema/MAPPA.md` (atlante trasversale) + `futuro/` (parcheggio meta, spec agente architetto/PM).
 
 **Le tue `[N]`:** ① (minore) `SUPABASE_SERVICE_ROLE_KEY` in `apps/qr/.env.local` (ramo positivo ledger) · ② **T-008**.
-**Segnalo:** `Struttura/appadmin.html` (2389 righe) + `prenotazioni.html` untracked, **non committati** (riferimento, non miei) — dimmi se versionarli. Il **prototipo booking** che hai: dammelo allo Sprint 3.
+**Segnalo:** `Struttura/appadmin.html` + `prenotazioni.html` untracked, **non committati** — dimmi se versionarli. Prototipo booking → Sprint 3.
 
 ## Prossima sessione — prompt da lanciare
 
@@ -99,15 +93,19 @@ Intake gestionale → `MODULO-7-GESTIONALE.md`. Deciso **E-D-29/30**. Nuovi: **T
 *(Sessione mirata: puoi saltare `/apertura`. Basta l'àncora — dammi il task e la fisso io con un `git rev-parse`.)*
 
 ```
-Lavoriamo su T-030 (RBAC): scrivi la migrazione. Il motore puro è già fatto e verde 10/10
-(packages/core-rbac). Piano pronto in dossier/T-030-rbac.md, decisione locked E-D-29 (3 piani).
+T-030 (RBAC) è chiuso e provato (DB-test 7/7 sul DB reale, migrazione 20260730000001 applicata).
+Prossimo bivio — entrambi consumano T-030 (verify-gate + RBAC), scegli tu:
 
-Scrivi supabase/migrations/2026073000000X_rbac.sql (SAD §3.1): user_roles (tetto ≤3 via definer,
-non unique), permissions admin-first (capability {read,verify}, granted_by=ADMIN), work_relationships
-+ work_sessions; RLS owner-scoped; 2 RPC definer assign_permission + approve_pending (pending_actions,
-maker-checker idempotente); estendi apps/qr/lib/grants.test.ts (nessun INSERT diretto a authenticated,
-whitelist anon invariata). Precedenti da leggere PRIMA (non ri-derivare): archivio/T-007 (grant anon:
-revoke from public NON toglie l'EXECUTE di default, si revoca da anon), T-004 (client SSR getUser).
-Poi revisore → migrazione [~] finché Nick applica ([N]). Dopo T-030: T-031 (TXN) o T-042 (schema
-gestionale G1, MODULO-7-GESTIONALE.md §4). /chiusura.
+• T-031 · TXN engine (F1) — il tronco a cui si appendono wallet/escrow/recensioni/referral
+  (SAD §3.2/4). Test-first: motore puro FSM OPEN→SUGGESTED→IN_PROGRESS→COMPLETED→(EXPIRED/ABANDONED)
+  in packages, poi migrazione `transactions` + aggiungi la FK su ledger_journal.transaction_id
+  (già nullable, predisposta in 20260729000001). Leggi PRIMA: archivio/T-029 (ledger), SAD §3.2.
+  Continua l'economia F1 (D-016: ledger F1 prima delle feature).
+
+• T-042 · Schema gestionale G1 — businesses/offerings(service|product)/bundles/staff/role_templates,
+  owner_id+RLS, prezzo_shaer INERTE (money OFF). Consuma il verify-gate di T-030. Modello in
+  MD/ecosistema/MODULO-7-GESTIONALE.md §4. Rende il prodotto usabile lato business.
+
+Dimmi quale apro. Poi test-first (regola 5) → revisore → [~]/[x] → /chiusura.
+(Sessione mirata: puoi saltare /apertura, fisso io l'àncora con git rev-parse.)
 ```

@@ -18,21 +18,15 @@ Una lezione **o diventa codice, o muore** (`lavoro.md §9`). Conversione: `→ t
 | L-009 · `stato:` nel frontmatter di un dossier fuori dall'enum `aperto\|chiuso` (T-019 scrisse `in-corso`): superava il check-presenza chiavi di §8 ma rompe i filtri per stato. Colto solo dal distillatore | `→ hook` — `pre-commit §8`: valida il **dominio** di `stato`, non solo la presenza della chiave (blocca se ∉ `{aperto,chiuso}`) |
 | L-010 · Sessione senza `/apertura`: ancora `Apertura:` di STATO stantia → la `/chiusura` diffa la baseline sbagliata (2026-07-28) | `→ hook` — `pre-commit §12`: l'ancora dev'essere un commit reale e antenato di HEAD (la freschezza resta a `/apertura`) |
 | L-011 · In una RPC che scrive denaro, un `p_kind` dichiarato dal chiamante non è un'attestazione, e un gate d'invariante scoped a un conto esemplare invece che universale conia backed dal nulla (T-029 respinta) | `→ test` — `apps/qr/lib/ledger.test.ts` (T-029a): i 2 exploit (conio da TREASURY via authenticated; scoperto conto non-TREASURY) e l'INSERT diretto sono **tentati e rifiutati**, verde 4/4 sul DB reale (2026-07-30) |
+| L-013 · `revoke all … from authenticated` su una tabella con **già** una policy RLS di SELECT (es. ADMIN) rende la policy **morta**: il grant precede la RLS (revisore T-030 g4) | `→ test` — `apps/qr/lib/grants.test.ts`: un non-ADMIN legge `admins` **vuoto** (RLS filtra), non `42501` |
 
 ## In vigore — testo, a scadenza
 
 - **L-012** (2026-07-30) · Un `T-NNN` citato in un dossier/`DECISIONI.md` ma assente dal saldo di `TODO.md`
   si perde (viola §8-bis). **`→ hook`** (da costruire): `pre-commit` segnala un `T-NNN` presente in
-  `dossier/*.md`/`DECISIONI.md` ma non nel saldo TODO. Sessioni su `→ regola`: 0.
+  `dossier/*.md`/`DECISIONI.md` ma non nel saldo TODO. Sessioni su `→ regola`: 1.
 
 ## Ritirate
 
-- **L-003** (2026-07-25 → ritirata 2026-07-27) · «Client Supabase browser creato
-  nel corpo di un `'use client'` gira nel prerender di build → `next build` rosso
-  senza env». Ferma su `→ regola` 3 sessioni, **0 ricorrenze da T-010**; il build
-  fallisce già rumorosamente da sé (e `pre-commit §9` gira `tsc`). Ritirata su
-  decisione di Nick: la protezione de-facto resta, il costo contesto sparisce.
-- **L-002** (2026-07-24 → ritirata 2026-07-25) · «test auth: email con MX reali,
-  mai `@example.com`». Ferma su `→ regola` 3 sessioni; l'errore non si è più
-  ripresentato — usare `@shaer.it` nei test è ormai abitudine. Ritirata su
-  decisione di Nick: la protezione de-facto resta, il costo contesto sparisce.
+- **L-003** (ritirata 2026-07-27) · client Supabase in `'use client'` → `next build` rosso: 0 ricorrenze da T-010, `tsc` (pre-commit §9) lo copre.
+- **L-002** (ritirata 2026-07-25) · email test con MX reali (`@shaer.it`, mai `@example.com`): abitudine consolidata, 0 ricorrenze.
