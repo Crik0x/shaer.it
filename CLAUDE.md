@@ -16,19 +16,15 @@ caricano all'avvio**: si aprono mirati quando servono.
 
 ## Le regole d'oro
 
-Le prime sei valgono ovunque. Dalla settima in poi sono di questo progetto.
+Le prime sei valgono ovunque e vivono per esteso in `.claude/rules/lavoro.md` (e
+nel `CLAUDE.md` globale): qui restano come **indice** — il numero è l'indirizzo
+citato in tutto il repo, non cambia. Dalla settima in poi sono di questo progetto.
 
-1. **Verificare la realtà prima della carta.** Una colonna esiste? → lo schema.
-   Una route? → il filesystem. Un fix? → il diff.
-2. **Fermarsi sull'incongruenza.** Segnala, esponi le opzioni **col costo**,
-   aspetta la decisione. Mai costruire su fondamenta ambigue.
-3. **Legge di conservazione dei task.** `TODO.md` è un saldo, non una fotografia:
-   **non si riscrive mai**. Nessuna riga ne esce senza destinazione e prova.
-4. **L'analisi non muore col task.** Ogni task lascia un dossier in `dossier/`,
-   scritto mentre il contesto è caldo. A task chiuso si archivia, mai si cancella.
-   *(procedura: `lavoro.md` §8 e §8-bis)*
-5. **Nessuna prova narrativa dove può esserci un test.** Se è calcolabile, è
-   testato. `[~]` è riservato a ciò che è davvero solo visivo.
+1. **Verificare la realtà prima della carta.** → `lavoro.md §1`.
+2. **Fermarsi sull'incongruenza**: opzioni **col costo**, poi la decisione. → `lavoro.md §3`.
+3. **Legge di conservazione dei task.** `TODO.md` è un saldo, non si riscrive mai. → `lavoro.md §8-bis`.
+4. **L'analisi non muore col task**: ogni task lascia un dossier. → `lavoro.md §8`.
+5. **Nessuna prova narrativa dove può esserci un test.** `[~]` solo per il visivo. → `lavoro.md §6`.
 6. **Non leggere né stampare mai i file `.env*`.** Nessun segreto lato client.
 7. **Un QR pubblicato non si rompe mai.** Lo `short_code` è immutabile e il
    redirect resta sempre risolvibile: un QR stampato su carta non si può
@@ -58,24 +54,17 @@ Le prime sei valgono ovunque. Dalla settima in poi sono di questo progetto.
 
 ## Convenzioni
 
-- **Italiano** per risposte, commenti tecnici e messaggi di commit. I system
-  prompt degli agenti restano in inglese.
-- **Istruzioni dirette e minime.** Niente ripetizioni, niente placeholder
-  parziali, niente spiegazioni di base: si entra subito nel merito tecnico.
-- **Modifiche chirurgiche.** Si tocca ciò che è stato chiesto. Sostituzioni
-  integrali di file solo se richieste esplicitamente.
+Lingua italiana, tono diretto e minimo, modifiche chirurgiche, «ogni domanda è
+un'opzione con la sua conseguenza» e versionamento-git valgono dal `CLAUDE.md`
+globale — qui solo ciò che è di questo progetto:
+
 - **Il tetto di sessione è il contesto**, mai un numero di task: testimone al
-  **25%**, tetto duro al **40%**.
+  **30%**, tetto duro al **40%**.
 - **Con più task aperti**: prima la sequenza, poi il codice (`lavoro.md` §4).
-  Prevedere l'incastro costa minuti, scoprirlo a lavoro fatto costa il lavoro.
-- **Ogni domanda a Nick è un'opzione con la sua conseguenza**, mai una domanda
-  aperta — e si chiede **prima** di costruire, non dopo.
 - **Dopo ogni step funzionante**: commit che dice *cosa e perché*, non come.
-- **Versionamento**: lo fa git. **Mai** `file_v2.ts`, mai un numero di versione
-  nella testata.
 - **Nulla si cancella**: si archivia datato in `Archivio/AAAA-MM-GG/`.
-- **Sezione «Per Nick»** in fondo a TODO.md, si **sostituisce** a ogni
-  avanzamento.
+- **«Per Nick» e il prompt di ripresa** vivono in `memoria/RIPRESA.md` (caricato
+  da `/apertura`), si **sostituiscono** a ogni avanzamento.
 
 ## Trappole note di questo dominio
 

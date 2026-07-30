@@ -98,7 +98,7 @@ sopra dati veri (Modulo 13). E-commerce/verticale ristorante come plugin —
 
 Ogni item passa dal percorso di `lavoro.md`: classifica (S/M/C) → precedenti →
 sequenza → implementazione additiva → **prova (test verde prima della carta)** →
-dossier → commit. Il tetto di ogni sessione è il **contesto** (testimone 25%, tetto
+dossier → commit. Il tetto di ogni sessione è il **contesto** (testimone 30%, tetto
 40%), mai un numero di task. Nulla si cancella: si archivia.
 
 **Prossima azione concreta:** M1 punto 1 (migrazione albero), dopo che Nick ha

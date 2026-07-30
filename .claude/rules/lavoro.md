@@ -127,7 +127,9 @@ o è bloccato da qualcosa che nessuno ha ancora nominato, o non serve davvero.
 Si porta a Nick con la diagnosi e due o tre vie d'uscita, ciascuna con la sua
 conseguenza.
 
-Solo la sezione «Per Nick» si sostituisce. Tutto il resto si conserva.
+«Per Nick» e il prompt di ripresa vivono in `memoria/RIPRESA.md` (caricato da
+`/apertura`, non all'avvio) e si sostituiscono a ogni chiusura; tutto ciò che
+resta in TODO si conserva.
 
 ## 8-ter · Le azioni di Nick — stato `[N]`
 
@@ -149,13 +151,16 @@ Aggiungi `[N]` alla legenda degli stati in testa a `TODO.md`.
 
 ## 8-quater · Il prompt da lanciare — sempre, dopo ogni chiusura
 
-Ogni `/chiusura` **deve** lasciare in `TODO.md` una sezione **«Prossima sessione —
-prompt da lanciare»** con il prompt pronto da incollare: la sequenza consigliata dei
-task, con le decisioni già prese richiamate per numero. Non è un di più: è ciò che
-permette a una sessione a freddo di partire senza ri-derivare la sequenza.
+Ogni `/chiusura` **deve** lasciare in `memoria/RIPRESA.md` — il file che
+`/apertura` carica al posto delle sezioni d'avvio, così non pesano a ogni turno —
+una sezione **«Prossima sessione — prompt da lanciare»** con il prompt pronto da
+incollare: la sequenza consigliata dei task, con le decisioni già prese richiamate
+per numero. Non è un di più: è ciò che permette a una sessione a freddo di partire
+senza ri-derivare la sequenza.
 
 - Sta in un blocco codice, pronto da copiare.
-- Si **sostituisce** a ogni chiusura (come «Per Nick»): è una fotografia, non un saldo.
+- Vive in `RIPRESA.md` accanto a «Per Nick»; si **sostituisce** a ogni chiusura: è
+  una fotografia, non un saldo.
 - Se manca, la chiusura non è finita.
 
 ## 9 · Le lezioni: o diventano codice, o muoiono
@@ -179,12 +184,18 @@ Salire di un gradino è sempre meglio che riscrivere lo stesso avviso più forte
 
 ## 9-bis · Il ritmo della sessione
 
-- **Al 25% del contesto consumato**: si scrivono i dossier e si fissa il TODO.
+- **Al 30% del contesto consumato**: si scrivono i dossier e si fissa il TODO.
   È il testimone — da lì una sessione a freddo deve poter continuare da sola.
 - **Al 40%**: tetto duro. Non si apre altro lavoro, si chiude.
 
 Il limite non è mai un numero di task: è il contesto. Se i task aperti sono più di
 quanti ne stiano in una sessione, la risposta è la **sequenza**, non il taglio.
+
+**La chiusura scala col peso della sessione.** Se il diff non tocca il codice di
+produzione **e** nessun dossier è di livello C, la `/chiusura` salta revisore e
+distillatore: distillare dossier leggeri costa più di quanto rende. Tutto il
+resto: chiusura piena. È ciò che rende economico l'ultimo tratto di contesto,
+invece di spenderlo in burocrazia sul lavoro appena fatto.
 
 ## 10 · Il costo del metodo
 

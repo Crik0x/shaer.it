@@ -23,7 +23,9 @@ Poi elenca:
 - quelli a **`↻3` o più**: fermati su questi, non vanno riportati un'altra volta
   in silenzio. Portameli con la diagnosi e due o tre vie d'uscita
 - i `[~]` — scritti ma non provati: sono debito, vanno chiusi o declassati
-- la sezione «Per Nick» — se c'è ancora, chiedi se è stata eseguita
+- apri `memoria/RIPRESA.md` (**non** è caricato all'avvio): «Per Nick» + il
+  prompt di ripresa. Se «Per Nick» ha azioni `[N]` ancora aperte, chiedi se sono
+  state eseguite; il prompt è il piano già pronto per la sessione di oggi
 
 **4 · Precedenti.** Per i task nuovi di livello **M** o **C**, `grep` delle loro
 aree in `dossier/PATTERN.md` e `dossier/archivio/`. Se esiste un precedente,
@@ -46,6 +48,6 @@ quale porta, prima di proporne un altro — un `200` non prova quale applicazion
 stai guardando, verifica un contenuto identificativo. Segnala un albero sporco
 (`git status --short`). Poi aspetta il mio ok sulla sequenza e comincia.
 
-Ritmo: testimone al **25%** del contesto, tetto duro al **40%**.
+Ritmo: testimone al **30%** del contesto, tetto duro al **40%**.
 Riepilogo di apertura ≤ 15 righe. Non caricare REGISTRO, DECISIONI, dossier o
 `docs/**` se non servono ai task di oggi.

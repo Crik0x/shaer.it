@@ -1,111 +1,55 @@
 # TODO
 
-**Saldo: 19 aperti — 17 nuovi (T-016, T-017, T-018, T-020, T-024, T-031…T-037, T-039…T-043), 2 riportati (T-022 `↻1`, T-008 `↻3`)**  ·  24 chiusi (…T-028 il 2026-07-29b; T-038 il 2026-07-29c; **T-029, T-030 il 2026-07-30**)
+**Saldo: 19 aperti — 17 nuovi (T-016, T-017, T-018, T-020, T-024, T-031…T-037, T-039…T-043), 2 riportati (T-022 `↻1`, T-008 `↻3`)**  ·  24 chiusi → `memoria/REGISTRO.md`
 
-Stati: `[ ]` da fare · `[~]` scritto non provato · `[A]` accettato · `[x]` fatto con prova · `[>]` riportato (`↻`) · `[N]` azione di Nick (si rimuove a conferma). **Non si riscrive mai** (`lavoro.md §8-bis/ter`); `↻3`→stop; solo «Per Nick» si sostituisce.
+Stati: `[ ]` da fare · `[~]` scritto non provato · `[A]` accettato · `[x]` fatto con prova · `[>]` riportato (`↻`) · `[N]` azione di Nick (si rimuove a conferma). **Non si riscrive mai** (`lavoro.md §8-bis/ter`); `↻3`→stop. «Per Nick» e il prompt di ripresa vivono in `memoria/RIPRESA.md` (caricato da `/apertura`).
 
 ## Da te — azioni `[N]` (col come-fare, si rimuovono a conferma)
 
-- [N] **T-008 · Supabase prod separato (Confirm email ON)** `↻3` — NON accendere Confirm su
-      `alrguvxspssjwfmtuhdw` (romperebbe i test). Passi: New project «shaer-qr-prod» → Auth›Email Confirm ON
-      → URL+anon+service key nei secret Vercel (Production) → applica migrazioni nel SQL editor. Come-fare
-      completo in `dossier/archivio/T-004-auth-dashboard.md`. → poi «T-008 fatto».
-
-- [N] **(minore) Service key per il ramo positivo del ledger** — aggiungi `SUPABASE_SERVICE_ROLE_KEY` a
-      `apps/qr/.env.local` (Dashboard Supabase › Settings › API › service_role). Poi `node --test
-      --env-file=.env.local lib/ledger.test.ts` proverà anche «un transfer lecito è accettato» (ora `skipped`).
-      Non tocca l'anti-frode (già provato). → scrivi «service key messa».
+- [N] **T-008 · Supabase prod separato (Confirm email ON)** `↻3` — NON accendere Confirm su `alrguvxspssjwfmtuhdw` (romperebbe i test). New project «shaer-qr-prod» → Auth Confirm ON → URL+anon+service key nei secret Vercel (Production) → migrazioni nel SQL editor. Come-fare completo: `dossier/archivio/T-004-auth-dashboard.md`. → «T-008 fatto».
+- [N] **(minore) Service key ramo positivo ledger** — `SUPABASE_SERVICE_ROLE_KEY` in `apps/qr/.env.local` (Supabase › Settings › API › service_role). Poi il test «transfer lecito accettato» esce da `skipped`. → «service key messa».
 
 ## Ora
 
-- [ ] T-016 **Piano free/pro + metering** `C` 💰 — ≤100 scan/mese gratis, oltre blocca analisi+export+nuovi QR,
-      mai il redirect (D-009). Export PDF pro. Stripe (D-011). Nodi (metering derivato/mese/quota) + piano in `dossier/T-016-piano-free-pro.md`. Precede T-020.
-- [ ] T-017 **Restyling densità dashboard** `M` — token (regola 8), Server Components; struttura (non palette) da `arkes_dashboard_v3.html` (D-012). `dossier/T-017-restyling-dashboard.md`.
-- [ ] T-018 **Editor QR avanzato** `M` — più tipi/opzioni + branding + `purpose`/`parent_id` (assorbe enum station/employee). Aggancio slug T-020. `dossier/T-018-editor-qr-avanzato.md`.
-- [ ] T-020 **Slug custom + @tag** `C` ⚠️ — pro, 2€/mese, immutabile/riassegnabile (D-010). **Consuma T-016**. Nodi @tag+orfani in `dossier/T-020-slug-custom-tag.md`.
-- [ ] T-024 **Harness verifica auth (SSR cookie→route)** `M` — 4ª recidiva muro auth-non-testabile. Test: cookie Supabase-SSR in `fetch` verso route → asserisce stringhe chiave. Prec: `auth.test.ts`, `PATTERN.md`.
+- [ ] T-016 **Piano free/pro + metering** `C` 💰 — Stripe (D-011), quota ≤100 scan/mese, mai il redirect (D-009), export PDF pro. Precede T-020. → `dossier/T-016-piano-free-pro.md`.
+- [ ] T-017 **Restyling densità dashboard** `M` — token (regola 8), Server Components; struttura (non palette) da `arkes_dashboard_v3.html` (D-012). → `dossier/T-017-restyling-dashboard.md`.
+- [ ] T-018 **Editor QR avanzato** `M` — più tipi/opzioni + branding + `purpose`/`parent_id`; aggancio slug T-020. → `dossier/T-018-editor-qr-avanzato.md`.
+- [ ] T-020 **Slug custom + @tag** `C` ⚠️ — pro 2€/mese, immutabile/riassegnabile (D-010). **Consuma T-016**. → `dossier/T-020-slug-custom-tag.md`.
+- [ ] T-024 **Harness verifica auth (SSR cookie→route)** `M` — 4ª recidiva muro auth-non-testabile. Cookie Supabase-SSR in `fetch`→route, asserisce stringhe chiave. Prec: `auth.test.ts`, `PATTERN.md`.
 
 ## Modulo 0 — QR operativo §5.4 (D-015/016/017)
 
-*QR operativo (postazioni/dipendenti/bonus/escrow, MDD §5.4). Feature denaro bloccate dal ledger F1; le senza-soldi no.*
+*Feature denaro bloccate dal ledger F1; le senza-soldi no.*
 
-- [~] T-036 **Signup robusto a Confirm-email** `M` — fatto (`login-form.tsx`: no sessione → «controlla
-      l'email»; tsc verde). Ramo ON provabile solo dopo T-008 → `[~]`. `dossier/T-036-signup-confirm-email.md`.
-- [ ] T-037 **Landing: pivot copy operativo §5.4** `M` — hero ancora «analytics», simulatore già operativo:
-      riscrivere hero + messaggi. Voce di brand = Nick.
-- [ ] T-039 **Mappa postazioni spostabili** `C` — D-017: demo finta in landing (drag no-lib, collasso `-`)
-      + editor reale in dashboard, persiste solo per utente **verificato** (gate T-030). Sostituisce `NetworkTreePanel`.
-- [ ] T-040 **Connessione tra account (scan-to-connect)** `C` — A scansiona il QR di B → arco (utile admin
-      damascati→cliente). Grafo puro, no denaro. Serve `connections` + RLS + flusso scan.
-- [ ] T-041 **Fidelity card** `C` 💰 **[BLOCCATO su F1]** — punti = crediti (D-016): non lavorabile finché
-      T-029a…T-032 non danno crediti reali. Segnaposto.
+- [~] T-036 **Signup robusto a Confirm-email** `M` — fatto (`login-form.tsx`, tsc verde); ramo ON provabile solo dopo T-008. → `dossier/T-036-signup-confirm-email.md`.
+- [ ] T-037 **Landing: pivot copy operativo §5.4** `M` — hero «analytics» → operativo (simulatore già operativo). Voce di brand = Nick.
+- [ ] T-039 **Mappa postazioni spostabili** `C` — D-017: demo drag no-lib in landing + editor reale in dashboard, persiste solo per utente **verificato** (gate T-030). Sostituisce `NetworkTreePanel`.
+- [ ] T-040 **Connessione tra account (scan-to-connect)** `C` — A scansiona il QR di B → arco. Grafo puro, no denaro. Serve `connections` + RLS + flusso scan.
+- [ ] T-041 **Fidelity card** `C` 💰 **[BLOCCATO su F1]** — punti = crediti (D-016); non lavorabile finché T-031/032 non danno crediti reali. Segnaposto.
 
 ## Ecosistema — F1 costruzione (sequenza stabilisce→consuma)
 
-*SAD §3–8 (E-D-26), test-first (regola 5), codice in `apps/qr`/`packages` (D-015). Precedenti nei singoli task. **T-029/T-030** chiusi `[x]` → «Fatto»; conio backed = task nuovo (post-webhook Stripe).*
+*SAD §3–8 (E-D-26), test-first (regola 5), codice in `apps/qr`/`packages` (D-015).*
 
 - [ ] T-031 **TXN engine** `C` — SAD §3.2/4. Stabilisce il tronco TXN. Consuma T-029 + T-030.
-- [ ] T-032 **Wallet derivato + conti utente** `M` — SAD §3.1/3.3. Consuma T-029 + T-030.
-      ✅ T-030 (RBAC) chiuso → **sbloccato** (senza RBAC i saldi utente = furto, revisore 2026-07-29c g2).
-- [ ] T-033 **Escrow + circuito chiuso** `C` 💰 — SAD §3.3. Consuma T-029 (held) + T-031. Prec: `archivio/T-038` (modello bonus).
+- [ ] T-032 **Wallet derivato + conti utente** `M` — SAD §3.1/3.3. Consuma T-029 + T-030. **Sbloccato** da T-030.
+- [ ] T-033 **Escrow + circuito chiuso** `C` 💰 — SAD §3.3. Consuma T-029 (held) + T-031. Prec: `archivio/T-038`.
 - [ ] T-034 **Recensioni & Rank bayesiano** `M` — SAD §3.5. Consuma T-031.
 - [ ] T-035 **Referral versionato + `param_sets`** `M` — SAD §3.4/3.5. Stabilisce `param_sets`. Consuma T-029 + T-031.
 
 ## Modulo 7 — Gestionale attività (G1) — nuovo scope (E-D-29/30)
 
-*Prima fetta = admin single-activity, schema money-ready ma **pagamento OFF**, generico multi-verticale. Visione+taglio+modello in `MD/ecosistema/MODULO-7-GESTIONALE.md`. Booking cliente + CRM = fuori (Sprint 3 / post-TXN).*
+*Prima fetta = admin single-activity, schema money-ready ma pagamento OFF. Modello: `MD/ecosistema/MODULO-7-GESTIONALE.md`.*
 
-- [ ] T-042 **Schema gestionale G1** `C` — tabelle `businesses`, `offerings`(service|product), `bundles`,
-      `staff`(ref QR opzionale), `role_templates`+`staff_roles`(scadenza), tutte `owner_id`+RLS, prezzo_shaer
-      **inerte**. **Consuma T-030** (RBAC/verify-gate). Modello in `MODULO-7-GESTIONALE.md §4`.
-- [ ] T-043 **CRUD admin G1** `M` — dashboard servizi/prodotti/pacchetti/staff/ruoli, Server Components
-      (regola 9), estetica Stripe/Vercel (regola 8). **Consuma T-042** + struttura di `arkes_admin_panel_v14.html`
-      (tab Servizi&Badge/Operatrici&Servizi/Catalogo/Prodotti/Pacchetti — struttura, non palette).
+- [ ] T-042 **Schema gestionale G1** `C` — `businesses`/`offerings`(service|product)/`bundles`/`staff`/`role_templates`+`staff_roles`, tutte `owner_id`+RLS, prezzo_shaer **inerte**. **Consuma T-030**. Modello §4.
+- [ ] T-043 **CRUD admin G1** `M` — dashboard servizi/prodotti/pacchetti/staff/ruoli, Server Components (regola 9), estetica Stripe/Vercel (regola 8). **Consuma T-042** + struttura `arkes_admin_panel_v14.html`.
 
 ## Riportati
 
-- [>] T-022 **Fuso orario del cliente + granularità Giorno/Ora** `↻1` `C` — blocchi A+B+C fatti e provati
-      (23/23 + `next build` + revisore). Resta solo **D** (toggle Giorno/Ora) + rendering fuso locale `[~]`
-      (dietro auth → T-024). Dettaglio in `dossier/T-022-fuso-cliente.md`. Condivide la fondazione con T-016.
+- [>] T-022 **Fuso orario cliente + granularità Giorno/Ora** `↻1` `C` — A+B+C provati (23/23 + `next build` + revisore). Resta **D** (toggle Giorno/Ora) + rendering fuso locale `[~]` (dietro auth → T-024). → `dossier/T-022-fuso-cliente.md`. Fondazione condivisa con T-016.
 
 ## Fatto
 
-*(Prova completa in `memoria/REGISTRO.md` + `dossier/archivio/`. Qui non si ripete — potato 2026-07-27.)*
+*(Prova in `memoria/REGISTRO.md` + `dossier/archivio/`. Qui non si ripete — potato 2026-07-27.)*
 
-**Chiusi (24):** T-001…T-007, T-009…T-015, T-019, T-021, T-023, T-025, T-026, T-027, T-028, T-038, **T-029, T-030** → `memoria/REGISTRO.md`
-
-## Per Nick — comandi e azioni
-
-*(questa sezione si **sostituisce** a ogni avanzamento, non si accumula)*
-
-**Sessione 2026-07-30 (parte 2).** Chiuso **T-030 RBAC `[x]`** — DB-test **7/7** sul DB reale (admin-first,
-verify-gate, maker-checker **multisig**), migrazione applicata da te. Decise **E-D-31/32/33** (pannello routa
-per ruolo · profili ADMIN/UTENTE/BUSINESS+sotto-tipi · ADMIN elevabile+multi-admin+multisig). Nuovi file:
-`MD/ecosistema/MAPPA.md` (atlante trasversale) + `futuro/` (parcheggio meta, spec agente architetto/PM).
-
-**Le tue `[N]`:** ① (minore) `SUPABASE_SERVICE_ROLE_KEY` in `apps/qr/.env.local` (ramo positivo ledger) · ② **T-008**.
-**Segnalo:** `Struttura/appadmin.html` + `prenotazioni.html` untracked, **non committati** — dimmi se versionarli. Prototipo booking → Sprint 3.
-
-## Prossima sessione — prompt da lanciare
-
-*(standing: dopo ogni `/chiusura` questa sezione porta il prompt pronto — `lavoro.md` §8-quater)*
-
-*(Sessione mirata: puoi saltare `/apertura`. Basta l'àncora — dammi il task e la fisso io con un `git rev-parse`.)*
-
-```
-T-030 (RBAC) è chiuso e provato (DB-test 7/7 sul DB reale, migrazione 20260730000001 applicata).
-Prossimo bivio — entrambi consumano T-030 (verify-gate + RBAC), scegli tu:
-
-• T-031 · TXN engine (F1) — il tronco a cui si appendono wallet/escrow/recensioni/referral
-  (SAD §3.2/4). Test-first: motore puro FSM OPEN→SUGGESTED→IN_PROGRESS→COMPLETED→(EXPIRED/ABANDONED)
-  in packages, poi migrazione `transactions` + aggiungi la FK su ledger_journal.transaction_id
-  (già nullable, predisposta in 20260729000001). Leggi PRIMA: archivio/T-029 (ledger), SAD §3.2.
-  Continua l'economia F1 (D-016: ledger F1 prima delle feature).
-
-• T-042 · Schema gestionale G1 — businesses/offerings(service|product)/bundles/staff/role_templates,
-  owner_id+RLS, prezzo_shaer INERTE (money OFF). Consuma il verify-gate di T-030. Modello in
-  MD/ecosistema/MODULO-7-GESTIONALE.md §4. Rende il prodotto usabile lato business.
-
-Dimmi quale apro. Poi test-first (regola 5) → revisore → [~]/[x] → /chiusura.
-(Sessione mirata: puoi saltare /apertura, fisso io l'àncora con git rev-parse.)
-```
+**Chiusi (24):** T-001…T-007, T-009…T-015, T-019, T-021, T-023, T-025, T-026, T-027, T-028, T-038, T-029, T-030 → `memoria/REGISTRO.md`

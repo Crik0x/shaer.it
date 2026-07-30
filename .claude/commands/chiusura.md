@@ -8,10 +8,11 @@ cosa hai fatto, guardalo.
 **Prima di tutto, il livello della sessione** — la chiusura scala come il dossier.
 Guarda il diff (`git diff <ancora>..HEAD --stat`) e i dossier toccati:
 
-- **snella** — nessun file di produzione toccato **e** ogni dossier è di livello
-  S: fai i passi 1, 2, 6, 7 e **salta revisore e distillatore**. Distillare tre
-  dossier da tre righe costa più di quanto rende.
-- **piena** — tutto il resto: sette passi, in ordine.
+- **snella** — nessun file di produzione toccato **e** nessun dossier è di livello
+  C (S ed M vanno bene): fai i passi 1, 2, 6, 7 e **salta revisore e
+  distillatore**. Distillare dossier leggeri costa più di quanto rende.
+- **piena** — tutto il resto (un file di produzione toccato, oppure un dossier C):
+  sette passi, in ordine.
 
 Nel dubbio, piena.
 
@@ -67,10 +68,11 @@ di 5, se ne converte una prima di aggiungerne un'altra.
   destinazione, i riportati restano col loro id e `↻`+1, i nuovi si aggiungono.
   Aggiorna la riga di saldo in testa. A **`↻3` fermati** e portami il task con la
   diagnosi e due o tre vie d'uscita, ciascuna con la sua conseguenza.
-  Solo la sezione «Per Nick» si sostituisce.
-- **«Prossima sessione — prompt da lanciare»** (`lavoro.md` §8-quater): riscrivi il
-  blocco-prompt col piano pronto per la sessione dopo. **Sempre**, dopo ogni chiusura.
-  Se manca, la chiusura non è finita.
+  «Per Nick» e il prompt di ripresa non stanno più in TODO: vivono in `RIPRESA.md`.
+- **`memoria/RIPRESA.md`** (`lavoro.md` §8-quater): riscrivi «Per Nick» (azioni
+  `[N]`, segnalazioni) **e** il blocco-prompt «Prossima sessione» col piano pronto
+  per la sessione dopo. È il file che `/apertura` carica al posto delle sezioni
+  d'avvio. **Sempre**, dopo ogni chiusura: se manca, la chiusura non è finita.
 - `REGISTRO.md` in append: `T-NNN · data · task · esito · prova`
 - esegui `node scripts/costo.mjs`: i tetti si **misurano**, non si stimano a occhio
 - esegui `node scripts/resa.mjs --registra P D C R` coi quattro numeri di questa
