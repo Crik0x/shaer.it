@@ -15,7 +15,7 @@ Stati: `[ ]` da fare · `[~]` scritto non provato · `[A]` accettato · `[x]` fa
 - [ ] T-017 **Restyling densità dashboard** `M` — token (regola 8), Server Components; struttura (non palette) da `arkes_dashboard_v3.html` (D-012). → `dossier/T-017-restyling-dashboard.md`.
 - [ ] T-018 **Editor QR avanzato** `M` — più tipi/opzioni + branding + `purpose`/`parent_id`; aggancio slug T-020. → `dossier/T-018-editor-qr-avanzato.md`.
 - [ ] T-020 **Slug custom + @tag** `C` ⚠️ — pro 2€/mese, immutabile/riassegnabile (D-010). **Consuma T-016**. → `dossier/T-020-slug-custom-tag.md`.
-- [ ] T-024 **Harness verifica auth (SSR cookie→route)** `M` — 4ª recidiva muro auth-non-testabile. Cookie Supabase-SSR in `fetch`→route, asserisce stringhe chiave. Prec: `auth.test.ts`, `PATTERN.md`.
+- [x] T-024 **Harness verifica auth (SSR cookie→route)** `M` — **fatto+provato** (2026-07-31): `apps/web/lib/dashboard-auth.test.ts` 1/1 sul dev server (cookie SSR via jar-libreria → `fetch /dashboard` vede email di sessione + «Esci»; senza cookie → `/login`). Rompe il muro 4ª recidiva (PATTERN r.18 → ✅). Dossier `T-024`. → Chiusi in `/chiusura`.
 
 ## Modulo 0 — QR operativo §5.4 (D-015/016/017)
 
